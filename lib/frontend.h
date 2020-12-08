@@ -3,7 +3,6 @@
 #define INCLUDE_FRONTEND_H_
 
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -392,15 +391,6 @@ class Frontend {
       obs_count_table[landmark_obs_count_.at(i)]++;
     }
 
-    std::ofstream obs_count_file("observation_count.txt");
-    obs_count_file << "obs_count,num_of_landmarks\n"; 
-
-    for (std::map<size_t, size_t>::iterator it=obs_count_table.begin(); it!=obs_count_table.end(); ++it) {
-      std::cout << "obs counts: " << it->first << " \t # of landmarks: " << it->second << std::endl;
-      obs_count_file << it->first << "," << it->second << std::endl;
-    }
-    obs_count_file.close();
-
     return true;
   }
 
@@ -416,6 +406,9 @@ class Frontend {
     double fv = camera_ptr_->K().at<double>(1,1);
     double pu = camera_ptr_->K().at<double>(0,2);
     double pv = camera_ptr_->K().at<double>(1,2);
+
+    // header
+    output_stream << "timestamp,landmark_id,u,v,size" << std::endl; 
 
 
     for (size_t i=0; i<keyframes_.size(); ++i) {
@@ -440,7 +433,8 @@ class Frontend {
 
           // ouptput stream
           output_stream << keyframes_.at(i).timestamp_ << "," << landmark_id_remap[lm_id] << ","
-                        << fu*undis_point.at(0).x + pu << "," << fv*undis_point.at(0).y + pv
+                        << fu*undis_point.at(0).x + pu << "," << fv*undis_point.at(0).y + pv << ","
+                        << keyframes_.at(i).keypoints_[kp_id].size
                         << std::endl;          
         }
       }

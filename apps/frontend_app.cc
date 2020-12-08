@@ -69,7 +69,6 @@ int main(int argc, char **argv) {
   frontend.Match(bf_hamming_matcher);
 
   std::ofstream feature_obs_file("feature_obs.csv");
-  feature_obs_file << "timestamp,landmark_id,u,v\n"; 
   frontend.OutputLandmarkObservation(feature_obs_file);
   feature_obs_file.close();
 

@@ -1,5 +1,14 @@
 add_library(lib STATIC
   frontend.h
+  so3.h
+  parameter_block.h
+  sized_parameter_block.h
+  vec_3d_parameter_block.h
+  quat_parameter_block.h
+  imu_data.h
+  imu_error.h
+  pre_int_imu_error.h
+  reprojection_error.h
 )
 
 target_include_directories(lib
