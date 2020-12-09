@@ -40,7 +40,7 @@ struct ObservationData {
       timestamp_ = std::stod(data_str)*1e-9;
 
       std::getline(str_stream, data_str, ','); 
-      index_ = std::stoi(data_str);
+      landmark_id_ = std::stoi(data_str);
 
       for (int i=0; i<2; ++i) {                    
         std::getline(str_stream, data_str, ','); 
@@ -58,7 +58,7 @@ struct ObservationData {
   }
 
   double timestamp_;
-  size_t index_;
+  size_t landmark_id_;
   Eigen::Vector2d feature_pos_; 
   double size_;
 };
@@ -124,6 +124,83 @@ class State {
   Eigen::Vector3d acc_bias_; 
 };
 
+
+
+struct TriangularData {
+  TriangularData(size_t state_idx, Eigen::Vector2d keypoint) {
+    state_idx_ = state_idx;
+    keypoint_ = keypoint;
+  }
+
+  size_t state_idx_;
+  Eigen::Vector2d keypoint_;
+};
+
+// keypoints should be normalized
+Eigen::Vector3d EpipolarInitialize(Eigen::Vector2d kp1, Eigen::Quaterniond q1, Eigen::Vector3d p1_n1,
+                                   Eigen::Vector2d kp2, Eigen::Quaterniond q2, Eigen::Vector3d p2_n2,
+                                   Eigen::Matrix4d T_bc,
+                                   double fu, double fv, double cu, double cv) {
+  Eigen::Matrix3d K;
+  K << fu,  0, cu,
+        0, fv, cv,
+        0,  0,  1;
+
+  Eigen::Matrix<double, 3, 4> projection;
+  projection << 1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0;
+
+  // from body frame to camera frame
+  Eigen::Matrix3d R_bc = T_bc.topLeftCorner<3,3>();
+  Eigen::Matrix3d R_cb = R_bc.transpose();
+  Eigen::Vector3d t_bc = T_bc.topRightCorner<3,1>();
+
+  Eigen::Matrix4d T_cb = Eigen::Matrix4d::Identity();
+  T_cb.topLeftCorner<3,3>() = R_cb;
+  T_cb.topRightCorner<3,1>() = -R_cb * t_bc;
+
+  // from nagivation frame to body frame
+  Eigen::Matrix3d R_nb_1 = q1.toRotationMatrix();
+  Eigen::Matrix3d R_bn_1 = R_nb_1.transpose();
+
+  Eigen::Matrix4d T_bn_1 = Eigen::Matrix4d::Identity();
+  T_bn_1.topLeftCorner<3,3>() = R_bn_1;
+  T_bn_1.topRightCorner<3,1>() = -R_bn_1 * p1_n1;
+
+  Eigen::Matrix3d R_nb_2 = q2.toRotationMatrix();
+  Eigen::Matrix3d R_bn_2 = R_nb_2.transpose();
+
+  Eigen::Matrix4d T_bn_2 = Eigen::Matrix4d::Identity();
+  T_bn_2.topLeftCorner<3,3>() = R_bn_2;
+  T_bn_2.topRightCorner<3,1>() = -R_bn_2 * p2_n2;
+
+  // 
+  Eigen::Matrix<double, 3, 4> P1 = K * projection * T_cb * T_bn_1;
+  Eigen::Matrix<double, 3, 4> P2 = K * projection * T_cb * T_bn_2;
+
+  // 
+  // Eigen::Matrix<double, 3, 4> P1 = projection * T_cb * T_bn_1;
+  // Eigen::Matrix<double, 3, 4> P2 = projection * T_cb * T_bn_2;
+
+  //
+  Eigen::Matrix4d A;
+  A.row(0) = kp1(0) * P1.row(2) - P1.row(0);
+  A.row(1) = kp1(1) * P1.row(2) - P1.row(1);
+  A.row(2) = kp2(0) * P2.row(2) - P2.row(0);
+  A.row(3) = kp2(1) * P2.row(2) - P2.row(1);
+
+  Eigen::JacobiSVD<Eigen::MatrixXd> svd(A, Eigen::ComputeFullU | Eigen::ComputeFullV);
+  Eigen::Vector4d vec = svd.matrixV().col(3);
+
+  return vec.head(3) / vec(3);
+}
+
+
+
+
+
+
 class ExpLandmarkOptSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -154,6 +231,9 @@ class ExpLandmarkOptSLAM {
     fu_ = experiment_config_file["cameras"][0]["focal_length"][0];
     fv_ = experiment_config_file["cameras"][0]["focal_length"][1];
 
+    cu_ = experiment_config_file["cameras"][0]["principal_point"][0];
+    cv_ = experiment_config_file["cameras"][0]["principal_point"][1];
+
     sigma_g_c_ = experiment_config_file["imu_params"]["sigma_g_c"];
     sigma_a_c_ = experiment_config_file["imu_params"]["sigma_a_c"];    
 
@@ -170,6 +250,7 @@ class ExpLandmarkOptSLAM {
     std::ifstream kf_time_file(kf_time_file_path);
     assert(("Could not open ground truth file.", kf_time_file.is_open()));
 
+    // TODO
     std::string gt_timestamp_start = "1403636580838555648";
     std::string gt_timestamp_end =   "1403636762743555584";
 
@@ -276,44 +357,207 @@ class ExpLandmarkOptSLAM {
 
     state_init_file.close();
 
+    return true;
+  }
+
+  bool ReadObservationData() {
+  
+    std::string feature_obs_file_path("config/feature_obs.csv");
+    std::cout << "Read feature observation data at " << feature_obs_file_path << std::endl;
+    std::ifstream feature_obs_file(feature_obs_file_path);
+    assert(("Could not open ground truth file.", feature_obs_file.is_open()));
+
+
+    // ignore the header
+    std::string line;
+    std::getline(feature_obs_file, line);
+
+    while (std::getline(feature_obs_file, line)) {
+
+      observation_data_.push_back(new ObservationData(line));
+
+      size_t landmark_id = observation_data_.back()->landmark_id_-1;
+
+      if (landmark_id >= landmark_parameter_.size()) {
+        landmark_parameter_.resize(landmark_id+1);
+      }
+    }
+
+    for (size_t i=0; i<landmark_parameter_.size(); ++i) {
+      landmark_parameter_.at(i) = new Vec3dParameterBlock();
+    }
+
+    feature_obs_file.close();
 
     return true;
   }
 
 
-  bool TestStateParameter(std::ostream& output_stream) {
-
-    double gt_timestamp_start = 1403636580.838555648;
 
 
-    for (size_t i=0; i<state_parameter_.size(); ++i) {
-      output_stream << i << " "
-                    << state_parameter_.at(i)->GetTimestamp() - gt_timestamp_start << " "
-                    << state_parameter_.at(i)->GetRotationBlock()->estimate().w() << " "
-                    << state_parameter_.at(i)->GetRotationBlock()->estimate().x() << " "
-                    << state_parameter_.at(i)->GetRotationBlock()->estimate().y() << " "
-                    << state_parameter_.at(i)->GetRotationBlock()->estimate().z() << " "
-                    << state_parameter_.at(i)->GetVelocityBlock()->estimate()[0] << " "
-                    << state_parameter_.at(i)->GetVelocityBlock()->estimate()[1] << " "
-                    << state_parameter_.at(i)->GetVelocityBlock()->estimate()[2] << " "
-                    << state_parameter_.at(i)->GetPositionBlock()->estimate()[0] << " "
-                    << state_parameter_.at(i)->GetPositionBlock()->estimate()[1] << " "
-                    << state_parameter_.at(i)->GetPositionBlock()->estimate()[2] << " "
-                    << state_parameter_.at(i)->GetGyroBias()[0] << " "
-                    << state_parameter_.at(i)->GetGyroBias()[1] << " "
-                    << state_parameter_.at(i)->GetGyroBias()[2] << " "
-                    << state_parameter_.at(i)->GetAcceBias()[0] << " "
-                    << state_parameter_.at(i)->GetAcceBias()[1] << " "
-                    << state_parameter_.at(i)->GetAcceBias()[2] << std::endl;
+  bool Triangulate() {
 
+    std::vector<std::vector<TriangularData>> tri_data;         // tri_data[num_of_landmark][2]
+    tri_data.resize(landmark_parameter_.size());
+
+    for (size_t i=0; i<observation_data_.size(); ++i) {
+
+      // determine the two nodes of the bipartite graph
+      size_t state_idx = 0;
+      for (size_t j=0; j<state_parameter_.size(); ++j) {
+        if (state_parameter_.at(j)->GetTimestamp() == observation_data_.at(i)->timestamp_) {
+          state_idx = j;
+          break;
+        }
+      }
+
+      size_t landmark_idx = observation_data_.at(i)->landmark_id_-1;  
+
+      if (tri_data.at(landmark_idx).empty()) {
+        TriangularData tri_data_instance(state_idx, observation_data_.at(i)->feature_pos_);
+        tri_data.at(landmark_idx).push_back(tri_data_instance);
+      }
+      else if (tri_data.at(landmark_idx).size() == 1 && tri_data.at(landmark_idx).at(0).state_idx_!=state_idx) {
+        TriangularData tri_data_instance(state_idx, observation_data_.at(i)->feature_pos_);
+        tri_data.at(landmark_idx).push_back(tri_data_instance);
+      }
+
+
+      ceres::CostFunction* cost_function = new ReprojectionError(observation_data_.at(i)->feature_pos_,
+                                                                 T_bc_,
+                                                                 fu_, fv_,
+                                                                 cu_, cv_,
+                                                                 observation_data_.at(i)->cov());
+
+      optimization_problem_.AddResidualBlock(cost_function,
+                                             NULL,
+                                             state_parameter_.at(state_idx)->GetRotationBlock()->parameters(),
+                                             state_parameter_.at(state_idx)->GetPositionBlock()->parameters(),
+                                             landmark_parameter_.at(landmark_idx)->parameters());
     }
+
+    // 
+    for (size_t i=0; i<landmark_parameter_.size(); ++i) {
+
+      Eigen::Vector2d keypoint_0 = tri_data.at(i).at(0).keypoint_;
+      Eigen::Vector2d keypoint_1 = tri_data.at(i).at(1).keypoint_;
+
+      size_t state_idx_0 = tri_data.at(i).at(0).state_idx_;
+      size_t state_idx_1 = tri_data.at(i).at(1).state_idx_;
+
+      Eigen::Vector3d init_landmark_pos = EpipolarInitialize(keypoint_0, state_parameter_.at(state_idx_0)->GetRotationBlock()->estimate(), state_parameter_.at(state_idx_0)->GetPositionBlock()->estimate(),
+                                                             keypoint_1, state_parameter_.at(state_idx_1)->GetRotationBlock()->estimate(), state_parameter_.at(state_idx_1)->GetPositionBlock()->estimate(),
+                                                             T_bc_, fu_, fv_, cu_, cv_);
+
+      landmark_parameter_.at(i)->setEstimate(init_landmark_pos);
+    }
+
+    return true;
+  }
+
+
+  bool ReadIMUData(std::string imu_file_path) {
+  
+    std::cout << "Read IMU data at " << imu_file_path << std::endl;
+
+    std::ifstream imu_file(imu_file_path);
+    assert(("Could not open IMU file.", imu_file.is_open()));
+
+    // Read the column names
+    // Extract the first line in the file
+    std::string first_line_data_str;
+    std::getline(imu_file, first_line_data_str);
+
+    size_t state_idx = 0;                 // the index of the last element
+
+    PreIntIMUData int_imu_data(state_parameter_.at(state_idx)->GetGyroBias(),
+                               state_parameter_.at(state_idx)->GetAcceBias(),
+                               sigma_g_c_,
+                               sigma_a_c_);
+    
+
+    std::string imu_data_str;
+    while (std::getline(imu_file, imu_data_str)) {
+
+
+      double timestamp;
+      Eigen::Vector3d gyr;
+      Eigen::Vector3d acc;
+
+      std::stringstream imu_str_stream(imu_data_str); 
+
+      if (imu_str_stream.good()) {
+        std::string data_str;
+        std::getline(imu_str_stream, data_str, ','); 
+        timestamp = std::stod(data_str)*1e-9;
+
+        for (int i=0; i<3; ++i) { 
+          std::getline(imu_str_stream, data_str, ','); 
+          gyr(i) = std::stod(data_str);
+        }
+
+        for (int i=0; i<3; ++i) {                    
+          std::getline(imu_str_stream, data_str, ','); 
+          acc(i) = std::stod(data_str);
+        }
+      }
+
+      IMUData imu_data(timestamp, gyr, acc);
+
+      double time_begin = 1403636580.838555648;
+      double time_end = 1403636762.743555584;
+      
+      if (time_begin <= imu_data.timestamp_ && imu_data.timestamp_ <= time_end) {
+
+
+        // starting to put imu data in the previously established state_parameter_
+        // case 1: the time stamp of the imu data is after the last state
+        if ((state_idx + 1) == state_parameter_.size()) {
+          int_imu_data.IntegrateSingleIMU(imu_data, imu_dt_);
+        }
+        // case 2: the time stamp of the imu data is between two consecutive states
+        else if (imu_data.timestamp_ < state_parameter_.at(state_idx+1)->GetTimestamp()) {
+          int_imu_data.IntegrateSingleIMU(imu_data, imu_dt_);
+        }
+        // case 3: the imu data just enter the new interval of integration
+        else {
+
+          // add imu constraint
+          ceres::CostFunction* cost_function = new PreIntImuError(int_imu_data.dt_,
+                                                                  int_imu_data.dR_,
+                                                                  int_imu_data.dv_,
+                                                                  int_imu_data.dp_);
+
+          optimization_problem_.AddResidualBlock(cost_function,
+                                                 NULL,
+                                                 state_parameter_.at(state_idx+1)->GetRotationBlock()->parameters(),
+                                                 state_parameter_.at(state_idx+1)->GetVelocityBlock()->parameters(),
+                                                 state_parameter_.at(state_idx+1)->GetPositionBlock()->parameters(),
+                                                 state_parameter_.at(state_idx)->GetRotationBlock()->parameters(),
+                                                 state_parameter_.at(state_idx)->GetVelocityBlock()->parameters(),
+                                                 state_parameter_.at(state_idx)->GetPositionBlock()->parameters());   
+
+          state_idx++;
+          
+
+          // prepare for next iteration
+          int_imu_data = PreIntIMUData(state_parameter_.at(state_idx)->GetGyroBias(),
+                                       state_parameter_.at(state_idx)->GetAcceBias(),
+                                       sigma_g_c_,
+                                       sigma_a_c_);
+
+          int_imu_data.IntegrateSingleIMU(imu_data, imu_dt_);
+
+        }
+      }
+    }
+
+    imu_file.close();
+    std::cout << "Finished reading IMU data." << std::endl;
     return true;
   }
 
  private:
-  // testing parameters
-  double time_begin_;
-  double time_end_;
 
   // experiment parameters
   double imu_dt_;
@@ -322,12 +566,14 @@ class ExpLandmarkOptSLAM {
 
   double fu_;
   double fv_;
+  double cu_;
+  double cv_;
 
   // parameter containers
   std::vector<State*>                state_parameter_;
   std::vector<Vec3dParameterBlock*>  landmark_parameter_;
 
-  std::vector<ObservationData>       observation_data_;
+  std::vector<ObservationData*>      observation_data_;
 
 
   double sigma_g_c_;   // gyro noise density [rad/s/sqrt(Hz)]
@@ -346,9 +592,6 @@ class ExpLandmarkOptSLAM {
 
 
 
-
-
-
 int main(int argc, char **argv) {
 
   google::InitGoogleLogging(argv[0]);
@@ -356,28 +599,22 @@ int main(int argc, char **argv) {
   std::string config_folder_path("config/");
   ExpLandmarkOptSLAM slam_problem(config_folder_path);
 
-  std::string euroc_dataset_path = "../../../dataset/mav0/";
+  std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/MH_01_easy/mav0/";
 
   // initialize the first state
   slam_problem.ReadInitialCondition();
-  slam_problem.TestStateParameter(std::cout);
 
-  /***
+  slam_problem.ReadObservationData();
 
-  // states are constructed here
-  std::string observation_file_path = "feature_observation.csv";
-  slam_problem.ReadObservationData(observation_file_path);
+  slam_problem.Triangulate();
 
-  // output ground truth data (for comparison)
-  slam_problem.ProcessGroundTruth(ground_truth_file_path);
 
   // setup IMU constraints
   std::string imu_file_path = euroc_dataset_path + "imu0/data.csv";
   slam_problem.ReadIMUData(imu_file_path);
 
-  // initiate landmark estimate
-  slam_problem.Triangulate();
 
+  /***
 
   // the result before optimization (for comparison)
   slam_problem.OutputOptimizationResult("trajectory_dr.csv");
