@@ -214,6 +214,7 @@ class Frontend {
 
     for (size_t i=0; i<keyframes_.size(); ++i) {
       for (size_t j=i+1; j<keyframes_.size(); ++j) {
+      // for (size_t j=keyframes_.size()-1; j>i; --j) {
 
         std::vector<cv::DMatch> matches_raw;
         std::vector<cv::DMatch> matches_distance;
@@ -259,6 +260,7 @@ class Frontend {
           }
         }
 
+        std::cout << i << " and " << j << std::endl;
         /***
         cv::Mat img_w_matches_raw;
         cv::drawMatches(keyframes_.at(i).img_, keyframes_.at(i).keypoints_,
@@ -400,7 +402,7 @@ class Frontend {
 
     std::map<size_t, size_t> landmark_id_remap;
     size_t landmark_count = 0;
-    const size_t landmark_obs_threshold = 5;
+    const size_t landmark_obs_threshold = 3;
 
     double fu = camera_ptr_->K().at<double>(0,0);
     double fv = camera_ptr_->K().at<double>(1,1);

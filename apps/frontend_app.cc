@@ -16,7 +16,7 @@
 int main(int argc, char **argv) {
 
   // TODO: automatically retrieve from the dataset
-  std::string gt_timestamp_start = "1403636580838555648";
+  std::string gt_timestamp_start = "1403636624463555584";
   std::string gt_timestamp_end =   "1403636762743555584";
 
 
@@ -45,7 +45,6 @@ int main(int argc, char **argv) {
       std::getline(s_stream, time_stamp_str, ',');   // get first string delimited by comma
       
       if (gt_timestamp_start <= time_stamp_str && time_stamp_str <= gt_timestamp_end) {
-
 
         Keyframe keyframe;
 
