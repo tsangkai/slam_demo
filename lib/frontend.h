@@ -179,6 +179,8 @@ class Frontend {
                              (double) config_file["cameras"][0]["distortion_coefficients"][1],
                              (double) config_file["cameras"][0]["distortion_coefficients"][2],
                              (double) config_file["cameras"][0]["distortion_coefficients"][3]);
+
+    landmark_obs_threshold_ = 5;
   }
 
   bool AddKeyframe(Keyframe keyframe) {
@@ -214,7 +216,7 @@ class Frontend {
 
     for (size_t i=0; i<keyframes_.size(); ++i) {
       for (size_t j=i+1; j<keyframes_.size(); ++j) {
-      // for (size_t j=keyframes_.size()-1; j>i; --j) {
+      
 
         std::vector<cv::DMatch> matches_raw;
         std::vector<cv::DMatch> matches_distance;
@@ -260,7 +262,9 @@ class Frontend {
           }
         }
 
+
         std::cout << i << " and " << j << std::endl;
+
         /***
         cv::Mat img_w_matches_raw;
         cv::drawMatches(keyframes_.at(i).img_, keyframes_.at(i).keypoints_,
@@ -402,7 +406,6 @@ class Frontend {
 
     std::map<size_t, size_t> landmark_id_remap;
     size_t landmark_count = 0;
-    const size_t landmark_obs_threshold = 3;
 
     double fu = camera_ptr_->K().at<double>(0,0);
     double fv = camera_ptr_->K().at<double>(1,1);
@@ -419,7 +422,7 @@ class Frontend {
         size_t lm_id = it->second->GetLandmarkId();
 
 
-        if (lm_id > 0 && landmark_obs_count_[lm_id-1] > landmark_obs_threshold) {
+        if (lm_id > 0 && landmark_obs_count_[lm_id-1] > landmark_obs_threshold_) {
 
           // reassign landmark id
           if (landmark_id_remap.find(lm_id) == landmark_id_remap.end()) {
@@ -453,6 +456,8 @@ class Frontend {
 
   std::vector<KeypointMatch> keypoint_matches_;
   std::vector<size_t> landmark_obs_count_;
+
+  size_t landmark_obs_threshold_;
 
 };
 
