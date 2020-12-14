@@ -31,3 +31,17 @@ target_link_libraries(backend_app
   PUBLIC ceres
   PUBLIC lib
 )
+
+
+
+###
+
+add_executable(gt_process_app gt_process_app.cc)
+
+target_include_directories(gt_process_app
+  PUBLIC ${EIGEN3_INCLUDE_DIR}
+)
+
+target_link_libraries(gt_process_app
+  PUBLIC ${EIGEN3_LIBS}
+)

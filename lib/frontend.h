@@ -180,7 +180,7 @@ class Frontend {
                              (double) config_file["cameras"][0]["distortion_coefficients"][2],
                              (double) config_file["cameras"][0]["distortion_coefficients"][3]);
 
-    landmark_obs_threshold_ = 5;
+    landmark_obs_threshold_ = 7;
   }
 
   bool AddKeyframe(Keyframe keyframe) {
@@ -263,7 +263,7 @@ class Frontend {
         }
 
 
-        std::cout << i << " and " << j << std::endl;
+        std::cout << "frames " <<  i << " and " << j << std::endl;
 
         /***
         cv::Mat img_w_matches_raw;
@@ -434,16 +434,18 @@ class Frontend {
           std::vector<cv::Point2f> point;
           point.push_back(keyframes_.at(i).keypoints_[kp_id].pt);
           std::vector<cv::Point2f> undis_point;
-          cv::undistortPoints(point, undis_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), cv::noArray());
+          cv::undistortPoints(point, undis_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), camera_ptr_->K());
 
           // ouptput stream
           output_stream << keyframes_.at(i).timestamp_ << "," << landmark_id_remap[lm_id] << ","
-                        << fu*undis_point.at(0).x + pu << "," << fv*undis_point.at(0).y + pv << ","
+                        << undis_point.at(0).x << "," << undis_point.at(0).y << ","
                         << keyframes_.at(i).keypoints_[kp_id].size
                         << std::endl;          
         }
       }
     }
+
+    std::cout << "output landmark numbers: " << landmark_count << std::endl;
 
     return true;
   }
