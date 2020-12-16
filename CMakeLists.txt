@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.5.1)
 project(slam_demo)
 
 
-
 set(CMAKE_CXX_STANDARD 14)
 
 option(BUILD_TEST "build test programs" OFF)
@@ -21,6 +20,6 @@ find_package(Ceres REQUIRED)
 add_subdirectory(apps)
 add_subdirectory(lib)
 
-#if(BUILD_TEST)
-#  add_subdirectory(test)
-#endif(BUILD_TEST)
+if(BUILD_TEST)
+  add_subdirectory(test)
+endif(BUILD_TEST)
