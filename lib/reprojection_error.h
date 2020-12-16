@@ -126,7 +126,7 @@ class ReprojectionError:
     // PinholeCamera.hpp: 209
     measurement_t error;
     error[0] = fu_ * keypoint[0] + cu_ - measurement_[0];
-    error[1] = fv_ * keypoint[0] + cv_ - measurement_[1];
+    error[1] = fv_ * keypoint[1] + cv_ - measurement_[1];
 
     // covariance
     Eigen::LLT<Eigen::Matrix2d> lltOfInformation(covariance_.inverse());

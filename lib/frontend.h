@@ -20,8 +20,13 @@
 class Camera {
 
  public:
-  Camera(double fu, double fv, double pu, double pv,
+  Camera(double du, double dv,
+         double fu, double fv, double pu, double pv,
          double dis_para_0, double dis_para_1, double dis_para_2, double dis_para_3) {
+    
+    du_ = du;
+    dv_ = dv;
+
     fu_ = fu;
     fv_ = fv;
 
@@ -58,7 +63,24 @@ class Camera {
     return distortion_coeff;
   }
 
+  bool isInside(cv::Point2f pt) {
+
+    if ((pt.x >= (1-boarder_ratio_)*du_) || (pt.x <= boarder_ratio_*du_))
+      return false;
+
+    if ((pt.y >= (1-boarder_ratio_)*dv_) || (pt.y <= boarder_ratio_*dv_))
+      return false;
+
+    return true;
+  }
+
  private:
+
+  double du_;
+  double dv_;
+
+  double boarder_ratio_ = 0.15;
+
   double fu_;
   double fv_;
   double pu_;
@@ -171,7 +193,9 @@ class Frontend {
  public:
 
   Frontend(cv::FileStorage config_file) {
-    camera_ptr_ = new Camera((double) config_file["cameras"][0]["focal_length"][0], 
+    camera_ptr_ = new Camera((double) config_file["cameras"][0]["image_dimension"][0],
+                             (double) config_file["cameras"][0]["image_dimension"][1],
+                             (double) config_file["cameras"][0]["focal_length"][0], 
                              (double) config_file["cameras"][0]["focal_length"][1],
                              (double) config_file["cameras"][0]["principal_point"][0],
                              (double) config_file["cameras"][0]["principal_point"][1],
@@ -180,7 +204,7 @@ class Frontend {
                              (double) config_file["cameras"][0]["distortion_coefficients"][2],
                              (double) config_file["cameras"][0]["distortion_coefficients"][3]);
 
-    landmark_obs_threshold_ = 7;
+    landmark_obs_threshold_ = 2;
   }
 
   bool AddKeyframe(Keyframe keyframe) {
@@ -226,8 +250,13 @@ class Frontend {
 
         // matches_raw -> matches_distance
         for (size_t k=0; k<matches_raw.size(); k++) {
-          if (matches_raw[k].distance < 60) {
-            matches_distance.push_back(matches_raw[k]);
+          if (matches_raw[k].distance < 40) {
+            if (camera_ptr_->isInside(keyframes_.at(i).keypoints_[matches_raw[k].queryIdx].pt)) {
+              if (camera_ptr_->isInside(keyframes_.at(j).keypoints_[matches_raw[k].trainIdx].pt)) {
+                matches_distance.push_back(matches_raw[k]);
+
+              }
+            }
           }
         }
 
@@ -264,7 +293,6 @@ class Frontend {
 
 
         std::cout << "frames " <<  i << " and " << j << std::endl;
-
         /***
         cv::Mat img_w_matches_raw;
         cv::drawMatches(keyframes_.at(i).img_, keyframes_.at(i).keypoints_,
