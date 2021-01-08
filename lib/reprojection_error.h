@@ -150,8 +150,8 @@ class ReprojectionError:
 
       Eigen::MatrixXd J_kp_to_lm_c(2,3);
       double r_lm_c_2 = 1 / h_landmark_c[2];
-      J_kp_to_lm_c << r_lm_c_2, 0, h_landmark_c[0]*(r_lm_c_2*r_lm_c_2),
-                      0, r_lm_c_2, h_landmark_c[1]*(r_lm_c_2*r_lm_c_2);
+      J_kp_to_lm_c << r_lm_c_2, 0, (-1)*h_landmark_c[0]*(r_lm_c_2*r_lm_c_2),
+                      0, r_lm_c_2, (-1)*h_landmark_c[1]*(r_lm_c_2*r_lm_c_2);
 
       Eigen::Matrix3d J_lc_to_lb;
       J_lc_to_lb = R_cb;
