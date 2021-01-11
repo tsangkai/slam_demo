@@ -204,7 +204,7 @@ class Frontend {
                              (double) config_file["cameras"][0]["distortion_coefficients"][2],
                              (double) config_file["cameras"][0]["distortion_coefficients"][3]);
 
-    landmark_obs_threshold_ = 2;
+    landmark_obs_threshold_ = 5;
   }
 
   bool AddKeyframe(Keyframe keyframe) {
