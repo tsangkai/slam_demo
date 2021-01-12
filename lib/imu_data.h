@@ -1,3 +1,7 @@
+
+#ifndef INCLUDE_IMU_DATA_H_
+#define INCLUDE_IMU_DATA_H_
+
 #include <Eigen/Core>
 
 struct IMUData {
@@ -89,3 +93,5 @@ struct PreIntIMUData {
 
   Eigen::Matrix<double, 9, 9> cov_;
 };
+
+#endif /* INCLUDE_IMU_DATA_H_ */

@@ -5,6 +5,7 @@ add_library(lib STATIC
   sized_parameter_block.h
   vec_3d_parameter_block.h
   quat_parameter_block.h
+  triangularization.h
   imu_data.h
   imu_error.h
   pre_int_imu_error.h
