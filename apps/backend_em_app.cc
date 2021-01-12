@@ -394,9 +394,6 @@ class ExpLandmarkEmSLAM {
           if (landmark_id >= landmark_vec_.size()) {
             landmark_vec_.resize(landmark_id+1);
           }
-
-
-
         }
       }
     }
@@ -407,6 +404,7 @@ class ExpLandmarkEmSLAM {
     }
 
     feature_obs_file.close();
+
 
     // debug
     size_t num_obs = 0;
@@ -423,52 +421,44 @@ class ExpLandmarkEmSLAM {
     }
 
     std::cout << "numober of states: " << state_vec_.size() << std::endl;
+    std::cout << "numober of observation vec: " << observation_vec_.size() << std::endl;
     std::cout << "numober of landmarks: " << landmark_vec_.size() << std::endl;
     std::cout << "numober of feature observations: " << num_obs << std::endl;
 
 
 
     // initialize landmark by triangularization
-    /***
-    tri_data_.resize(landmark_vec_.size());
+    std::vector<std::vector<TriangularData>> tri_data;        // doesn't have to be a member!?
+    tri_data.resize(landmark_vec_.size());
+
     for (size_t i=0; i<observation_vec_.size(); ++i) {
+      for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
 
-      // determine the two nodes of the bipartite graph
-      size_t state_idx = state_vec_.size();
-      for (size_t j=0; j<state_vec_.size(); ++j) {
-        if (state_vec_.at(j)->GetTimestamp() == observation_vec_.at(i)->timestamp_) {
-          state_idx = j;
-          break;
-        }
+        size_t landmark_idx = observation_vec_.at(i).at(j)->landmark_id_-1;  
+
+        TriangularData tri_data_instance(observation_vec_.at(i).at(j)->feature_pos_,
+                                       state_vec_.at(i+1)->GetRotationBlock()->estimate(),
+                                       state_vec_.at(i+1)->GetPositionBlock()->estimate());
+        tri_data.at(landmark_idx).push_back(tri_data_instance);
       }
-      assert(("Could not find state index of the observation.", state_idx < state_vec_.size()));
-
-
-      size_t landmark_idx = observation_vec_.at(i)->landmark_id_-1;  
-
-      TriangularData tri_data_instance(observation_vec_.at(i)->feature_pos_,
-                                       state_vec_.at(state_idx)->GetRotationBlock()->estimate(),
-                                       state_vec_.at(state_idx)->GetPositionBlock()->estimate());
-      tri_data_.at(landmark_idx).push_back(tri_data_instance);
     }    
 
     // set landmark initial estimate
     for (size_t i=0; i<landmark_vec_.size(); ++i) {
 
       size_t idx_0 = 0;
-      size_t idx_1 = std::min(size_t(1), tri_data_.at(i).size()-1);                     // !!!!!!!!!!!!!!!!!!!
+      size_t idx_1 = std::min(size_t(1), tri_data.at(i).size()-1);                     // !!!!!!!!!!!!!!!!!!!
 
-      Eigen::Vector3d init_landmark_pos = EpipolarInitialize(tri_data_.at(i).at(idx_0).keypoint_, 
-                                                             tri_data_.at(i).at(idx_0).rotation_, 
-                                                             tri_data_.at(i).at(idx_0).position_,
-                                                             tri_data_.at(i).at(idx_1).keypoint_, 
-                                                             tri_data_.at(i).at(idx_1).rotation_, 
-                                                             tri_data_.at(i).at(idx_1).position_,
+      Eigen::Vector3d init_landmark_pos = EpipolarInitialize(tri_data.at(i).at(idx_0).keypoint_, 
+                                                             tri_data.at(i).at(idx_0).rotation_, 
+                                                             tri_data.at(i).at(idx_0).position_,
+                                                             tri_data.at(i).at(idx_1).keypoint_, 
+                                                             tri_data.at(i).at(idx_1).rotation_, 
+                                                             tri_data.at(i).at(idx_1).position_,
                                                              T_bc_, fu_, fv_, cu_, cv_);
 
       landmark_vec_.at(i)->setEstimate(init_landmark_pos);
     }
-    ***/
 
     return true;
   }
@@ -704,7 +694,7 @@ class ExpLandmarkEmSLAM {
 
   std::vector<PreIntIMUData*>                 pre_int_imu_vec_;
   std::vector<std::vector<ObservationData*>>  observation_vec_;
-  std::vector<std::vector<TriangularData>>    tri_vec_;         // tri_data[num_of_landmark][num_of_obs]
+  // std::vector<std::vector<TriangularData>>    tri_vec_;         // tri_data[num_of_landmark][num_of_obs]
 
 
   // ceres parameter
