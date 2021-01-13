@@ -476,25 +476,6 @@ class ExpLandmarkOptSLAM {
         // case 3: the imu data just enter the new interval of integration
         else {
 
-          // add imu constraint
-          /***
-          ceres::CostFunction* cost_function = new PreIntImuError(int_imu_data.dt_,
-                                                                  int_imu_data.dR_,
-                                                                  int_imu_data.dv_,
-                                                                  int_imu_data.dp_,
-                                                                  int_imu_data.cov_);
-
-          optimization_problem_.AddResidualBlock(cost_function,
-                                                 NULL,
-                                                 state_vec_.at(state_idx+1)->GetRotationBlock()->parameters(),
-                                                 state_vec_.at(state_idx+1)->GetVelocityBlock()->parameters(),
-                                                 state_vec_.at(state_idx+1)->GetPositionBlock()->parameters(),
-                                                 state_vec_.at(state_idx)->GetRotationBlock()->parameters(),
-                                                 state_vec_.at(state_idx)->GetVelocityBlock()->parameters(),
-                                                 state_vec_.at(state_idx)->GetPositionBlock()->parameters());   
-          ***/
-
-
           pre_int_imu_vec_.push_back(int_imu_data_ptr);
 
           state_idx++;
@@ -626,7 +607,7 @@ class ExpLandmarkOptSLAM {
     return true;
   }
   
-  
+
  private:
 
   // experiment parameters
