@@ -16,16 +16,16 @@ target_link_libraries(frontend_app
 
 ###
 
-add_executable(backend_app backend_app.cc)
+add_executable(backend_opt_app backend_opt_app.cc)
 
-target_include_directories(backend_app
+target_include_directories(backend_opt_app
   PUBLIC ${OpenCV_INCLUDE_DIRS}          # not the target style
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC ${CERES_INCLUDE_DIRS}     
   PUBLIC lib
 )
 
-target_link_libraries(backend_app
+target_link_libraries(backend_opt_app
   PUBLIC ${OpenCV_LIBS}
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC ceres

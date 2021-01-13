@@ -107,12 +107,12 @@ class State {
 
 
 
-class ExpLandmarkEmSLAM {
+class ExpLandmarkOptSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
  public:
 
-  ExpLandmarkEmSLAM(std::string config_folder_path) {
+  ExpLandmarkOptSLAM(std::string config_folder_path) {
     ReadConfigurationFiles(config_folder_path);
 
     quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
@@ -519,7 +519,7 @@ class ExpLandmarkEmSLAM {
 
 
 
-  bool SetupMStep() {
+  bool SetupOptProblem() {
 
     // add parameter blocks
     for (size_t i=0; i<landmark_vec_.size(); ++i) {
@@ -530,13 +530,29 @@ class ExpLandmarkEmSLAM {
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetPositionBlock()->parameters(), 3);
-
-      optimization_problem_.SetParameterBlockConstant(state_vec_.at(i)->GetRotationBlock()->parameters());
-      optimization_problem_.SetParameterBlockConstant(state_vec_.at(i)->GetVelocityBlock()->parameters());
-      optimization_problem_.SetParameterBlockConstant(state_vec_.at(i)->GetPositionBlock()->parameters());
     }
     
 
+    // imu constraints
+    for (size_t i=0; i<pre_int_imu_vec_.size(); ++i) {
+      ceres::CostFunction* cost_function = new PreIntImuError(pre_int_imu_vec_.at(i)->dt_,
+                                                              pre_int_imu_vec_.at(i)->dR_,
+                                                              pre_int_imu_vec_.at(i)->dv_,
+                                                              pre_int_imu_vec_.at(i)->dp_,
+                                                              pre_int_imu_vec_.at(i)->cov_);
+
+      optimization_problem_.AddResidualBlock(cost_function,
+                                             NULL,
+                                             state_vec_.at(i+1)->GetRotationBlock()->parameters(),
+                                             state_vec_.at(i+1)->GetVelocityBlock()->parameters(),
+                                             state_vec_.at(i+1)->GetPositionBlock()->parameters(),
+                                             state_vec_.at(i)->GetRotationBlock()->parameters(),
+                                             state_vec_.at(i)->GetVelocityBlock()->parameters(),
+                                             state_vec_.at(i)->GetPositionBlock()->parameters());   
+    }
+
+
+    // observation constraints
     for (size_t i=0; i<observation_vec_.size(); ++i) {
       for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
 
@@ -556,6 +572,10 @@ class ExpLandmarkEmSLAM {
       }
     }
 
+
+    optimization_problem_.SetParameterBlockConstant(state_vec_.at(0)->GetRotationBlock()->parameters());
+    optimization_problem_.SetParameterBlockConstant(state_vec_.at(0)->GetVelocityBlock()->parameters());
+    optimization_problem_.SetParameterBlockConstant(state_vec_.at(0)->GetPositionBlock()->parameters());    
 
     return true;
   }
@@ -579,7 +599,6 @@ class ExpLandmarkEmSLAM {
     return true;
   }
 
-  /***
 
   bool OutputOptimizationResult(std::string output_file_name) {
 
@@ -606,8 +625,8 @@ class ExpLandmarkEmSLAM {
 
     return true;
   }
-  ***/
-
+  
+  
  private:
 
   // experiment parameters
@@ -628,7 +647,7 @@ class ExpLandmarkEmSLAM {
 
   std::vector<PreIntIMUData*>                 pre_int_imu_vec_;
   std::vector<std::vector<ObservationData*>>  observation_vec_;
-
+  
 
   // ceres parameter
   ceres::LocalParameterization*               quat_parameterization_ptr_;
@@ -650,17 +669,17 @@ int main(int argc, char **argv) {
   std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/MH_01_easy/mav0/";
 
 
-  ExpLandmarkEmSLAM slam_problem(config_folder_path);
+  ExpLandmarkOptSLAM slam_problem(config_folder_path);
 
   // initialize the first state
   slam_problem.ReadInitialTraj("data/");
   slam_problem.ReadObservationData("data/");
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
 
-  slam_problem.SetupMStep();
+  slam_problem.SetupOptProblem();
 
   slam_problem.SolveOptimizationProblem();
-  // slam_problem.OutputOptimizationResult("trajectory_em.csv");
+  slam_problem.OutputOptimizationResult("trajectory.csv");
 
   return 0;
 }
