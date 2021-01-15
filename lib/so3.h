@@ -106,12 +106,23 @@ Eigen::Quaterniond Exp_q(const Eigen::Vector3d v) {
 // [Kok et al] (3.39a)
 Eigen::Vector3d Log_q(const Eigen::Quaterniond q) {
 
-  double atan = atan2(q.vec().norm(), q.w());
-  if (abs(atan) < eps) {
-    return 2 * q.vec();
+  Eigen::Quaterniond quat;
+  if (q.w() < 0) {
+    quat.w() = -q.w();
+    quat.x() = -q.x();
+    quat.y() = -q.y();
+    quat.z() = -q.z();
+  }
+  else {
+    quat = q;
   }
 
-  return 2 * (atan / q.vec().norm()) * q.vec();
+  double atan = atan2(quat.vec().norm(), quat.w());
+  if (abs(atan) < eps) {
+    return 2 * quat.vec();
+  }
+
+  return 2 * (atan / quat.vec().norm()) * quat.vec();
 }
 
 
