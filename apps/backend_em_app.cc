@@ -518,7 +518,8 @@ class ExpLandmarkEmSLAM {
     }
 
     for (size_t i=0; i<state_vec_.size(); ++i) {
-      optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
+      // optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
+      optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetRotationBlock()->parameters(), 4);
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetPositionBlock()->parameters(), 3);
 
@@ -554,7 +555,7 @@ class ExpLandmarkEmSLAM {
 
   bool SolveEmProblem() {
 
-    // std::cout << "Begin solving the optimization problem." << std::endl;
+    std::cout << "Begin solving the EM problem." << std::endl;
 
     optimization_options_.linear_solver_type = ceres::SPARSE_SCHUR;
     optimization_options_.minimizer_progress_to_stdout = true;
@@ -566,7 +567,7 @@ class ExpLandmarkEmSLAM {
 
     // M step
     ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
-    // std::cout << optimization_summary_.FullReport() << "\n";
+    std::cout << optimization_summary_.FullReport() << "\n";
     std::cout << "Final cost " << optimization_summary_.final_cost << std::endl; // -1
 
     // E step
@@ -597,7 +598,7 @@ class ExpLandmarkEmSLAM {
       state_estimate.at(i)->q_ = state_vec_.at(i+1)->GetRotationBlock()->estimate();
       state_estimate.at(i)->v_ = state_vec_.at(i+1)->GetVelocityBlock()->estimate();
       state_estimate.at(i)->p_ = state_vec_.at(i+1)->GetPositionBlock()->estimate();
-
+      
 
       Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
       F.block<3,3>(0,0) = u_dR.transpose();
@@ -623,7 +624,6 @@ class ExpLandmarkEmSLAM {
       Eigen::Matrix3d k_R = Eigen::Matrix3d::Identity();
       Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
       Eigen::Vector3d k_p = Eigen::Vector3d::Zero();
-
 
       for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
 
@@ -674,13 +674,20 @@ class ExpLandmarkEmSLAM {
       }
 
       state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * k_R;
+      if (state_estimate.at(i)->q_.w() < 0) {
+        state_estimate.at(i)->q_.w() = (-1)*state_estimate.at(i)->q_.w();
+        state_estimate.at(i)->q_.x() = (-1)*state_estimate.at(i)->q_.x();
+        state_estimate.at(i)->q_.y() = (-1)*state_estimate.at(i)->q_.y();
+        state_estimate.at(i)->q_.z() = (-1)*state_estimate.at(i)->q_.z();
+      }
       state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + k_v;
       state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + k_p;
+
     }
 
 
     // backward RTS smoother
-    for (int i=state_estimate.size()-2; i > -1; --i) {
+    for (int i=state_estimate.size()-2; i>-1; --i) {
 
       std::cout << "RTS smoother: " << i << std::endl;
 
@@ -719,11 +726,20 @@ class ExpLandmarkEmSLAM {
       residual.block<3,1>(3,0) = state_estimate.at(i+1)->v_ - v1;
       residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
-
       Eigen::Matrix<double, 9, 1> m;
-      m = C * residual;
+      m = 0.1 * C * residual;
+
+
+      // std::cout << m << std::endl;
+      // std::cin.get();
 
       state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * Exp(m.block<3,1>(0,0));
+      if (state_estimate.at(i)->q_.w() < 0) {
+        state_estimate.at(i)->q_.w() = (-1)*state_estimate.at(i)->q_.w();
+        state_estimate.at(i)->q_.x() = (-1)*state_estimate.at(i)->q_.x();
+        state_estimate.at(i)->q_.y() = (-1)*state_estimate.at(i)->q_.y();
+        state_estimate.at(i)->q_.z() = (-1)*state_estimate.at(i)->q_.z();
+      }
       state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + m.block<3,1>(3,0);
       state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + m.block<3,1>(6,0);
 
@@ -821,6 +837,8 @@ int main(int argc, char **argv) {
   slam_problem.SetupMStep();
 
   slam_problem.SolveEmProblem();
+  slam_problem.SolveEmProblem();
+
   slam_problem.OutputOptimizationResult("trajectory_em.csv");
 
   return 0;
