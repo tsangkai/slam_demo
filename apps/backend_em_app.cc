@@ -359,12 +359,12 @@ class ExpLandmarkEmSLAM {
         num_obs += observation_vec_.at(j-1).size();
       }
     }
+    ***/
 
     std::cout << "numober of states: " << state_vec_.size() << std::endl;
     std::cout << "numober of observation vec: " << observation_vec_.size() << std::endl;
     std::cout << "numober of landmarks: " << landmark_vec_.size() << std::endl;
-    std::cout << "numober of feature observations: " << num_obs << std::endl;
-    ***/
+    // std::cout << "numober of feature observations: " << num_obs << std::endl;
 
 
 

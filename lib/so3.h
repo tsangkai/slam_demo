@@ -59,8 +59,6 @@ Eigen::Matrix3d Exp(Eigen::Vector3d omega) {
 }
 
 
-
-
 // from ORB SLAM 3
 Eigen::Vector3d Log(Eigen::Matrix3d R) {
 
@@ -198,7 +196,6 @@ Eigen::Matrix3d LeftJacobianInv(const Eigen::Vector3d & v) {
   const double v_norm_2 = v_norm*v_norm;
   const Eigen::Matrix3d skewed_v = Skew(v);
 
-
   if (v_norm > eps) {
     left_jacobian_inv = Eigen::Matrix3d::Identity() - 0.5 * skewed_v + (1/v_norm_2  - (1+cos(v_norm))/(2*v_norm*sin(v_norm))) * skewed_v * skewed_v;
   }
@@ -241,7 +238,6 @@ Eigen::Matrix3d RightJacobianInv(const Eigen::Vector3d & v) {
 
   return right_jacobian_inv;
 }
-
 
 
 #endif /* INCLUDE_SO3_H_ */

@@ -563,11 +563,24 @@ class ExpLandmarkEmSLAM {
     optimization_options_.parameter_tolerance = 1e-25;
     optimization_options_.max_num_iterations = 100;
 
+    // preperation for E step
+    // E step
+    std::vector<Estimate*> state_estimate;
+    state_estimate.resize(state_vec_.size()-1);
+
+    for (size_t i=0; i<state_estimate.size(); ++i) {
+      state_estimate.at(i) = new Estimate;
+
+      state_estimate.at(i)->q_ = state_vec_.at(i+1)->GetRotationBlock()->estimate();
+      state_estimate.at(i)->v_ = state_vec_.at(i+1)->GetVelocityBlock()->estimate();
+      state_estimate.at(i)->p_ = state_vec_.at(i+1)->GetPositionBlock()->estimate();
+    }    
+
 
     // block structure
     size_t n = 1;
     double a = 1.1;
-    double c = 10.0;
+    double c = 10.25;
 
     size_t block_size = floor(c * pow(n, a)); 
     size_t T = 1;
@@ -621,9 +634,174 @@ class ExpLandmarkEmSLAM {
 
 
       // M step
-      ceres::Solve(opt_options, &opt_problem, &opt_summary);
+      // ceres::Solve(opt_options, &opt_problem, &opt_summary);
 
       // E step
+      for (size_t t=T; t < T+block_size; ++t) {
+        // time update
+        Eigen::Quaterniond q0 = state_vec_.at(t-1)->GetRotationBlock()->estimate();
+        Eigen::Vector3d v0 = state_vec_.at(t-1)->GetVelocityBlock()->estimate();
+        Eigen::Vector3d p0 = state_vec_.at(t-1)->GetPositionBlock()->estimate();
+
+        double u_dt = pre_int_imu_vec_.at(t-1)->dt_;
+        Eigen::Matrix3d u_dR = pre_int_imu_vec_.at(t-1)->dR_;  
+        Eigen::Vector3d u_dv = pre_int_imu_vec_.at(t-1)->dv_;  
+        Eigen::Vector3d u_dp = pre_int_imu_vec_.at(t-1)->dp_;
+        Eigen::Matrix<double, 9, 9> u_cov = pre_int_imu_vec_.at(t-1)->cov_;  
+
+        Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
+        F.block<3,3>(0,0) = u_dR.transpose();
+        F.block<3,3>(3,0) = (-1)*q0.toRotationMatrix()*Skew(u_dv);
+        F.block<3,3>(3,0) = Eigen::Matrix3d::Identity();
+        F.block<3,3>(6,0) = (-1)*q0.toRotationMatrix()*Skew(u_dp);
+        F.block<3,3>(6,3) = u_dt*Eigen::Matrix3d::Identity();
+        F.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
+
+        Eigen::Matrix<double, 9, 9> G = Eigen::Matrix<double, 9, 9>::Zero();
+        G.block<3,3>(0,0) = Eigen::Matrix3d::Identity();
+        G.block<3,3>(3,3) = q0.toRotationMatrix();
+        G.block<3,3>(6,6) = q0.toRotationMatrix();
+
+        if (t==1) {
+          state_estimate.at(t-1)->cov_ = G * u_cov * G.transpose();
+        }
+        else {
+          state_estimate.at(t-1)->cov_ = F * state_estimate.at(t-2)->cov_ * F.transpose() + G * u_cov * G.transpose();
+        }
+
+        // observation update
+        Eigen::Matrix3d k_R = Eigen::Matrix3d::Identity();
+        Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
+        Eigen::Vector3d k_p = Eigen::Vector3d::Zero();
+
+        for (size_t j=0; j<observation_vec_.at(t-1).size(); ++j) {
+
+          Eigen::Vector3d landmark = landmark_vec_.at(observation_vec_.at(t-1).at(j)->landmark_id_-1)->estimate();
+          Eigen::Vector2d measurement = observation_vec_.at(t-1).at(j)->feature_pos_;
+          Eigen::Matrix2d R = observation_vec_.at(t-1).at(j)->cov();
+
+          Eigen::Matrix3d R_bc = T_bc_.topLeftCorner<3,3>();
+          Eigen::Vector3d t_bc = T_bc_.topRightCorner<3,1>();
+
+          Eigen::Matrix3d R_nb = state_estimate.at(t-1)->q_.toRotationMatrix();
+          Eigen::Vector3d t_nb = state_estimate.at(t-1)->p_;
+
+          Eigen::Vector3d landmark_c = R_bc.transpose() * ((R_nb.transpose()*(landmark - t_nb)) - t_bc);
+          Eigen::Vector2d landmark_proj;
+          landmark_proj << fu_ * landmark_c[0]/landmark_c[2] + cu_, 
+                           fv_ * landmark_c[1]/landmark_c[2] + cv_;
+
+          Eigen::Matrix<double, 2, 2> H_cam;
+          H_cam << fu_, 0.0,
+                   0.0, fv_;
+ 
+          Eigen::Matrix<double, 2, 3> H_proj;
+          H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
+                    0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
+  
+          Eigen::Matrix<double, 3, 9> H_trans;
+          H_trans.setZero();
+          H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
+          H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
+
+          Eigen::Matrix<double, 2, 9> H;
+          H = H_cam * H_proj * H_trans;
+
+
+          Eigen::Matrix<double, 9, 2> K;
+          K = state_estimate.at(t-1)->cov_ * H.transpose() * (H * state_estimate.at(t-1)->cov_ * H.transpose() + R).inverse();
+          Eigen::Matrix<double, 9, 1> m;
+          m = K * (measurement - landmark_proj);
+
+          k_R = k_R * Exp(m.block<3,1>(0,0));
+          k_v = k_v + m.block<3,1>(3,0);
+          k_p = k_p + m.block<3,1>(6,0);  
+
+          Eigen::Matrix<double, 9, 9> IKH;
+          IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
+          state_estimate.at(t-1)->cov_ = IKH * state_estimate.at(t-1)->cov_ * IKH.transpose() + K * R * K.transpose();
+        }
+
+        state_estimate.at(t-1)->q_ = state_estimate.at(t-1)->q_ * k_R;
+        if (state_estimate.at(t-1)->q_.w() < 0) {
+          state_estimate.at(t-1)->q_.w() = (-1)*state_estimate.at(t-1)->q_.w();
+          state_estimate.at(t-1)->q_.x() = (-1)*state_estimate.at(t-1)->q_.x();
+          state_estimate.at(t-1)->q_.y() = (-1)*state_estimate.at(t-1)->q_.y();
+          state_estimate.at(t-1)->q_.z() = (-1)*state_estimate.at(t-1)->q_.z();
+        }
+        state_estimate.at(t-1)->v_ = state_estimate.at(t-1)->v_ + k_v;
+        state_estimate.at(t-1)->p_ = state_estimate.at(t-1)->p_ + k_p;
+
+      }
+
+      // backward RTS smoother
+      for (int t=T+block_size-2; t>T-1; --t) {
+
+        std::cout << "RTS smoother: " << t << std::endl;
+
+        Eigen::Quaterniond q0 = state_estimate.at(t)->q_;
+        Eigen::Vector3d v0 = state_estimate.at(t)->v_;
+        Eigen::Vector3d p0 = state_estimate.at(t)->p_;
+
+        double u_dt = pre_int_imu_vec_.at(t+1)->dt_;
+        Eigen::Matrix3d u_dR = pre_int_imu_vec_.at(t+1)->dR_;  
+        Eigen::Vector3d u_dv = pre_int_imu_vec_.at(t+1)->dv_;  
+        Eigen::Vector3d u_dp = pre_int_imu_vec_.at(t+1)->dp_;
+        Eigen::Matrix<double, 9, 9> u_cov = pre_int_imu_vec_.at(t+1)->cov_;  
+
+        Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
+        F.block<3,3>(0,0) = u_dR.transpose();
+        F.block<3,3>(3,0) = (-1)*q0.toRotationMatrix()*Skew(u_dv);
+        F.block<3,3>(3,0) = Eigen::Matrix3d::Identity();
+        F.block<3,3>(6,0) = (-1)*q0.toRotationMatrix()*Skew(u_dp);
+        F.block<3,3>(6,3) = u_dt*Eigen::Matrix3d::Identity();
+        F.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
+
+        Eigen::Matrix<double, 9, 9> G = Eigen::Matrix<double, 9, 9>::Zero();
+        G.block<3,3>(0,0) = Eigen::Matrix3d::Identity();
+        G.block<3,3>(3,3) = q0.toRotationMatrix();
+        G.block<3,3>(6,6) = q0.toRotationMatrix();
+
+        Eigen::Quaterniond q1 = q0 * Eigen::Quaterniond(u_dR);
+        Eigen::Vector3d v1 = v0 + q0.toRotationMatrix() * u_dv + gravity * u_dt;
+        Eigen::Vector3d p1 = p0 + u_dt*v0 + q0.toRotationMatrix() * u_dp + 0.5 * gravity * u_dt*u_dt;
+
+        Eigen::Matrix<double, 9, 9> C;
+        C = state_estimate.at(t)->cov_ * F.transpose() * (F * state_estimate.at(t)->cov_ * F.transpose() + G * u_cov * G.transpose()).inverse();
+
+        Eigen::Matrix<double, 9, 1> residual;
+        residual.block<3,1>(0,0) = Log_q(q1.conjugate() * state_estimate.at(t+1)->q_);
+        residual.block<3,1>(3,0) = state_estimate.at(t+1)->v_ - v1;
+        residual.block<3,1>(6,0) = state_estimate.at(t+1)->p_ - p1;
+
+        Eigen::Matrix<double, 9, 1> m;
+        m = 0.1 * C * residual;
+
+
+        // std::cout << m << std::endl;
+        // std::cin.get();
+
+        state_estimate.at(t)->q_ = state_estimate.at(t)->q_ * Exp(m.block<3,1>(0,0));
+        if (state_estimate.at(t)->q_.w() < 0) {
+          state_estimate.at(t)->q_.w() = (-1)*state_estimate.at(t)->q_.w();
+          state_estimate.at(t)->q_.x() = (-1)*state_estimate.at(t)->q_.x();
+          state_estimate.at(t)->q_.y() = (-1)*state_estimate.at(t)->q_.y();
+          state_estimate.at(t)->q_.z() = (-1)*state_estimate.at(t)->q_.z();
+        }
+        state_estimate.at(t)->v_ = state_estimate.at(t)->v_ + m.block<3,1>(3,0);
+        state_estimate.at(t)->p_ = state_estimate.at(t)->p_ + m.block<3,1>(6,0);
+
+        // ignore sigma update
+
+      }      
+
+
+      // update the state estimate
+      for (size_t t=T; t < T+block_size; ++t) {
+        state_vec_.at(t)->GetRotationBlock()->setEstimate(state_estimate.at(t-1)->q_);
+        state_vec_.at(t)->GetVelocityBlock()->setEstimate(state_estimate.at(t-1)->v_);
+        state_vec_.at(t)->GetPositionBlock()->setEstimate(state_estimate.at(t-1)->p_);
+      }
 
       // M step
       ceres::Solve(opt_options, &opt_problem, &opt_summary);
