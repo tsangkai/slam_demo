@@ -4,7 +4,7 @@ project(slam_demo)
 
 set(CMAKE_CXX_STANDARD 14)
 
-option(BUILD_TEST "build test programs" OFF)
+option(BUILD_TEST "build test programs" ON)
 
 
 
