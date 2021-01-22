@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
   std::cout << " [ OK ] " << std::endl;
 
 
-  std::cout<<"run the solver... "<<std::endl;
+  std::cout << "run the solver... " << std::endl;
   ceres::Solver::Options optimization_options;
   optimization_options.max_num_iterations = 100;
   ceres::Solver::Summary optimization_summary;

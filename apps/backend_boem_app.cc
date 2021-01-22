@@ -775,7 +775,7 @@ class ExpLandmarkEmSLAM {
         residual.block<3,1>(6,0) = state_estimate.at(t+1)->p_ - p1;
 
         Eigen::Matrix<double, 9, 1> m;
-        m = 0.1 * C * residual;
+        m = C * residual;
 
 
         // std::cout << m << std::endl;

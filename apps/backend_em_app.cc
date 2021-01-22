@@ -566,9 +566,11 @@ class ExpLandmarkEmSLAM {
 
 
     // M step
+    /***
     ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
     std::cout << optimization_summary_.FullReport() << "\n";
     std::cout << "Final cost " << optimization_summary_.final_cost << std::endl; // -1
+    ***/
 
     // E step
     std::vector<Estimate*> state_estimate;
@@ -727,7 +729,7 @@ class ExpLandmarkEmSLAM {
       residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
       Eigen::Matrix<double, 9, 1> m;
-      m = 0.1 * C * residual;
+      m = C * residual;
 
 
       // std::cout << m << std::endl;
@@ -754,6 +756,11 @@ class ExpLandmarkEmSLAM {
       state_vec_.at(i+1)->GetVelocityBlock()->setEstimate(state_estimate.at(i)->v_);
       state_vec_.at(i+1)->GetPositionBlock()->setEstimate(state_estimate.at(i)->p_);
     }
+
+    // M step
+    ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
+    std::cout << optimization_summary_.FullReport() << "\n";
+    std::cout << "Final cost " << optimization_summary_.final_cost << std::endl; // -1
 
     return true;
   }
