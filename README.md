@@ -14,6 +14,10 @@ You will need to install the following dependencies,
 
         sudo apt-get install libeigen3-dev
 
+* Boost,
+
+        sudo apt-get install libboost-dev libboost-filesystem-dev
+        
 * ceres
 
 ## Build instruction
