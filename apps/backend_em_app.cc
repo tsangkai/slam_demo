@@ -11,6 +11,7 @@
 #include <ceres/rotation.h>
 #include <opencv2/core/core.hpp>    // for config file reading
 #include <Eigen/Core>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 
 #include "so3.h"
@@ -841,10 +842,18 @@ int main(int argc, char **argv) {
   slam_problem.ReadObservationData("data/");
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
 
+  boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
+
   slam_problem.SetupMStep();
 
   slam_problem.SolveEmProblem();
   slam_problem.SolveEmProblem();
+
+  boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+  boost::posix_time::time_duration t = end_time - begin_time;
+  double dt = ((double)t.total_nanoseconds() * 1e-9);
+
+  std::cout << "The entire time is " << dt << " sec." << std::endl;
 
   slam_problem.OutputOptimizationResult("trajectory_em.csv");
 
