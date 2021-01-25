@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
                                                     acc,
                                                     dt,
                                                     Eigen::Vector3d(0,0,0),
-                                                    Eigen::Vector3d(0,0,0),                   
+                                                    Eigen::Vector3d(0,0,0),
                                                     sigma_g_c,
                                                     sigma_a_c);
 

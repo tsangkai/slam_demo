@@ -11,6 +11,7 @@
 #include <ceres/rotation.h>
 #include <opencv2/core/core.hpp>    // for config file reading
 #include <Eigen/Core>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 
 #include "so3.h"
@@ -598,7 +599,7 @@ class ExpLandmarkEmSLAM {
       opt_options.num_threads = 6;
       opt_options.function_tolerance = 1e-20;
       opt_options.parameter_tolerance = 1e-25;
-      opt_options.max_num_iterations = 100;
+      opt_options.max_num_iterations = 20;
 
 
       for (size_t i=0; i<landmark_vec_.size(); ++i) {
@@ -892,9 +893,16 @@ int main(int argc, char **argv) {
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
 
   // slam_problem.SetupMStep();
+  boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
   slam_problem.SolveEmProblem();
 
+  boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+  boost::posix_time::time_duration t = end_time - begin_time;
+  double dt = ((double)t.total_nanoseconds() * 1e-9);
+
+  std::cout << "The entire time is " << dt << " sec." << std::endl;
+  
   slam_problem.OutputOptimizationResult("trajectory_boem.csv");
 
   return 0;
