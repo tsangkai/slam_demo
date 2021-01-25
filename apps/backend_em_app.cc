@@ -846,7 +846,7 @@ int main(int argc, char **argv) {
 
   slam_problem.SetupMStep();
 
-  slam_problem.SolveEmProblem();
+  //slam_problem.SolveEmProblem();
   slam_problem.SolveEmProblem();
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();

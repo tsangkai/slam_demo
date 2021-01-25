@@ -599,7 +599,7 @@ class ExpLandmarkEmSLAM {
       opt_options.num_threads = 6;
       opt_options.function_tolerance = 1e-20;
       opt_options.parameter_tolerance = 1e-25;
-      opt_options.max_num_iterations = 100;
+      opt_options.max_num_iterations = 20;
 
 
       for (size_t i=0; i<landmark_vec_.size(); ++i) {
