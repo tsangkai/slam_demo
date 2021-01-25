@@ -843,7 +843,7 @@ int main(int argc, char **argv) {
 
   slam_problem.SetupMStep();
 
-  slam_problem.SolveEmProblem();
+  // slam_problem.SolveEmProblem();
   slam_problem.SolveEmProblem();
 
   slam_problem.OutputOptimizationResult("trajectory_em.csv");
