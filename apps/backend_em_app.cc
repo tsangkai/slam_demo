@@ -127,7 +127,7 @@ class ExpLandmarkEmSLAM {
     ReadConfigurationFiles(config_folder_path);
 
     quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
-    loss_function_ptr_ = NULL; //new ceres::HuberLoss(1.0);
+    loss_function_ptr_ = new ceres::HuberLoss(1.0);
   }
 
   bool ReadConfigurationFiles(std::string config_folder_path) {
@@ -519,7 +519,6 @@ class ExpLandmarkEmSLAM {
     }
 
     for (size_t i=0; i<state_vec_.size(); ++i) {
-      // optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetRotationBlock()->parameters(), 4);
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
       optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetPositionBlock()->parameters(), 3);
@@ -542,7 +541,7 @@ class ExpLandmarkEmSLAM {
                                                                    observation_vec_.at(i).at(j)->cov());
 
         optimization_problem_.AddResidualBlock(cost_function,
-                                               NULL, //loss_function_ptr_,
+                                               loss_function_ptr_,
                                                state_vec_.at(i+1)->GetRotationBlock()->parameters(),
                                                state_vec_.at(i+1)->GetPositionBlock()->parameters(),
                                                landmark_vec_.at(landmark_idx)->parameters());
@@ -645,47 +644,55 @@ class ExpLandmarkEmSLAM {
         landmark_proj << fu_ * landmark_c[0]/landmark_c[2] + cu_, 
                          fv_ * landmark_c[1]/landmark_c[2] + cv_;
 
-        Eigen::Matrix<double, 2, 2> H_cam;
-        H_cam << fu_, 0.0,
-                 0.0, fv_;
+        // exclude outliers
+        Eigen::Vector2d innovation = measurement - landmark_proj;
+        if (innovation.norm() < 60) {  // if the threshold is too small, no loop closure can occur
 
-        Eigen::Matrix<double, 2, 3> H_proj;
-        H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
-                  0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
+          Eigen::Matrix<double, 2, 2> H_cam;
+          H_cam << fu_, 0.0,
+                   0.0, fv_;
 
-        Eigen::Matrix<double, 3, 9> H_trans;
-        H_trans.setZero();
-        H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
-        H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
+          Eigen::Matrix<double, 2, 3> H_proj;
+          H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
+                    0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
 
-        Eigen::Matrix<double, 2, 9> H;
-        H = H_cam * H_proj * H_trans;
+          Eigen::Matrix<double, 3, 9> H_trans;
+          H_trans.setZero();
+          H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
+          H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
+
+          Eigen::Matrix<double, 2, 9> H;
+          H = H_cam * H_proj * H_trans;
 
 
-        Eigen::Matrix<double, 9, 2> K;
-        K = state_estimate.at(i)->cov_ * H.transpose() * (H * state_estimate.at(i)->cov_ * H.transpose() + R).inverse();
-        Eigen::Matrix<double, 9, 1> m;
-        m = K * (measurement - landmark_proj);
+          Eigen::Matrix<double, 9, 2> K;
+          K = state_estimate.at(i)->cov_ * H.transpose() * (H * state_estimate.at(i)->cov_ * H.transpose() + R).inverse();
+          Eigen::Matrix<double, 9, 1> m;
+          m = K * (measurement - landmark_proj);
 
-        k_R = k_R * Exp(m.block<3,1>(0,0));
-        k_v = k_v + m.block<3,1>(3,0);
-        k_p = k_p + m.block<3,1>(6,0);  
+            k_R = k_R * Exp(m.block<3,1>(0,0));
+            k_v = k_v + m.block<3,1>(3,0);
+            k_p = k_p + m.block<3,1>(6,0);  
 
-        Eigen::Matrix<double, 9, 9> IKH;
-        IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-        state_estimate.at(i)->cov_ = IKH * state_estimate.at(i)->cov_ * IKH.transpose() + K * R * K.transpose();
+            Eigen::Matrix<double, 9, 9> IKH;
+            IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
+            state_estimate.at(i)->cov_ = IKH * state_estimate.at(i)->cov_ * IKH.transpose() + K * R * K.transpose();
+          
+        }
       }
 
-      state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * k_R;
-      if (state_estimate.at(i)->q_.w() < 0) {
-        state_estimate.at(i)->q_.w() = (-1)*state_estimate.at(i)->q_.w();
-        state_estimate.at(i)->q_.x() = (-1)*state_estimate.at(i)->q_.x();
-        state_estimate.at(i)->q_.y() = (-1)*state_estimate.at(i)->q_.y();
-        state_estimate.at(i)->q_.z() = (-1)*state_estimate.at(i)->q_.z();
-      }
-      state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + k_v;
-      state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + k_p;
+      if (k_p.norm() < 0.7) {
 
+        state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * k_R;
+        if (state_estimate.at(i)->q_.w() < 0) {
+          state_estimate.at(i)->q_.w() = (-1)*state_estimate.at(i)->q_.w();
+          state_estimate.at(i)->q_.x() = (-1)*state_estimate.at(i)->q_.x();
+          state_estimate.at(i)->q_.y() = (-1)*state_estimate.at(i)->q_.y();
+          state_estimate.at(i)->q_.z() = (-1)*state_estimate.at(i)->q_.z();
+        }
+        state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + k_v;
+        state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + k_p;
+      }
     }
 
 
@@ -730,7 +737,7 @@ class ExpLandmarkEmSLAM {
       residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
       Eigen::Matrix<double, 9, 1> m;
-      m = C * residual;
+      m = (0.4) * C * residual;  // give the IMU results less weight
 
 
       // std::cout << m << std::endl;
@@ -749,7 +756,6 @@ class ExpLandmarkEmSLAM {
       // ignore sigma update
 
     }
-
 
     // update the state estimate
     for (size_t i=0; i<state_estimate.size(); ++i) {
@@ -846,7 +852,7 @@ int main(int argc, char **argv) {
 
   slam_problem.SetupMStep();
 
-  //slam_problem.SolveEmProblem();
+  slam_problem.SolveEmProblem();
   slam_problem.SolveEmProblem();
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();

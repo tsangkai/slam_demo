@@ -8,4 +8,4 @@
 # python3 eval2.py
 
 ./build/apps/backend_em_app
-python3 eval2.py
+python3 eval.py

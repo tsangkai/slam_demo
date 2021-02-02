@@ -51,7 +51,7 @@ ax.plot(gt_data['p_x'], gt_data['p_y'], gt_data['p_z'], color = plot_color['gt']
 ax.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], label='VO')
 ax.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], label='est. opt.')
 ax.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], label='est. EM')
-ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], label='est. BOEM')
+# ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], label='est. BOEM')
 
 ax.view_init(39, 3)
 
@@ -214,22 +214,30 @@ est_boem_error = np.zeros_like(gt_data['p_x']);
 
 for i in range(len(gt_data['p_x'])):
 	vo_error[i] = math.sqrt( (gt_data['p_x'][i]-vo_data['p_x'][i])**2 + (gt_data['p_y'][i]-vo_data['p_y'][i])**2 + (gt_data['p_z'][i]-vo_data['p_z'][i])**2)
-	est_opt_error[i] = math.sqrt( (gt_data['p_x'][i]-est_opt_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_opt_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_opt_data['p_z'][i])**2)
-	est_em_error[i] = math.sqrt( (gt_data['p_x'][i]-est_em_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_em_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_em_data['p_z'][i])**2)
+	est_opt_error[i]  = math.sqrt( (gt_data['p_x'][i]-est_opt_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_opt_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_opt_data['p_z'][i])**2)
+	est_em_error[i]   = math.sqrt( (gt_data['p_x'][i]-est_em_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_em_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_em_data['p_z'][i])**2)
 	est_boem_error[i] = math.sqrt( (gt_data['p_x'][i]-est_boem_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_boem_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_boem_data['p_z'][i])**2)
 
+line_width = 2
 
-plt.plot(vo_data['timestamp'], vo_error, color = plot_color['vo'], label='VO')
-plt.plot(est_opt_data['timestamp'], est_opt_error, color = plot_color['opt'], label='est. opt.')
-plt.plot(est_em_data['timestamp'], est_em_error, color = plot_color['em'], label='est. EM')
-plt.plot(est_boem_data['timestamp'], est_boem_error, color = plot_color['boem'], label='est. BOEM')
+plt.plot(vo_data['timestamp'], vo_error, color = plot_color['vo'], linewidth=line_width, label='VO')
+plt.plot(est_opt_data['timestamp'], est_opt_error, color = plot_color['opt'], linewidth=line_width, label='est. opt.')
+plt.plot(est_em_data['timestamp'], est_em_error, color = plot_color['em'], linewidth=line_width, label='est. EM')
+plt.plot(est_boem_data['timestamp'], est_boem_error, color = plot_color['boem'], linewidth=line_width, label='est. BOEM')
 
 
 plt.legend()
 
 plt.xlabel('time [s]')
 plt.ylabel('error [m]')
+plt.ylim([0,2])
 
 plt.savefig('result/error.pdf')  
 
 plt.show()
+
+
+print(np.mean(vo_error))
+print(np.mean(est_opt_error))
+print(np.mean(est_em_error))
+print(np.mean(est_boem_error))

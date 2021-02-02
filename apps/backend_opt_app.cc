@@ -117,7 +117,7 @@ class ExpLandmarkOptSLAM {
     ReadConfigurationFiles(config_folder_path);
 
     quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
-    loss_function_ptr_ = NULL; //new ceres::HuberLoss(1.0);
+    loss_function_ptr_ = new ceres::HuberLoss(1.0);
   }
 
   bool ReadConfigurationFiles(std::string config_folder_path) {
@@ -547,7 +547,7 @@ class ExpLandmarkOptSLAM {
                                                                    observation_vec_.at(i).at(j)->cov());
 
         optimization_problem_.AddResidualBlock(cost_function,
-                                               NULL, //loss_function_ptr_,
+                                               loss_function_ptr_,
                                                state_vec_.at(i+1)->GetRotationBlock()->parameters(),
                                                state_vec_.at(i+1)->GetPositionBlock()->parameters(),
                                                landmark_vec_.at(landmark_idx)->parameters());
