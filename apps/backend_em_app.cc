@@ -629,6 +629,7 @@ class ExpLandmarkEmSLAM {
       Eigen::Matrix3d k_R = Eigen::Matrix3d::Identity();
       Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
       Eigen::Vector3d k_p = Eigen::Vector3d::Zero();
+      Eigen::Matrix<double, 9, 9> obs_cov = state_estimate.at(i)->cov_;
 
       for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
 
@@ -669,17 +670,17 @@ class ExpLandmarkEmSLAM {
 
 
           Eigen::Matrix<double, 9, 2> K;
-          K = state_estimate.at(i)->cov_ * H.transpose() * (H * state_estimate.at(i)->cov_ * H.transpose() + R).inverse();
+          K = obs_cov * H.transpose() * (H * obs_cov * H.transpose() + R).inverse();
           Eigen::Matrix<double, 9, 1> m;
           m = K * (measurement - landmark_proj);
 
-            k_R = k_R * Exp(m.block<3,1>(0,0));
-            k_v = k_v + m.block<3,1>(3,0);
-            k_p = k_p + m.block<3,1>(6,0);  
+          k_R = k_R * Exp(m.block<3,1>(0,0));
+          k_v = k_v + m.block<3,1>(3,0);
+          k_p = k_p + m.block<3,1>(6,0);  
 
-            Eigen::Matrix<double, 9, 9> IKH;
-            IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-            state_estimate.at(i)->cov_ = IKH * state_estimate.at(i)->cov_ * IKH.transpose() + K * R * K.transpose();
+          Eigen::Matrix<double, 9, 9> IKH;
+          IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
+          obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();
           
         }
       }
@@ -695,6 +696,8 @@ class ExpLandmarkEmSLAM {
         }
         state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + k_v;
         state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + k_p;
+
+        state_estimate.at(i)->cov_ = obs_cov;
       }
     }
 

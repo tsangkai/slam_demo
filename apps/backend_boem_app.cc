@@ -1,4 +1,3 @@
-
 #include <cassert>
 #include <iostream>
 #include <fstream>
@@ -125,9 +124,6 @@ class ExpLandmarkEmSLAM {
 
   ExpLandmarkEmSLAM(std::string config_folder_path) {
     ReadConfigurationFiles(config_folder_path);
-
-    quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
-    loss_function_ptr_ = NULL; //new ceres::HuberLoss(1.0);
   }
 
   bool ReadConfigurationFiles(std::string config_folder_path) {
@@ -351,7 +347,6 @@ class ExpLandmarkEmSLAM {
     size_t num_obs = 0;
     for (size_t j=1; j<state_vec_.size(); ++j) {
       std::cout << state_vec_.at(j)->GetTimestamp() - 1.40363e+09 << " ";
-
       if (observation_vec_.at(j-1).empty()) {
         std::cout << std::endl;
       }
@@ -360,7 +355,6 @@ class ExpLandmarkEmSLAM {
         num_obs += observation_vec_.at(j-1).size();
       }
     }
-
     std::cout << "numober of states: " << state_vec_.size() << std::endl;
     std::cout << "numober of observation vec: " << observation_vec_.size() << std::endl;
     std::cout << "numober of landmarks: " << landmark_vec_.size() << std::endl;
@@ -405,7 +399,6 @@ class ExpLandmarkEmSLAM {
     // debug
     /***
     for (size_t i=0; i<landmark_vec_.size(); ++i) {
-
       std::cout << i << " "
                 << landmark_vec_.at(i)->estimate()[0] << " "
                 << landmark_vec_.at(i)->estimate()[1] << " "
@@ -510,59 +503,9 @@ class ExpLandmarkEmSLAM {
   }
 
 
-
-  bool SetupMStep() {
-
-    // add parameter blocks
-    for (size_t i=0; i<landmark_vec_.size(); ++i) {
-      optimization_problem_.AddParameterBlock(landmark_vec_.at(i)->parameters(), 3);
-    }
-
-    for (size_t i=0; i<state_vec_.size(); ++i) {
-      optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
-      optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
-      optimization_problem_.AddParameterBlock(state_vec_.at(i)->GetPositionBlock()->parameters(), 3);
-
-      optimization_problem_.SetParameterBlockConstant(state_vec_.at(i)->GetRotationBlock()->parameters());
-      optimization_problem_.SetParameterBlockConstant(state_vec_.at(i)->GetVelocityBlock()->parameters());
-      optimization_problem_.SetParameterBlockConstant(state_vec_.at(i)->GetPositionBlock()->parameters());
-    }
-    
-
-    for (size_t i=0; i<observation_vec_.size(); ++i) {
-      for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
-
-        size_t landmark_idx = observation_vec_.at(i).at(j)->landmark_id_-1;  
-
-        ceres::CostFunction* cost_function = new ReprojectionError(observation_vec_.at(i).at(j)->feature_pos_,
-                                                                   T_bc_,
-                                                                   fu_, fv_,
-                                                                   cu_, cv_,
-                                                                   observation_vec_.at(i).at(j)->cov());
-
-        optimization_problem_.AddResidualBlock(cost_function,
-                                               NULL, //loss_function_ptr_,
-                                               state_vec_.at(i+1)->GetRotationBlock()->parameters(),
-                                               state_vec_.at(i+1)->GetPositionBlock()->parameters(),
-                                               landmark_vec_.at(landmark_idx)->parameters());
-      }
-    }
-
-
-    return true;
-  }
-
-
   bool SolveEmProblem() {
 
     std::cout << "Begin solving the EM problem." << std::endl;
-
-    optimization_options_.linear_solver_type = ceres::SPARSE_SCHUR;
-    optimization_options_.minimizer_progress_to_stdout = true;
-    optimization_options_.num_threads = 6;
-    optimization_options_.function_tolerance = 1e-20;
-    optimization_options_.parameter_tolerance = 1e-25;
-    optimization_options_.max_num_iterations = 100;
 
     // preperation for E step
     // E step
@@ -575,8 +518,7 @@ class ExpLandmarkEmSLAM {
       state_estimate.at(i)->q_ = state_vec_.at(i+1)->GetRotationBlock()->estimate();
       state_estimate.at(i)->v_ = state_vec_.at(i+1)->GetVelocityBlock()->estimate();
       state_estimate.at(i)->p_ = state_vec_.at(i+1)->GetPositionBlock()->estimate();
-    }    
-
+    }
 
     // block structure
     size_t n = 1;
@@ -626,7 +568,7 @@ class ExpLandmarkEmSLAM {
                                                                      observation_vec_.at(t-1).at(j)->cov());
  
           opt_problem.AddResidualBlock(cost_function,
-                                       NULL, //loss_function_ptr_,
+                                       new ceres::HuberLoss(1.0),
                                        state_vec_.at(t)->GetRotationBlock()->parameters(),
                                        state_vec_.at(t)->GetPositionBlock()->parameters(),
                                        landmark_vec_.at(landmark_idx)->parameters());
@@ -649,6 +591,12 @@ class ExpLandmarkEmSLAM {
         Eigen::Vector3d u_dv = pre_int_imu_vec_.at(t-1)->dv_;  
         Eigen::Vector3d u_dp = pre_int_imu_vec_.at(t-1)->dp_;
         Eigen::Matrix<double, 9, 9> u_cov = pre_int_imu_vec_.at(t-1)->cov_;  
+
+        /***
+        state_estimate.at(t-1)->q_ = state_vec_.at(t)->GetRotationBlock()->estimate();
+        state_estimate.at(t-1)->v_ = state_vec_.at(t)->GetVelocityBlock()->estimate();
+        state_estimate.at(t-1)->p_ = state_vec_.at(t)->GetPositionBlock()->estimate();
+        ***/
 
         Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
         F.block<3,3>(0,0) = u_dR.transpose();
@@ -674,6 +622,7 @@ class ExpLandmarkEmSLAM {
         Eigen::Matrix3d k_R = Eigen::Matrix3d::Identity();
         Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
         Eigen::Vector3d k_p = Eigen::Vector3d::Zero();
+        Eigen::Matrix<double, 9, 9> obs_cov = state_estimate.at(t-1)->cov_;
 
         for (size_t j=0; j<observation_vec_.at(t-1).size(); ++j) {
 
@@ -692,53 +641,63 @@ class ExpLandmarkEmSLAM {
           landmark_proj << fu_ * landmark_c[0]/landmark_c[2] + cu_, 
                            fv_ * landmark_c[1]/landmark_c[2] + cv_;
 
-          Eigen::Matrix<double, 2, 2> H_cam;
-          H_cam << fu_, 0.0,
-                   0.0, fv_;
+          // exclude outliers
+          Eigen::Vector2d innovation = measurement - landmark_proj;
+          if (innovation.norm() < 80) {  // if the threshold is too small, no loop closure can occur
+
+            Eigen::Matrix<double, 2, 2> H_cam;
+            H_cam << fu_, 0.0,
+                     0.0, fv_;
  
-          Eigen::Matrix<double, 2, 3> H_proj;
-          H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
-                    0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
+            Eigen::Matrix<double, 2, 3> H_proj;
+            H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
+                      0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
   
-          Eigen::Matrix<double, 3, 9> H_trans;
-          H_trans.setZero();
-          H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
-          H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
+            Eigen::Matrix<double, 3, 9> H_trans;
+            H_trans.setZero();
+            H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
+            H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
 
-          Eigen::Matrix<double, 2, 9> H;
-          H = H_cam * H_proj * H_trans;
+            Eigen::Matrix<double, 2, 9> H;
+            H = H_cam * H_proj * H_trans;
 
 
-          Eigen::Matrix<double, 9, 2> K;
-          K = state_estimate.at(t-1)->cov_ * H.transpose() * (H * state_estimate.at(t-1)->cov_ * H.transpose() + R).inverse();
-          Eigen::Matrix<double, 9, 1> m;
-          m = K * (measurement - landmark_proj);
+            Eigen::Matrix<double, 9, 2> K;
+            K = obs_cov * H.transpose() * (H * obs_cov * H.transpose() + R).inverse();
+            Eigen::Matrix<double, 9, 1> m;
+            m = K * (measurement - landmark_proj);
 
-          k_R = k_R * Exp(m.block<3,1>(0,0));
-          k_v = k_v + m.block<3,1>(3,0);
-          k_p = k_p + m.block<3,1>(6,0);  
+            k_R = k_R * Exp(m.block<3,1>(0,0));
+            k_v = k_v + m.block<3,1>(3,0);
+            k_p = k_p + m.block<3,1>(6,0);  
 
-          Eigen::Matrix<double, 9, 9> IKH;
-          IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-          state_estimate.at(t-1)->cov_ = IKH * state_estimate.at(t-1)->cov_ * IKH.transpose() + K * R * K.transpose();
+            Eigen::Matrix<double, 9, 9> IKH;
+            IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
+            obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();
+          }
         }
 
-        state_estimate.at(t-1)->q_ = state_estimate.at(t-1)->q_ * k_R;
-        if (state_estimate.at(t-1)->q_.w() < 0) {
-          state_estimate.at(t-1)->q_.w() = (-1)*state_estimate.at(t-1)->q_.w();
-          state_estimate.at(t-1)->q_.x() = (-1)*state_estimate.at(t-1)->q_.x();
-          state_estimate.at(t-1)->q_.y() = (-1)*state_estimate.at(t-1)->q_.y();
-          state_estimate.at(t-1)->q_.z() = (-1)*state_estimate.at(t-1)->q_.z();
+        if (k_p.norm() < 0.65) {
+
+          state_estimate.at(t-1)->q_ = state_estimate.at(t-1)->q_ * k_R;
+          if (state_estimate.at(t-1)->q_.w() < 0) {
+            state_estimate.at(t-1)->q_.w() = (-1)*state_estimate.at(t-1)->q_.w();
+            state_estimate.at(t-1)->q_.x() = (-1)*state_estimate.at(t-1)->q_.x();
+            state_estimate.at(t-1)->q_.y() = (-1)*state_estimate.at(t-1)->q_.y();
+            state_estimate.at(t-1)->q_.z() = (-1)*state_estimate.at(t-1)->q_.z();
+          }
+          state_estimate.at(t-1)->v_ = state_estimate.at(t-1)->v_ + k_v;
+          state_estimate.at(t-1)->p_ = state_estimate.at(t-1)->p_ + k_p;
+
+          state_estimate.at(t-1)->cov_ = obs_cov;
         }
-        state_estimate.at(t-1)->v_ = state_estimate.at(t-1)->v_ + k_v;
-        state_estimate.at(t-1)->p_ = state_estimate.at(t-1)->p_ + k_p;
 
       }
 
       // backward RTS smoother
       for (int t=T+block_size-2; t>T-1; --t) {
 
-        std::cout << "RTS smoother: " << t << std::endl;
+        // std::cout << "RTS smoother: " << t << std::endl;
 
         Eigen::Quaterniond q0 = state_estimate.at(t)->q_;
         Eigen::Vector3d v0 = state_estimate.at(t)->v_;
@@ -776,7 +735,7 @@ class ExpLandmarkEmSLAM {
         residual.block<3,1>(6,0) = state_estimate.at(t+1)->p_ - p1;
 
         Eigen::Matrix<double, 9, 1> m;
-        m = C * residual;
+        m = 0.3 * C * residual;
 
 
         // std::cout << m << std::endl;
@@ -863,15 +822,6 @@ class ExpLandmarkEmSLAM {
 
   std::vector<PreIntIMUData*>                 pre_int_imu_vec_;
   std::vector<std::vector<ObservationData*>>  observation_vec_;
-
-
-  // ceres parameter
-  ceres::LocalParameterization*               quat_parameterization_ptr_;
-  ceres::LossFunction*                        loss_function_ptr_;
-
-  ceres::Problem                              optimization_problem_;
-  ceres::Solver::Options                      optimization_options_;
-  ceres::Solver::Summary                      optimization_summary_;
 
 };
 

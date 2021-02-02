@@ -51,7 +51,7 @@ ax.plot(gt_data['p_x'], gt_data['p_y'], gt_data['p_z'], color = plot_color['gt']
 ax.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], label='VO')
 ax.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], label='est. opt.')
 ax.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], label='est. EM')
-# ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], label='est. BOEM')
+ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], label='est. BOEM')
 
 ax.view_init(39, 3)
 
