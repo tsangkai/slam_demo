@@ -598,12 +598,6 @@ class ExpLandmarkEmSLAM {
       state_estimate.at(i)->v_ = state_vec_.at(i+1)->GetVelocityBlock()->estimate() + kf_constant * imu_dv;
       state_estimate.at(i)->p_ = state_vec_.at(i+1)->GetPositionBlock()->estimate() + kf_constant * imu_dp;
 
-      /***
-      state_estimate.at(i)->q_ = state_vec_.at(i+1)->GetRotationBlock()->estimate();
-      state_estimate.at(i)->v_ = state_vec_.at(i+1)->GetVelocityBlock()->estimate();
-      state_estimate.at(i)->p_ = state_vec_.at(i+1)->GetPositionBlock()->estimate();
-      ***/
-      
 
       Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
       F.block<3,3>(0,0) = u_dR.transpose();
@@ -743,7 +737,7 @@ class ExpLandmarkEmSLAM {
       residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
       Eigen::Matrix<double, 9, 1> m;
-      m = (0.3) * C * residual;  // give the IMU results less weight
+      m = (0.2) * C * residual;  // give the IMU results less weight
 
 
       // std::cout << m << std::endl;

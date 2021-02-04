@@ -573,10 +573,7 @@ class ExpLandmarkEmSLAM {
 
       // E step
       for (size_t i=T; i < T+block_size; ++i) {
-        std::cout << "time: " << i << std::endl;
-
         state_estimate.at(i) = new Estimate;
-
 
         // time update
         Eigen::Quaterniond q0 = state_vec_.at(i)->GetRotationBlock()->estimate();
@@ -740,7 +737,7 @@ class ExpLandmarkEmSLAM {
         residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
         Eigen::Matrix<double, 9, 1> m;
-        m = 0.3 * C * residual;
+        m = 0.2 * C * residual;
 
 
         // std::cout << m << std::endl;
@@ -848,7 +845,6 @@ int main(int argc, char **argv) {
   slam_problem.ReadObservationData("data/");
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
 
-  // slam_problem.SetupMStep();
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
   slam_problem.SolveEmProblem();
