@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <map>
 
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
@@ -22,6 +23,14 @@
 #include "imu_error.h"
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
+
+std::map<std::string, std::string> euroc_dataset_name = {
+  {"MH_01", "MH_01_easy"},
+  {"MH_02", "MH_02_easy"},
+  {"MH_03", "MH_03_medium"},
+  {"MH_04", "MH_04_difficult"},
+  {"MH_05", "MH_05_difficult"}
+};
 
 
 struct ObservationData {
@@ -161,10 +170,6 @@ class ExpLandmarkOptSLAM {
     std::ifstream kf_time_file(kf_time_file_path);
     assert(("Could not open keyframe time file.", kf_time_file.is_open()));
 
-    // TODO
-    std::string gt_timestamp_start = "1403636624463555584";
-    std::string gt_timestamp_end =   "1403636762743555584";
-
     // ignore the header
     std::string line;
     std::getline(kf_time_file, line);
@@ -176,11 +181,9 @@ class ExpLandmarkOptSLAM {
         std::string time_stamp_str;
         std::getline(s_stream, time_stamp_str, ',');   // get first string delimited by comma
       
-        if (gt_timestamp_start <= time_stamp_str && time_stamp_str <= gt_timestamp_end) {
+        // state
+        state_vec_.push_back(new State(std::stod(time_stamp_str)*1e-9));
 
-          // state
-          state_vec_.push_back(new State(std::stod(time_stamp_str)*1e-9));
-        }
       }
     }
 
@@ -647,14 +650,18 @@ int main(int argc, char **argv) {
 
   google::InitGoogleLogging(argv[0]);
 
-  std::string config_folder_path("config/");
-  std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/MH_01_easy/mav0/";
+  std::string dataset = std::string(argv[1]);
 
+  std::string config_folder_path("config/");
+  std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/" + euroc_dataset_name.at(dataset) + "/mav0/";
 
   ExpLandmarkOptSLAM slam_problem(config_folder_path);
 
   // initialize the first state
-  slam_problem.ReadInitialTraj("data/");
+  slam_problem.ReadInitialTraj("data/" + dataset + "/");
+  slam_problem.OutputOptimizationResult("data/" + dataset + "/traj_vo.csv");
+
+  /***
   slam_problem.ReadObservationData("data/");
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
 
@@ -670,7 +677,8 @@ int main(int argc, char **argv) {
 
   std::cout << "The entire time is " << dt << " sec." << std::endl;
 
-  slam_problem.OutputOptimizationResult("trajectory.csv");
+  slam_problem.OutputOptimizationResult("data/" + dataset + "traj_opt.csv");
+  ***/
 
   return 0;
 }
