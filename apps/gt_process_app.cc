@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
   std::vector<Data> keyframe_data;
 
   // Step 1: read out_kf_time.csv
-  std::ifstream kf_time_file("data/" + dataset + "/out_kf_time.csv");
+  std::ifstream kf_time_file("data/" + dataset + "/okvis_kf.csv");
 
   // Read the column names
   // Extract the first line in the file
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
   Eigen::Quaterniond q0;
   Eigen::Vector3d p0;
 
-  std::ifstream vo_file("data/" + dataset + "/traj_vo.csv");
+  std::ifstream vo_file("result/" + dataset + "/traj_vo.csv");
   std::getline(vo_file, first_line_data_str);
 
   std::string vo_str;
@@ -166,7 +166,7 @@ int main(int argc, char **argv) {
   Eigen::Quaterniond q0_gt = keyframe_data.front().rotation_;
   Eigen::Vector3d p0_gt = keyframe_data.front().position_;
 
-  std::ofstream out_gt_file("data/" + dataset + "/traj_gt.csv");
+  std::ofstream out_gt_file("result/" + dataset + "/traj_gt.csv");
   out_gt_file << "timestamp,p_x,p_y,p_z,v_x,v_y,v_z,q_w,q_x,q_y,q_z\n";
 
   for (size_t i=0; i<keyframe_data.size(); ++i) {

@@ -852,7 +852,7 @@ int main(int argc, char **argv) {
 
   std::cout << "The entire time is " << dt << " sec." << std::endl;
 
-  slam_problem.OutputResult("data/" + dataset + "/traj_em.csv");
+  slam_problem.OutputResult("result/" + dataset + "/traj_em.csv");
 
   return 0;
 }

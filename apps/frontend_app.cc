@@ -23,10 +23,6 @@ std::map<std::string, std::string> euroc_dataset_name = {
 
 int main(int argc, char **argv) {
 
-  // TODO: automatically retrieve from the dataset
-  // std::string gt_timestamp_start = "1403636624463555584";
-  // std::string gt_timestamp_end =   "1403636762743555584";
-
   std::string dataset = std::string(argv[1]);
   std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/" + euroc_dataset_name.at(dataset) + "/mav0/";
 
