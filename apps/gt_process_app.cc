@@ -166,7 +166,7 @@ int main(int argc, char **argv) {
   Eigen::Quaterniond q0_gt = keyframe_data.front().rotation_;
   Eigen::Vector3d p0_gt = keyframe_data.front().position_;
 
-  std::ofstream out_gt_file("data/" + dataset + "/gt.csv");
+  std::ofstream out_gt_file("data/" + dataset + "/traj_gt.csv");
   out_gt_file << "timestamp,p_x,p_y,p_z,v_x,v_y,v_z,q_w,q_x,q_y,q_z\n";
 
   for (size_t i=0; i<keyframe_data.size(); ++i) {

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <cassert>
+#include <map>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -12,21 +13,29 @@
 #include "frontend.h"
 
 
+std::map<std::string, std::string> euroc_dataset_name = {
+  {"MH_01", "MH_01_easy"},
+  {"MH_02", "MH_02_easy"},
+  {"MH_03", "MH_03_medium"},
+  {"MH_04", "MH_04_difficult"},
+  {"MH_05", "MH_05_difficult"}
+};
 
 int main(int argc, char **argv) {
 
   // TODO: automatically retrieve from the dataset
-  std::string gt_timestamp_start = "1403636624463555584";
-  std::string gt_timestamp_end =   "1403636762743555584";
+  // std::string gt_timestamp_start = "1403636624463555584";
+  // std::string gt_timestamp_end =   "1403636762743555584";
+
+  std::string dataset = std::string(argv[1]);
+  std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/" + euroc_dataset_name.at(dataset) + "/mav0/";
 
 
-  std::string vo_data_file_path("config/out_kf_time.csv");
-  std::cout << "Read visual odometry ouput data at " << vo_data_file_path << " ..." << std::endl;
-  std::ifstream vo_data_file(vo_data_file_path.c_str());
+  std::cout << "Read visual odometry ouput data " << dataset << " ..." << std::endl;
+  std::ifstream vo_data_file("data/" + dataset + "/out_kf_time.csv");
   assert(("Could not open visual odometry ouput data.", vo_data_file.is_open()));
 
-  std::string dataset_path("/home/lemur/dataset/EuRoC/MH_01_easy/mav0/");
-  std::string image_path("cam0/data/");
+
 
   // the BRISK keypoint detector and descriptor extractor
   cv::FileStorage config_file("config/config_fpga_p2_euroc.yaml", cv::FileStorage::READ);
@@ -44,16 +53,16 @@ int main(int argc, char **argv) {
       std::string time_stamp_str;
       std::getline(s_stream, time_stamp_str, ',');   // get first string delimited by comma
       
-      if (gt_timestamp_start <= time_stamp_str && time_stamp_str <= gt_timestamp_end) {
+      // if (gt_timestamp_start <= time_stamp_str && time_stamp_str <= gt_timestamp_end) {
 
         Keyframe keyframe;
 
         keyframe.timestamp_ = time_stamp_str;
-        keyframe.img_ = cv::imread(dataset_path + image_path + time_stamp_str + ".png", cv::IMREAD_GRAYSCALE);
+        keyframe.img_ = cv::imread(euroc_dataset_path + "cam0/data/" + time_stamp_str + ".png", cv::IMREAD_GRAYSCALE);
 
         frontend.AddKeyframe(keyframe);
 
-      }
+      // }
     }
   }
 
@@ -67,7 +76,7 @@ int main(int argc, char **argv) {
       cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMING);  
   frontend.Match(bf_hamming_matcher);
 
-  std::ofstream feature_obs_file("feature_obs.csv");
+  std::ofstream feature_obs_file("data/" + dataset + "/feature_obs.csv");
   frontend.OutputLandmarkObservation(feature_obs_file);
   feature_obs_file.close();
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <map>
 
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
@@ -22,6 +23,14 @@
 #include "imu_error.h"
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
+
+std::map<std::string, std::string> euroc_dataset_name = {
+  {"MH_01", "MH_01_easy"},
+  {"MH_02", "MH_02_easy"},
+  {"MH_03", "MH_03_medium"},
+  {"MH_04", "MH_04_difficult"},
+  {"MH_05", "MH_05_difficult"}
+};
 
 // TODO: define globally
 Eigen::Vector3d gravity = Eigen::Vector3d(0, 0, -9.81007);
@@ -171,10 +180,6 @@ class ExpLandmarkEmSLAM {
     std::ifstream kf_time_file(kf_time_file_path);
     assert(("Could not open keyframe time file.", kf_time_file.is_open()));
 
-    // TODO
-    std::string gt_timestamp_start = "1403636624463555584";
-    std::string gt_timestamp_end =   "1403636762743555584";
-
     // ignore the header
     std::string line;
     std::getline(kf_time_file, line);
@@ -186,11 +191,7 @@ class ExpLandmarkEmSLAM {
         std::string time_stamp_str;
         std::getline(s_stream, time_stamp_str, ',');   // get first string delimited by comma
       
-        if (gt_timestamp_start <= time_stamp_str && time_stamp_str <= gt_timestamp_end) {
-
-          // state
-          state_vec_.push_back(new State(std::stod(time_stamp_str)*1e-9));
-        }
+        state_vec_.push_back(new State(std::stod(time_stamp_str)*1e-9));
       }
     }
 
@@ -419,7 +420,6 @@ class ExpLandmarkEmSLAM {
 
 
 
-
   bool ReadImuData(std::string imu_file_path) {
   
     std::cout << "Read IMU data at " << imu_file_path << std::endl;
@@ -440,7 +440,7 @@ class ExpLandmarkEmSLAM {
                                                         sigma_a_c_);
 
     std::string imu_data_str;
-    while (std::getline(imu_file, imu_data_str)) {
+    while (std::getline(imu_file, imu_data_str) && (state_idx < state_vec_.size()-1)) {
 
 
       double timestamp;
@@ -466,25 +466,15 @@ class ExpLandmarkEmSLAM {
       }
 
       IMUData imu_data(timestamp, gyr, acc);
-
-      double time_begin = 1403636624.463555584;
-      double time_end = 1403636762.743555584;
-
       
       
-      if (time_begin <= imu_data.timestamp_ && imu_data.timestamp_ <= time_end) {
+      if (state_vec_.front()->GetTimestamp() <= imu_data.timestamp_) {
 
-
-        // starting to put imu data in the previously established state_parameter_
-        // case 1: the time stamp of the imu data is after the last state
-        if ((state_idx + 1) == state_vec_.size()) {
+        // case 1: the time stamp of the imu data is between two consecutive states
+        if (imu_data.timestamp_ < state_vec_.at(state_idx+1)->GetTimestamp()) {
           int_imu_data_ptr->IntegrateSingleIMU(imu_data, imu_dt_);
         }
-        // case 2: the time stamp of the imu data is between two consecutive states
-        else if (imu_data.timestamp_ < state_vec_.at(state_idx+1)->GetTimestamp()) {
-          int_imu_data_ptr->IntegrateSingleIMU(imu_data, imu_dt_);
-        }
-        // case 3: the imu data just enter the new interval of integration
+        // case 2: the imu data just enter the new interval of integration
         else {
 
           pre_int_imu_vec_.push_back(int_imu_data_ptr);
@@ -508,7 +498,6 @@ class ExpLandmarkEmSLAM {
     std::cout << "Finished reading IMU data." << std::endl;
     return true;
   }
-
 
 
   bool SetupMStep() {
@@ -541,7 +530,7 @@ class ExpLandmarkEmSLAM {
                                                                    observation_vec_.at(i).at(j)->cov());
 
         optimization_problem_.AddResidualBlock(cost_function,
-                                               loss_function_ptr_,
+                                               new ceres::HuberLoss(1.0),
                                                state_vec_.at(i+1)->GetRotationBlock()->parameters(),
                                                state_vec_.at(i+1)->GetPositionBlock()->parameters(),
                                                landmark_vec_.at(landmark_idx)->parameters());
@@ -773,7 +762,7 @@ class ExpLandmarkEmSLAM {
   }
 
 
-  bool OutputOptimizationResult(std::string output_file_name) {
+  bool OutputResult(std::string output_file_name) {
 
     std::ofstream output_file(output_file_name);
 
@@ -837,15 +826,17 @@ int main(int argc, char **argv) {
 
   google::InitGoogleLogging(argv[0]);
 
+  std::string dataset = std::string(argv[1]);
+
   std::string config_folder_path("config/");
-  std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/MH_01_easy/mav0/";
+  std::string euroc_dataset_path = "/home/lemur/dataset/EuRoC/" + euroc_dataset_name.at(dataset) + "/mav0/";
 
 
   ExpLandmarkEmSLAM slam_problem(config_folder_path);
 
   // initialize the first state
-  slam_problem.ReadInitialTraj("data/");
-  slam_problem.ReadObservationData("data/");
+  slam_problem.ReadInitialTraj("data/" + dataset + "/");
+  slam_problem.ReadObservationData("data/" + dataset + "/");
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
@@ -861,7 +852,7 @@ int main(int argc, char **argv) {
 
   std::cout << "The entire time is " << dt << " sec." << std::endl;
 
-  slam_problem.OutputOptimizationResult("trajectory_em.csv");
+  slam_problem.OutputResult("data/" + dataset + "/traj_em.csv");
 
   return 0;
 }

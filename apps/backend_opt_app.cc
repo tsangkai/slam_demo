@@ -433,7 +433,7 @@ class ExpLandmarkOptSLAM {
                                                         sigma_a_c_);
 
     std::string imu_data_str;
-    while (std::getline(imu_file, imu_data_str)) {
+    while (std::getline(imu_file, imu_data_str) && (state_idx < state_vec_.size()-1)) {
 
 
       double timestamp;
@@ -459,25 +459,15 @@ class ExpLandmarkOptSLAM {
       }
 
       IMUData imu_data(timestamp, gyr, acc);
-
-      double time_begin = 1403636624.463555584;
-      double time_end = 1403636762.743555584;
-
       
       
-      if (time_begin <= imu_data.timestamp_ && imu_data.timestamp_ <= time_end) {
+      if (state_vec_.front()->GetTimestamp() <= imu_data.timestamp_) {
 
-
-        // starting to put imu data in the previously established state_parameter_
-        // case 1: the time stamp of the imu data is after the last state
-        if ((state_idx + 1) == state_vec_.size()) {
+        // case 1: the time stamp of the imu data is between two consecutive states
+        if (imu_data.timestamp_ < state_vec_.at(state_idx+1)->GetTimestamp()) {
           int_imu_data_ptr->IntegrateSingleIMU(imu_data, imu_dt_);
         }
-        // case 2: the time stamp of the imu data is between two consecutive states
-        else if (imu_data.timestamp_ < state_vec_.at(state_idx+1)->GetTimestamp()) {
-          int_imu_data_ptr->IntegrateSingleIMU(imu_data, imu_dt_);
-        }
-        // case 3: the imu data just enter the new interval of integration
+        // case 2: the imu data just enter the new interval of integration
         else {
 
           pre_int_imu_vec_.push_back(int_imu_data_ptr);
@@ -550,7 +540,7 @@ class ExpLandmarkOptSLAM {
                                                                    observation_vec_.at(i).at(j)->cov());
 
         optimization_problem_.AddResidualBlock(cost_function,
-                                               loss_function_ptr_,
+                                               new ceres::HuberLoss(1.0),
                                                state_vec_.at(i+1)->GetRotationBlock()->parameters(),
                                                state_vec_.at(i+1)->GetPositionBlock()->parameters(),
                                                landmark_vec_.at(landmark_idx)->parameters());
@@ -585,7 +575,7 @@ class ExpLandmarkOptSLAM {
   }
 
 
-  bool OutputOptimizationResult(std::string output_file_name) {
+  bool OutputResult(std::string output_file_name) {
 
     std::ofstream output_file(output_file_name);
 
@@ -659,10 +649,9 @@ int main(int argc, char **argv) {
 
   // initialize the first state
   slam_problem.ReadInitialTraj("data/" + dataset + "/");
-  slam_problem.OutputOptimizationResult("data/" + dataset + "/traj_vo.csv");
+  // slam_problem.OutputResult("data/" + dataset + "/traj_vo.csv");
 
-  /***
-  slam_problem.ReadObservationData("data/");
+  slam_problem.ReadObservationData("data/" + dataset + "/");
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
@@ -677,8 +666,7 @@ int main(int argc, char **argv) {
 
   std::cout << "The entire time is " << dt << " sec." << std::endl;
 
-  slam_problem.OutputOptimizationResult("data/" + dataset + "traj_opt.csv");
-  ***/
+  slam_problem.OutputResult("data/" + dataset + "/traj_opt.csv");
 
   return 0;
 }

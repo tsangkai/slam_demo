@@ -7,10 +7,10 @@ from mpl_toolkits.mplot3d import Axes3D
 
 plot_color = {
 	'gt': [0, 0, 0],
+	'vo': [0.0000, 0.5490, 0.3765], # spruce
 	'opt': [0.8627, 0.2980, 0.2745],
 	'em': [0.8471, 0.6824, 0.2784],
 	'boem': [0.2633, 0.4475, 0.7086],  # navy
-	'vo': [0.0000, 0.5490, 0.3765], # spruce
 }
 
 
@@ -21,17 +21,21 @@ fig_height = 7.0
 
 dataset = sys.argv[1]
 
-gt_data = pd.read_csv("data/" + dataset + "/gt.csv")
+gt_data = pd.read_csv("data/" + dataset + "/traj_gt.csv")
 vo_data = pd.read_csv("data/" + dataset + "/traj_vo.csv")
-#est_opt_data = pd.read_csv("data/" + dataset + "/traj_opt.csv")
+est_opt_data = pd.read_csv("data/" + dataset + "/traj_opt.csv")
+est_em_data = pd.read_csv("data/" + dataset + "/traj_em.csv")
+est_boem_data = pd.read_csv("data/" + dataset + "/traj_boem.csv")
 
-# landmark_data = pd.read_csv("landmark.csv")
 
 
 # offset initial time
 init_time = gt_data['timestamp'][0]
 gt_data['timestamp'] = gt_data['timestamp'] - init_time
 vo_data['timestamp'] = vo_data['timestamp'] - init_time
+est_opt_data['timestamp'] = est_opt_data['timestamp'] - init_time
+est_em_data['timestamp'] = est_em_data['timestamp'] - init_time
+est_boem_data['timestamp'] = est_boem_data['timestamp'] - init_time
 
 
 
@@ -43,11 +47,11 @@ fig.set_size_inches(fig_width, fig_height)
 ax = fig.gca(projection='3d')
 
 
-# ax.scatter(landmark_data['p_x'], landmark_data['p_y'], landmark_data['p_z'])
-
 ax.plot(gt_data['p_x'], gt_data['p_y'], gt_data['p_z'], color = plot_color['gt'], label='gt')
 ax.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], label='VO')
-#ax.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], label='est. opt.')
+ax.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], label='est. opt.')
+ax.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], label='est. EM')
+ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], label='est. BOEM')
 
 
 ax.view_init(39, 3)
@@ -70,3 +74,46 @@ ax.legend()
 
 plt.show()
 
+
+
+
+
+
+# error plot
+fig = plt.figure(2)
+fig.set_size_inches(fig_width, fig_height)
+
+vo_error = np.zeros_like(gt_data['p_x']);
+est_opt_error = np.zeros_like(gt_data['p_x']);
+est_em_error = np.zeros_like(gt_data['p_x']);
+est_boem_error = np.zeros_like(gt_data['p_x']);
+
+for i in range(len(gt_data['p_x'])):
+	vo_error[i] = math.sqrt( (gt_data['p_x'][i]-vo_data['p_x'][i])**2 + (gt_data['p_y'][i]-vo_data['p_y'][i])**2 + (gt_data['p_z'][i]-vo_data['p_z'][i])**2)
+	est_opt_error[i]  = math.sqrt( (gt_data['p_x'][i]-est_opt_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_opt_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_opt_data['p_z'][i])**2)
+	est_em_error[i]   = math.sqrt( (gt_data['p_x'][i]-est_em_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_em_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_em_data['p_z'][i])**2)
+	est_boem_error[i] = math.sqrt( (gt_data['p_x'][i]-est_boem_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_boem_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_boem_data['p_z'][i])**2)
+
+line_width = 2
+
+plt.plot(vo_data['timestamp'], vo_error, color = plot_color['vo'], linewidth=line_width, label='VO')
+plt.plot(est_opt_data['timestamp'], est_opt_error, color = plot_color['opt'], linewidth=line_width, label='est. opt.')
+plt.plot(est_em_data['timestamp'], est_em_error, color = plot_color['em'], linewidth=line_width, label='est. EM')
+plt.plot(est_boem_data['timestamp'], est_boem_error, color = plot_color['boem'], linewidth=line_width, label='est. BOEM')
+
+
+plt.legend()
+
+plt.xlabel('time [s]')
+plt.ylabel('error [m]')
+# plt.ylim([0,2])
+
+# plt.savefig('result/error.pdf')  
+
+plt.show()
+
+
+print("VO: \t" + str(np.mean(vo_error)))
+print("opt.: \t" + str(np.mean(est_opt_error)))
+print("EM: \t" + str(np.mean(est_em_error)))
+print("BOEM: \t" + str(np.mean(est_boem_error)))
