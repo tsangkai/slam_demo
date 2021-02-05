@@ -1,5 +1,4 @@
 add_library(lib STATIC
-  frontend.h
   so3.h
   parameter_block.h
   sized_parameter_block.h

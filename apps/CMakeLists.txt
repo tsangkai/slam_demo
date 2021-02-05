@@ -1,7 +1,10 @@
 
 ###
 
-add_executable(frontend_app frontend_app.cc)
+add_executable(frontend_app 
+  frontend_app.cc
+  frontend.h
+)
 
 target_include_directories(frontend_app
   PUBLIC ${OpenCV_INCLUDE_DIRS}          # not the target style

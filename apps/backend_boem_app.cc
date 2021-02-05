@@ -172,7 +172,7 @@ class ExpLandmarkBoemSLAM {
 
 
     // Step 1. red out_kf_time.csv to construct the state
-    std::string kf_time_file_path(data_folder_path + "out_kf_time.csv");
+    std::string kf_time_file_path(data_folder_path + "okvis_kf.csv");
     std::cout << "Read keyframe time data at " << kf_time_file_path << std::endl;
     std::ifstream kf_time_file(kf_time_file_path);
     assert(("Could not open keyframe time file.", kf_time_file.is_open()));
@@ -196,7 +196,7 @@ class ExpLandmarkBoemSLAM {
 
 
     // Step 2. read out_state.csv to initialize state
-    std::string state_init_file_path(data_folder_path + "out_state.csv");
+    std::string state_init_file_path(data_folder_path + "okvis_state.csv");
     std::cout << "Read initial state estimate data at " << state_init_file_path << std::endl;
     std::ifstream state_init_file(state_init_file_path);
     assert(("Could not open initial state estimate file.", state_init_file.is_open()));
