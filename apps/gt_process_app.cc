@@ -1,8 +1,3 @@
-// This code with generate the ground truth for visualization
-// It first needs keyframe time.
-// This file also takes care of the transformation between estimation and the groundturth.
-// Therefore, the visual odometry output is required.
-
 
 #include <iostream>
 #include <iomanip>
@@ -115,53 +110,8 @@ int main(int argc, char **argv) {
   
   gt_file.close();
 
-  // step 3. obtain offset term
-  Eigen::Quaterniond q0;
-  Eigen::Vector3d p0;
 
-  std::ifstream vo_file("result/" + dataset + "/traj_vo.csv");
-  std::getline(vo_file, first_line_data_str);
-
-  std::string vo_str;
-  std::getline(vo_file, vo_str);
-
-  std::stringstream vo_str_stream(vo_str); 
-
-  if (vo_str_stream.good()) {
-    std::string data_str;
-    std::getline(vo_str_stream, data_str, ','); 
-
-
-    double position[3];
-    for (size_t i=0; i<3; ++i) {
-      std::getline(vo_str_stream, data_str, ','); 
-      position[i] = std::stod(data_str);
-    }
-
-    double velocity[3];
-    for (size_t i=0; i<3; ++i) {
-      std::getline(vo_str_stream, data_str, ','); 
-      velocity[i] = std::stod(data_str);
-    }
-
-    double rotation[4];
-    for (size_t i=0; i<4; ++i) {
-      std::getline(vo_str_stream, data_str, ','); 
-      rotation[i] = std::stod(data_str);
-    }
-
-    q0 = Eigen::Quaterniond(rotation[0], rotation[1], rotation[2], rotation[3]);
-    p0 = Eigen::Vector3d(position);
-  }  
-
-
-
-  vo_file.close();
-
-
-
-
-  // step 4. output the transformed ground truth
+  // step 3. output the transformed ground truth
 
   Eigen::Quaterniond q0_gt = keyframe_data.front().rotation_;
   Eigen::Vector3d p0_gt = keyframe_data.front().position_;
@@ -171,10 +121,9 @@ int main(int argc, char **argv) {
 
   for (size_t i=0; i<keyframe_data.size(); ++i) {
     
-    Eigen::Quaterniond q = keyframe_data.at(i).rotation_ * q0_gt.inverse() * q0;
-    Eigen::Vector3d v = q0.toRotationMatrix() * q0_gt.inverse().toRotationMatrix() * keyframe_data.at(i).velocity_;
-    Eigen::Vector3d p = q0.toRotationMatrix() * q0_gt.inverse().toRotationMatrix() * (keyframe_data.at(i).position_-p0_gt) + p0;
-
+    Eigen::Quaterniond q = keyframe_data.at(i).rotation_;
+    Eigen::Vector3d v = keyframe_data.at(i).velocity_;
+    Eigen::Vector3d p = keyframe_data.at(i).position_;
 
 
     out_gt_file << std::setprecision(13) << std::stod(keyframe_data.at(i).timestamp_)*1e-3 << ",";

@@ -1,6 +1,35 @@
 
 ###
 
+add_executable(gt_process_app 
+  gt_process_app.cc
+)
+
+target_include_directories(gt_process_app
+  PUBLIC ${EIGEN3_INCLUDE_DIR}
+)
+
+target_link_libraries(gt_process_app
+  PUBLIC ${EIGEN3_LIBS}
+)
+
+
+###
+
+add_executable(traj_process_app 
+  traj_process_app.cc
+)
+
+target_include_directories(traj_process_app
+  PUBLIC ${EIGEN3_INCLUDE_DIR}
+)
+
+target_link_libraries(traj_process_app
+  PUBLIC ${EIGEN3_LIBS}
+)
+
+###
+
 add_executable(frontend_app 
   frontend_app.cc
   frontend.h
@@ -17,22 +46,14 @@ target_link_libraries(frontend_app
 )
 
 
-###
 
-add_executable(gt_process_app gt_process_app.cc)
-
-target_include_directories(gt_process_app
-  PUBLIC ${EIGEN3_INCLUDE_DIR}
-)
-
-target_link_libraries(gt_process_app
-  PUBLIC ${EIGEN3_LIBS}
-)
 
 
 ###
 
-add_executable(backend_opt_app backend_opt_app.cc)
+add_executable(backend_opt_app 
+  backend_opt_app.cc
+)
 
 target_include_directories(backend_opt_app
   PUBLIC ${OpenCV_INCLUDE_DIRS}          # not the target style
@@ -57,7 +78,9 @@ target_link_libraries(backend_opt_app
 
 ###
 
-add_executable(backend_em_app backend_em_app.cc)
+add_executable(backend_em_app 
+  backend_em_app.cc
+)
 
 target_include_directories(backend_em_app
   PUBLIC ${OpenCV_INCLUDE_DIRS}          # not the target style
@@ -77,7 +100,9 @@ target_link_libraries(backend_em_app
 
 ###
 
-add_executable(backend_boem_app backend_boem_app.cc)
+add_executable(backend_boem_app 
+  backend_boem_app.cc
+)
 
 target_include_directories(backend_boem_app
   PUBLIC ${OpenCV_INCLUDE_DIRS}          # not the target style

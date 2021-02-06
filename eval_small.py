@@ -22,10 +22,10 @@ fig_height = 7.0
 dataset = sys.argv[1]
 
 gt_data = pd.read_csv("result/" + dataset + "/traj_gt.csv")
-vo_data = pd.read_csv("result/" + dataset + "/traj_vo.csv")
-est_opt_data = pd.read_csv("result/" + dataset + "/traj_opt.csv")
-est_em_data = pd.read_csv("result/" + dataset + "/traj_em.csv")
-est_boem_data = pd.read_csv("result/" + dataset + "/traj_boem.csv")
+vo_data = pd.read_csv("result/" + dataset + "/traj_vo_x.csv")
+est_opt_data = pd.read_csv("result/" + dataset + "/traj_opt_x.csv")
+est_em_data = pd.read_csv("result/" + dataset + "/traj_em_x.csv")
+est_boem_data = pd.read_csv("result/" + dataset + "/traj_boem_x.csv")
 
 
 
