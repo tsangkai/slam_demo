@@ -108,7 +108,7 @@ struct ObservationData {
   Eigen::Matrix2d cov() {
     double sigma_2 = size_ * size_ / 64.0;
     // return sigma_2 * Eigen::Matrix2d::Identity();
-    return 0.03 * Eigen::Matrix2d::Identity();
+    return 1e-7 * Eigen::Matrix2d::Identity();
   }
 
   double timestamp_;
@@ -343,7 +343,7 @@ class ExpLandmarkOptSLAM {
     // the following states
     for (size_t i=0; i<landmark_len_; ++i) {
       Vec3dParameterBlock* landmark_ptr = new Vec3dParameterBlock();
-      // landmark_ptr->setEstimate(landmark_vec_.at(i) + 0.02 * Eigen::Vector3d::Random());
+      // landmark_ptr->setEstimate(landmark_vec_.at(i) + 1e-7 * Eigen::Vector3d::Random());
       landmark_ptr->setEstimate(landmark_vec_.at(i));
       landmark_para_vec_.push_back(landmark_ptr);
     }
