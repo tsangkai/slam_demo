@@ -595,7 +595,7 @@ class ExpLandmarkBoemSLAM {
         Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
         F.block<3,3>(0,0) = u_dR.transpose();
         F.block<3,3>(3,0) = (-1)*q0.toRotationMatrix()*Skew(u_dv);
-        F.block<3,3>(3,0) = Eigen::Matrix3d::Identity();
+        F.block<3,3>(3,3) = Eigen::Matrix3d::Identity();
         F.block<3,3>(6,0) = (-1)*q0.toRotationMatrix()*Skew(u_dp);
         F.block<3,3>(6,3) = u_dt*Eigen::Matrix3d::Identity();
         F.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
