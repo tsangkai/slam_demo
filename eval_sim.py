@@ -19,23 +19,13 @@ fig_height = 4.38
 
 # keyframe has larger time range than ground truth
 
-dataset = sys.argv[1]
 
-gt_data = pd.read_csv("result/" + dataset + "/traj_gt.csv")
-vo_data = pd.read_csv("result/" + dataset + "/traj_vo_x.csv")
-est_opt_data = pd.read_csv("result/" + dataset + "/traj_opt_x.csv")
-est_em_data = pd.read_csv("result/" + dataset + "/traj_em_x.csv")
-est_boem_data = pd.read_csv("result/" + dataset + "/traj_boem_x.csv")
+gt_data = pd.read_csv("result/sim/gt.csv")
+dr_data = pd.read_csv("result/sim/dr.csv")
+est_opt_data = pd.read_csv("result/sim/opt.csv")
+#est_em_data = pd.read_csv("result/" + dataset + "/traj_em_x.csv")
+#est_boem_data = pd.read_csv("result/" + dataset + "/traj_boem_x.csv")
 
-
-
-# offset initial time
-init_time = gt_data['timestamp'][0]
-gt_data['timestamp'] = gt_data['timestamp'] - init_time
-vo_data['timestamp'] = vo_data['timestamp'] - init_time
-est_opt_data['timestamp'] = est_opt_data['timestamp'] - init_time
-est_em_data['timestamp'] = est_em_data['timestamp'] - init_time
-est_boem_data['timestamp'] = est_boem_data['timestamp'] - init_time
 
 
 
@@ -54,10 +44,10 @@ ax = Axes3D(fig, rect=(0.0, 0.05, 1, 0.9))
 line_width = 1.2
 
 ax.plot(gt_data['p_x'], gt_data['p_y'], gt_data['p_z'], color = plot_color['gt'], linewidth=line_width, label='ground truth')
-ax.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], linewidth=line_width, label='VO')
+ax.plot(dr_data['p_x'], dr_data['p_y'], dr_data['p_z'], color = plot_color['vo'], linewidth=line_width, label='deadreckoning')
 ax.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], linewidth=line_width, label='opt.')
-ax.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], linewidth=line_width, label='EM')
-ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], linewidth=line_width, label='BOEM')
+#ax.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], linewidth=line_width, label='EM')
+#ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], linewidth=line_width, label='BOEM')
 
 
 
@@ -78,7 +68,7 @@ ax.set_zlabel('z [m]')
 
 ax.legend()
 
-plt.savefig("result/" + dataset + "/trajectory.pdf")
+#plt.savefig("result/" + dataset + "/trajectory.pdf")
 
 plt.show()
 
@@ -88,6 +78,7 @@ plt.show()
 
 
 # error plot
+'''
 fig = plt.figure(2)
 fig.set_size_inches(fig_width, fig_height)
 
@@ -128,3 +119,4 @@ print("VO:\t" + str(np.mean(vo_error)))
 print("opt.:\t" + str(np.mean(est_opt_error)))
 print("EM:\t" + str(np.mean(est_em_error)))
 print("BOEM:\t" + str(np.mean(est_boem_error)))
+'''

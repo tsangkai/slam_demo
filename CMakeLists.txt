@@ -17,9 +17,10 @@ find_package(Ceres REQUIRED)
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-
-add_subdirectory(apps)
 add_subdirectory(lib)
+add_subdirectory(apps)
+add_subdirectory(sim)
+
 
 if(BUILD_TEST)
   add_subdirectory(test)

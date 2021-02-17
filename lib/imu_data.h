@@ -7,6 +7,9 @@
 struct IMUData {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+  IMUData() {
+  }
+
   IMUData(double timestamp, Eigen::Vector3d gyr, Eigen::Vector3d acc) {
     timestamp_ = timestamp;
     gyr_ = gyr;

@@ -47,7 +47,7 @@ struct ObservationData {
 
   double timestamp_;
   size_t landmark_id_;
-  Eigen::Vector2d feature_pos_; 
+  Eigen::Vector2d feature_pos_; // u and v
   double size_;
 };
 

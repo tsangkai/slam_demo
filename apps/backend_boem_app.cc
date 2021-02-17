@@ -509,7 +509,10 @@ class ExpLandmarkBoemSLAM {
     size_t block_size = floor(c * pow(n, a)); 
     size_t T = 0; //1;
 
-    while (T+block_size < state_vec_.size()) {
+    bool reach_end = false;
+
+    // while (T+block_size < state_vec_.size()) {
+    while (!reach_end) {
 
       std::cout << n << " " << T << ", " << T + block_size << std::endl;
 
@@ -754,13 +757,42 @@ class ExpLandmarkBoemSLAM {
         state_vec_.at(i+1)->GetPositionBlock()->setEstimate(state_estimate.at(i)->p_);
       }
 
-      // M step
+      // M step (average version)
+
+      std::vector<Eigen::Vector3d> landmark_estimate;
+      landmark_estimate.resize(landmark_vec_.size());
+
+      for (size_t i =0; i<landmark_vec_.size(); ++i) {
+        landmark_estimate.at(i) = landmark_vec_.at(i)->estimate();
+      }
+
       ceres::Solve(opt_options, &opt_problem, &opt_summary);
+      double alpha = double(block_size) / double(T+block_size+10);
+      for (size_t i =0; i<landmark_vec_.size(); ++i) {
+        landmark_vec_.at(i)->setEstimate((1 - alpha) * landmark_estimate.at(i) + alpha * landmark_vec_.at(i)->estimate());
+      }
+
+
+
 
       // block interval update
       T = T + block_size;
-      n++;
-      block_size = floor(c * pow(n, a)); 
+
+      if (T == state_vec_.size()-1) {
+        reach_end = true;
+      }
+      else {
+        n++;
+        block_size = floor(c * pow(n, a));
+
+        if (T+block_size > state_vec_.size() - 1) {
+          block_size = state_vec_.size() - T -1;
+        }
+      }
+
+
+    // while (T+block_size < state_vec_.size()) {
+
     
     } // while
 
