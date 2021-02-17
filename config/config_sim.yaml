@@ -19,7 +19,7 @@ imu_param:
 landmark_generation:
   box_xy: 2.0 # box offset from the circle
   box_z: 1 # box offset from uav height
-
+  init_noise: 0.05
 
 
 camera:

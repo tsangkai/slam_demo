@@ -155,6 +155,8 @@ class ExpLandmarkOptSLAM {
     box_xy_ = (double) config_file["landmark_generation"]["box_xy"];
     box_z_ = (double) config_file["landmark_generation"]["box_z"];
 
+    landmark_init_noise_ = (double) config_file["landmark_generation"]["init_noise"];
+
     cv::FileNode T_bc = config_file["camera"]["T_bc"];
     T_bc_ << (double) T_bc[0], (double) T_bc[1], (double) T_bc[2], (double) T_bc[3],
              (double) T_bc[4], (double) T_bc[5], (double) T_bc[6], (double) T_bc[7],
@@ -379,7 +381,7 @@ class ExpLandmarkOptSLAM {
     // the following states
     for (size_t i=0; i<landmark_len_; ++i) {
       Vec3dParameterBlock* landmark_ptr = new Vec3dParameterBlock();
-      landmark_ptr->setEstimate(landmark_vec_.at(i) + 0.05 * Eigen::Vector3d::Random());
+      landmark_ptr->setEstimate(landmark_vec_.at(i) + landmark_init_noise_ * Eigen::Vector3d::Random());
       landmark_para_vec_.push_back(landmark_ptr);
     }
 
@@ -453,8 +455,6 @@ class ExpLandmarkOptSLAM {
 
 
   bool SolveOptProblem() {
-
-    std::cout << "Begin solving the optimization problem." << std::endl;
 
     optimization_options_.linear_solver_type = ceres::SPARSE_SCHUR;
     optimization_options_.minimizer_progress_to_stdout = true;
@@ -547,6 +547,7 @@ class ExpLandmarkOptSLAM {
   // landmark generation parameter
   double box_xy_;  // box offset from the circle
   double box_z_;   // box offset from uav height
+  double landmark_init_noise_;
 
   // camera parameters
 
