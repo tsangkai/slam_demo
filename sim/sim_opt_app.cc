@@ -211,7 +211,7 @@ class ExpLandmarkOptSLAM {
       
       landmark_pos(0) = (r+box_xy);
       landmark_pos(1) = (r+box_xy)*Eigen::Vector3d::Random()(1);
-      landmark_pos(2) = (z_h + box_z)*Eigen::Vector3d::Random()(2) + z_h;
+      landmark_pos(2) = (z_h + box_z)*Eigen::Vector3d::Random()(2) + z_h;  // [-box_z, box_z+2*z_h]
 
       landmark_vec_.push_back(landmark_pos);
     }
@@ -293,7 +293,7 @@ class ExpLandmarkOptSLAM {
 
             ObservationData* feature_obs_ptr = new ObservationData(state_vec_.at(i)->timestamp_);
             feature_obs_ptr->landmark_id_ = m;
-            feature_obs_ptr->feature_pos_ = feature_pt + 0.03 * Eigen::Vector2d::Random();
+            feature_obs_ptr->feature_pos_ = feature_pt + 1e-7 * Eigen::Vector2d::Random();
 
             observation_vec_.at(i).push_back(feature_obs_ptr);
           
@@ -343,8 +343,7 @@ class ExpLandmarkOptSLAM {
     // the following states
     for (size_t i=0; i<landmark_len_; ++i) {
       Vec3dParameterBlock* landmark_ptr = new Vec3dParameterBlock();
-      // landmark_ptr->setEstimate(landmark_vec_.at(i) + 1e-7 * Eigen::Vector3d::Random());
-      landmark_ptr->setEstimate(landmark_vec_.at(i));
+      landmark_ptr->setEstimate(landmark_vec_.at(i) + 0.05 * Eigen::Vector3d::Random());
       landmark_para_vec_.push_back(landmark_ptr);
     }
 
@@ -365,7 +364,7 @@ class ExpLandmarkOptSLAM {
 
     for (size_t i=0; i<landmark_vec_.size(); ++i) {
       optimization_problem_.AddParameterBlock(landmark_para_vec_.at(i)->parameters(), 3);
-      optimization_problem_.SetParameterBlockConstant(landmark_para_vec_.at(i)->parameters());
+      // optimization_problem_.SetParameterBlockConstant(landmark_para_vec_.at(i)->parameters());
     }
 
    
