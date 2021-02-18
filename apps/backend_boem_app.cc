@@ -667,7 +667,7 @@ class ExpLandmarkBoemSLAM {
 
             Eigen::Matrix<double, 9, 9> IKH;
             IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-            obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();
+            obs_cov = IKH * obs_cov; // * IKH.transpose() + K * R * K.transpose();
           }
         }
 
