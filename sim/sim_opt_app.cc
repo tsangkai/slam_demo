@@ -597,10 +597,19 @@ int main(int argc, char **argv) {
   slam_problem.CreateImuData();
   slam_problem.CreateObservationData();
 
+  boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
+
   slam_problem.SetupOptProblem();
 
   slam_problem.OutputResult("result/sim/dr.csv");
   slam_problem.SolveOptProblem();
+  
+  boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
+  boost::posix_time::time_duration t = end_time - begin_time;
+  double dt = ((double)t.total_nanoseconds() * 1e-9);
+
+  std::cout << "The entire time is " << dt << " sec." << std::endl;
+
   slam_problem.OutputResult("result/sim/opt.csv");
   slam_problem.OutputGroundtruth("result/sim/");
 

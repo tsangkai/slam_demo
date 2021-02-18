@@ -2,10 +2,10 @@
 
 # This one works for opt.
 
-state_len: 500
+state_len: 300  # 500
 landmark_len: 100
 
-dt: 0.02
+dt: 0.03  # 0.02
 
 trajectory:
   r: 5.0 # circle radius x-y plane
@@ -22,7 +22,7 @@ landmark_generation:
   box_xy: 2.0 # box offset from the circle
   box_z: 1 # box offset from uav height
   
-landmark_init_noise: 0.08
+landmark_init_noise: 0.06
 
 
 camera:
