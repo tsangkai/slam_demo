@@ -706,7 +706,7 @@ class ExpLandmarkBoemSLAM {
         Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
         F.block<3,3>(0,0) = u_dR.transpose();
         F.block<3,3>(3,0) = (-1)*q0.toRotationMatrix()*Skew(u_dv);
-        F.block<3,3>(3,0) = Eigen::Matrix3d::Identity();
+        F.block<3,3>(3,3) = Eigen::Matrix3d::Identity();
         F.block<3,3>(6,0) = (-1)*q0.toRotationMatrix()*Skew(u_dp);
         F.block<3,3>(6,3) = u_dt*Eigen::Matrix3d::Identity();
         F.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
@@ -759,18 +759,18 @@ class ExpLandmarkBoemSLAM {
 
       // M step (average version)
 
-      std::vector<Eigen::Vector3d> landmark_estimate;
-      landmark_estimate.resize(landmark_vec_.size());
+      // std::vector<Eigen::Vector3d> landmark_estimate;
+      // landmark_estimate.resize(landmark_vec_.size());
 
-      for (size_t i =0; i<landmark_vec_.size(); ++i) {
-        landmark_estimate.at(i) = landmark_vec_.at(i)->estimate();
-      }
+      // for (size_t i =0; i<landmark_vec_.size(); ++i) {
+      //   landmark_estimate.at(i) = landmark_vec_.at(i)->estimate();
+      // }
 
       ceres::Solve(opt_options, &opt_problem, &opt_summary);
-      double alpha = double(block_size) / double(T+block_size+10);
-      for (size_t i =0; i<landmark_vec_.size(); ++i) {
-        landmark_vec_.at(i)->setEstimate((1 - alpha) * landmark_estimate.at(i) + alpha * landmark_vec_.at(i)->estimate());
-      }
+      // double alpha = double(block_size) / double(T+block_size+10);
+      // for (size_t i =0; i<landmark_vec_.size(); ++i) {
+      //   landmark_vec_.at(i)->setEstimate((1 - alpha) * landmark_estimate.at(i) + alpha * landmark_vec_.at(i)->estimate());
+      // }
 
 
 
@@ -789,10 +789,6 @@ class ExpLandmarkBoemSLAM {
           block_size = state_vec_.size() - T -1;
         }
       }
-
-
-    // while (T+block_size < state_vec_.size()) {
-
     
     } // while
 
