@@ -633,7 +633,7 @@ class ExpLandmarkEmSLAM {
 
         // exclude outliers
         Eigen::Vector2d innovation = measurement - landmark_proj;
-        if (innovation.norm() < 80) {  // if the threshold is too small, no loop closure can occur
+        if (innovation.norm() < 90) {  // if the threshold is too small, no loop closure can occur
 
           Eigen::Matrix<double, 2, 2> H_cam;
           H_cam << fu_, 0.0,
@@ -663,7 +663,7 @@ class ExpLandmarkEmSLAM {
 
           Eigen::Matrix<double, 9, 9> IKH;
           IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-          obs_cov = IKH * obs_cov; // * IKH.transpose() + K * R * K.transpose();
+          obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();
           
         }
       }
@@ -726,7 +726,7 @@ class ExpLandmarkEmSLAM {
       residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
       Eigen::Matrix<double, 9, 1> m;
-      m = (0.2) * C * residual;  // give the IMU results less weight
+      m = 0.6 * C * residual;  // give the IMU results less weight
 
 
       // std::cout << m << std::endl;
