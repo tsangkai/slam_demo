@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
 
   std::cout << "Read visual odometry ouput data " << dataset << " ..." << std::endl;
-  std::ifstream vo_data_file("data/" + dataset + "/out_kf_time.csv");
+  std::ifstream vo_data_file("data/" + dataset + "/okvis_kf.csv");
   assert(("Could not open visual odometry ouput data.", vo_data_file.is_open()));
 
 

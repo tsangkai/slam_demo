@@ -671,7 +671,8 @@ class ExpLandmarkBoemSLAM {
           }
         }
 
-        if (k_p.norm() < 0.65) {
+        if (k_p.norm() < 0.7) {
+
 
           state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * k_R;
           if (state_estimate.at(i)->q_.w() < 0) {
@@ -729,7 +730,7 @@ class ExpLandmarkBoemSLAM {
         residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
         Eigen::Matrix<double, 9, 1> m;
-        m = 0.6 * C * residual;
+        m = 0.7 * C * residual;
 
 
         // std::cout << m << std::endl;

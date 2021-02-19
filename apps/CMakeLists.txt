@@ -31,20 +31,6 @@ target_link_libraries(traj_process_app
 
 ###
 
-add_executable(traj_process_app_old
-  traj_process_app_old.cc
-)
-
-target_include_directories(traj_process_app_old
-  PUBLIC ${EIGEN3_INCLUDE_DIR}
-)
-
-target_link_libraries(traj_process_app_old
-  PUBLIC ${EIGEN3_LIBS}
-)
-
-###
-
 add_executable(frontend_app 
   frontend_app.cc
   frontend.h

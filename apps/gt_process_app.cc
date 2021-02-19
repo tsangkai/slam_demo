@@ -113,30 +113,23 @@ int main(int argc, char **argv) {
 
   // step 3. output the transformed ground truth
 
-  Eigen::Quaterniond q0_gt = keyframe_data.front().rotation_;
-  Eigen::Vector3d p0_gt = keyframe_data.front().position_;
-
   std::ofstream out_gt_file("result/" + dataset + "/traj_gt.csv");
   out_gt_file << "timestamp,p_x,p_y,p_z,v_x,v_y,v_z,q_w,q_x,q_y,q_z\n";
 
   for (size_t i=0; i<keyframe_data.size(); ++i) {
     
-    Eigen::Quaterniond q = keyframe_data.at(i).rotation_;
-    Eigen::Vector3d v = keyframe_data.at(i).velocity_;
-    Eigen::Vector3d p = keyframe_data.at(i).position_;
-
 
     out_gt_file << std::setprecision(13) << std::stod(keyframe_data.at(i).timestamp_)*1e-3 << ",";
-    out_gt_file << std::to_string(p(0)) << ","
-                << std::to_string(p(1)) << ","
-                << std::to_string(p(2)) << ","
-                << std::to_string(v(0)) << ","
-                << std::to_string(v(1)) << ","
-                << std::to_string(v(2)) << ","
-                << std::to_string(q.w()) << ","
-                << std::to_string(q.x()) << ","
-                << std::to_string(q.y()) << ","
-                << std::to_string(q.z()) << std::endl;
+    out_gt_file << std::to_string(keyframe_data.at(i).position_(0)) << ","
+                << std::to_string(keyframe_data.at(i).position_(1)) << ","
+                << std::to_string(keyframe_data.at(i).position_(2)) << ","
+                << std::to_string(keyframe_data.at(i).velocity_(0)) << ","
+                << std::to_string(keyframe_data.at(i).velocity_(1)) << ","
+                << std::to_string(keyframe_data.at(i).velocity_(2)) << ","
+                << std::to_string(keyframe_data.at(i).rotation_.w()) << ","
+                << std::to_string(keyframe_data.at(i).rotation_.x()) << ","
+                << std::to_string(keyframe_data.at(i).rotation_.y()) << ","
+                << std::to_string(keyframe_data.at(i).rotation_.z()) << std::endl;
 
   }
   out_gt_file.close();

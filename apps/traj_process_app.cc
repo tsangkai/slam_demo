@@ -1,6 +1,6 @@
 // This code finds the optimal transformation between two trajectories.
 // In particular, the transformation between the ground truth and the estimated trajectory.
-// I impose that the starting points are the same, and calculate the optimal 3D rotation.
+// Initial point can be different
 
 
 #include <iostream>
@@ -92,18 +92,36 @@ int main(int argc, char **argv) {
   input_file.close();
 
   // Step 2: 
+
+  std::cout << "ref vec size: \t" << ref_state_vec.size() << std::endl;
+  std::cout << "input vec size: \t" << input_state_vec.size() << std::endl;
+
+  Eigen::Vector3d ref_p_mean(0,0,0);
+  Eigen::Vector3d input_p_mean(0,0,0);
+
+  double one_over_size = 1.0 / (double) ref_state_vec.size();
+
+  for (size_t i=0; i<ref_state_vec.size(); ++i) {
+    ref_p_mean += one_over_size * ref_state_vec.at(i)->p_;
+    input_p_mean += one_over_size * input_state_vec.at(i)->p_;
+  }
+
+  std::cout << "ref p mean: \t" << ref_p_mean << std::endl;
+  std::cout << "input p mean: \t" << input_p_mean << std::endl;
+
   Eigen::MatrixXd ref_stacked_vec(3,ref_state_vec.size());
   Eigen::MatrixXd input_stacked_vec(3,ref_state_vec.size());
 
   for (size_t i=0; i<ref_state_vec.size(); ++i) {
-    ref_stacked_vec.block<3,1>(0,i) = ref_state_vec.at(i)->p_ - ref_state_vec.at(0)->p_;
-    input_stacked_vec.block<3,1>(0,i) = input_state_vec.at(i)->p_ - input_state_vec.at(0)->p_;
+    ref_stacked_vec.block<3,1>(0,i) = ref_state_vec.at(i)->p_ - ref_p_mean;
+    input_stacked_vec.block<3,1>(0,i) = input_state_vec.at(i)->p_ - input_p_mean;
   }
 
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(input_stacked_vec*ref_stacked_vec.transpose(), Eigen::ComputeFullU | Eigen::ComputeFullV);
 
   // the transformation
   Eigen::Matrix3d R;
+  Eigen::Vector3d t;
 
   if ((svd.matrixV() * svd.matrixU().transpose()).determinant() > 0) {
     R = svd.matrixV() * svd.matrixU().transpose();
@@ -114,6 +132,8 @@ int main(int argc, char **argv) {
     R = svd.matrixV() * sigma * svd.matrixU().transpose();
   }
 
+  t = ref_p_mean - R * input_p_mean;
+
   // Step 4. Output the result
   std::ofstream out_file("result/" + dataset + "/" + traj_name + "_x.csv");
   out_file << "timestamp,p_x,p_y,p_z,v_x,v_y,v_z,q_w,q_x,q_y,q_z\n";
@@ -122,7 +142,9 @@ int main(int argc, char **argv) {
 
     Eigen::Quaterniond q = Eigen::Quaterniond(R) * input_state_vec.at(i)->q_;
     Eigen::Vector3d v = R * input_state_vec.at(i)->v_;
-    Eigen::Vector3d p = R * (input_state_vec.at(i)->p_ - input_state_vec.at(0)->p_) + ref_state_vec.at(0)->p_;
+    Eigen::Vector3d p = R * input_state_vec.at(i)->p_ + t;
+
+
 
     out_file << input_state_vec.at(i)->t_ << ",";
     out_file << std::to_string(p(0)) << ","
@@ -135,8 +157,8 @@ int main(int argc, char **argv) {
                 << std::to_string(q.x()) << ","
                 << std::to_string(q.y()) << ","
                 << std::to_string(q.z()) << std::endl;
-  }
 
+  }
   out_file.close();  
 
   return 0;

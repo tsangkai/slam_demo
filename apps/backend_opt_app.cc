@@ -649,7 +649,7 @@ int main(int argc, char **argv) {
 
   // initialize the first state
   slam_problem.ReadInitialTraj("data/" + dataset + "/");
-  // slam_problem.OutputResult("result/" + dataset + "/traj_vo.csv");
+  slam_problem.OutputResult("result/" + dataset + "/traj_vo.csv");
 
   slam_problem.ReadObservationData("data/" + dataset + "/");
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");

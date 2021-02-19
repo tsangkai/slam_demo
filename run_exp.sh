@@ -11,8 +11,8 @@ done
 
 for dataset in ${dataset_list[*]} 
 do
-  ./build/apps/traj_process_app_old ${dataset} traj_em
-  ./build/apps/traj_process_app_old ${dataset} traj_boem
+  ./build/apps/traj_process_app ${dataset} traj_em
+  ./build/apps/traj_process_app ${dataset} traj_boem
 done
 
 for dataset in ${dataset_list[*]} 
