@@ -177,12 +177,7 @@ class ExpLandmarkOptSLAM {
     cu_ = (double) config_file["camera"]["principal_point"][0];  // principal point
     cv_ = (double) config_file["camera"]["principal_point"][1];
 
-
     obs_cov_ = (double) config_file["camera"]["observation_noise"];
-
-
-
-
   }
 
 
@@ -212,6 +207,7 @@ class ExpLandmarkOptSLAM {
 
       State* state_ptr = new State;
 
+      state_ptr->timestamp_= T;
       state_ptr->q_ = quat_pos(Eigen::Quaterniond(rot));
       state_ptr->v_ = vel;
       state_ptr->p_ = pos;
@@ -301,7 +297,6 @@ class ExpLandmarkOptSLAM {
 
       T = T + dt_;
     }
-
 
     return true;
   }
@@ -446,8 +441,8 @@ class ExpLandmarkOptSLAM {
     optimization_options_.max_num_iterations = 100;
 
     // M step
-    ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
-    std::cout << optimization_summary_.FullReport() << "\n";
+    // ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
+    // std::cout << optimization_summary_.FullReport() << "\n";
 
     // E step
     std::vector<Estimate*> state_estimate;
@@ -659,7 +654,9 @@ class ExpLandmarkOptSLAM {
       state_para_vec_.at(i+1)->GetPositionBlock()->setEstimate(state_estimate.at(i)->p_);
     }
 
-
+    // M step
+    ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
+    std::cout << optimization_summary_.FullReport() << "\n";
 
     return true;
 

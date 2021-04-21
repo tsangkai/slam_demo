@@ -212,6 +212,7 @@ class ExpLandmarkOptSLAM {
 
       State* state_ptr = new State;
 
+      state_ptr->timestamp_= T;
       state_ptr->q_ = quat_pos(Eigen::Quaterniond(rot));
       state_ptr->v_ = vel;
       state_ptr->p_ = pos;
@@ -678,18 +679,18 @@ class ExpLandmarkOptSLAM {
 
       // M step (average version)
 
-      std::vector<Eigen::Vector3d> landmark_estimate;
-      landmark_estimate.resize(landmark_para_vec_.size());
+      // std::vector<Eigen::Vector3d> landmark_estimate;
+      // landmark_estimate.resize(landmark_para_vec_.size());
 
-      for (size_t i =0; i<landmark_para_vec_.size(); ++i) {
-        landmark_estimate.at(i) = landmark_para_vec_.at(i)->estimate();
-      }
+      // for (size_t i =0; i<landmark_para_vec_.size(); ++i) {
+      //   landmark_estimate.at(i) = landmark_para_vec_.at(i)->estimate();
+      // }
 
       ceres::Solve(opt_options, &opt_problem, &opt_summary);
-      double alpha = double(block_size) / double(T+block_size+10);
-      for (size_t i =0; i<landmark_para_vec_.size(); ++i) {
-        landmark_para_vec_.at(i)->setEstimate((1 - alpha) * landmark_estimate.at(i) + alpha * landmark_para_vec_.at(i)->estimate());
-      }
+      // double alpha = double(block_size) / double(T+block_size+10);
+      // for (size_t i =0; i<landmark_para_vec_.size(); ++i) {
+       //  landmark_para_vec_.at(i)->setEstimate((1 - alpha) * landmark_estimate.at(i) + alpha * landmark_para_vec_.at(i)->estimate());
+      // }
 
 
 

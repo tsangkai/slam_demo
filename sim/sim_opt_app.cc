@@ -205,6 +205,7 @@ class ExpLandmarkOptSLAM {
 
       State* state_ptr = new State;
 
+      state_ptr->timestamp_= T;
       state_ptr->q_ = quat_pos(Eigen::Quaterniond(rot));
       state_ptr->v_ = vel;
       state_ptr->p_ = pos;
@@ -476,7 +477,6 @@ class ExpLandmarkOptSLAM {
     traj_output_file << "timestamp,p_x,p_y,p_z,v_x,v_y,v_z,q_w,q_x,q_y,q_z\n";
 
     for (size_t i=0; i<state_len_; ++i) {
-
       traj_output_file << std::to_string(state_vec_.at(i)->timestamp_) << ",";
       traj_output_file << std::to_string(state_vec_.at(i)->p_(0)) << ",";
       traj_output_file << std::to_string(state_vec_.at(i)->p_(1)) << ",";
@@ -496,6 +496,24 @@ class ExpLandmarkOptSLAM {
 
 
   }
+
+    bool OutputLandmarks(std::string output_folder_name) {
+      std::ofstream traj_output_file(output_folder_name + "lmk.csv");
+
+      traj_output_file << "p_x,p_y,p_z\n";
+
+      for (size_t i=0; i<landmark_len_; ++i) {
+        traj_output_file << std::to_string(landmark_vec_.at(i)(0)) << ",";
+        traj_output_file << std::to_string(landmark_vec_.at(i)(1)) << ",";
+        traj_output_file << std::to_string(landmark_vec_.at(i)(2)) << std::endl;
+      }
+
+      traj_output_file.close();
+
+      return true;
+
+
+    }
 
   bool OutputResult(std::string output_file_name) {
 
@@ -602,6 +620,7 @@ int main(int argc, char **argv) {
   slam_problem.SetupOptProblem();
 
   slam_problem.OutputResult("result/sim/dr.csv");
+
   slam_problem.SolveOptProblem();
   
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
@@ -611,6 +630,7 @@ int main(int argc, char **argv) {
   std::cout << "The entire time is " << dt << " sec." << std::endl;
 
   slam_problem.OutputResult("result/sim/opt.csv");
+  slam_problem.OutputLandmarks("result/sim/");
   slam_problem.OutputGroundtruth("result/sim/");
 
 
