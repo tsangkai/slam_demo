@@ -331,7 +331,7 @@ class ExpLandmarkOptSLAM {
 
             ObservationData* feature_obs_ptr = new ObservationData(state_vec_.at(i)->timestamp_);
             feature_obs_ptr->landmark_id_ = m;
-            feature_obs_ptr->feature_pos_ = feature_pt + obs_cov_ * Eigen::Vector2d::Random();
+            feature_obs_ptr->feature_pos_ = feature_pt + sqrt(obs_cov_) * Eigen::Vector2d::Random();
             feature_obs_ptr->cov_ = obs_cov_;
 
             observation_vec_.at(i).push_back(feature_obs_ptr);
@@ -409,6 +409,7 @@ class ExpLandmarkOptSLAM {
     // imu constraints
     for (size_t i=0; i<imu_vec_.size(); ++i) {
 
+      /***
       ceres::CostFunction* cost_function = new ImuError(imu_vec_.at(i)->gyr_,
                                                         imu_vec_.at(i)->acc_,
                                                         dt_,
@@ -416,6 +417,29 @@ class ExpLandmarkOptSLAM {
                                                         Eigen::Vector3d(0,0,0),
                                                         sigma_g_c_,
                                                         sigma_a_c_);
+
+      optimization_problem_.AddResidualBlock(cost_function,
+                                             NULL,
+                                             state_para_vec_.at(i+1)->GetRotationBlock()->parameters(),
+                                             state_para_vec_.at(i+1)->GetVelocityBlock()->parameters(),
+                                             state_para_vec_.at(i+1)->GetPositionBlock()->parameters(),
+                                             state_para_vec_.at(i)->GetRotationBlock()->parameters(),
+                                             state_para_vec_.at(i)->GetVelocityBlock()->parameters(),
+                                             state_para_vec_.at(i)->GetPositionBlock()->parameters());
+      ***/
+
+      PreIntIMUData* int_imu_data_ptr = new PreIntIMUData(Eigen::Vector3d(0,0,0),
+                                                          Eigen::Vector3d(0,0,0),
+                                                          sigma_g_c_,
+                                                          sigma_a_c_);
+
+      int_imu_data_ptr->IntegrateSingleIMU(*imu_vec_.at(i), dt_);
+
+      ceres::CostFunction* cost_function = new PreIntImuError(int_imu_data_ptr->dt_,
+                                                              int_imu_data_ptr->dR_,
+                                                              int_imu_data_ptr->dv_,
+                                                              int_imu_data_ptr->dp_,
+                                                              int_imu_data_ptr->cov_);
 
       optimization_problem_.AddResidualBlock(cost_function,
                                              NULL,
@@ -442,7 +466,7 @@ class ExpLandmarkOptSLAM {
                                                                    observation_vec_.at(i).at(j)->cov());
 
         optimization_problem_.AddResidualBlock(cost_function,
-                                               NULL,
+                                               new ceres::HuberLoss(1.0), // NULL,
                                                state_para_vec_.at(i)->GetRotationBlock()->parameters(),
                                                state_para_vec_.at(i)->GetPositionBlock()->parameters(),
                                                landmark_para_vec_.at(landmark_idx)->parameters());
@@ -462,8 +486,21 @@ class ExpLandmarkOptSLAM {
     optimization_options_.num_threads = 6;
     optimization_options_.function_tolerance = 1e-20;
     optimization_options_.parameter_tolerance = 1e-25;
-    optimization_options_.max_num_iterations = 100;
+    optimization_options_.max_num_iterations = 20;
 
+
+    for (size_t i=1; i<landmark_len_; ++i) {
+      optimization_problem_.SetParameterBlockConstant(landmark_para_vec_.at(i)->parameters());
+    }
+    
+    ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
+    std::cout << optimization_summary_.FullReport() << "\n";
+
+    for (size_t i=1; i<landmark_len_; ++i) {
+      optimization_problem_.SetParameterBlockVariable(landmark_para_vec_.at(i)->parameters());
+    }
+
+    optimization_options_.max_num_iterations = 100;
 
     ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
     std::cout << optimization_summary_.FullReport() << "\n";

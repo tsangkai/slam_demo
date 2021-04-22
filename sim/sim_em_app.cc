@@ -17,11 +17,9 @@
 
 
 #include "so3.h"
+#include "imu_data.h"
 #include "vec_3d_parameter_block.h"
 #include "quat_parameter_block.h"
-#include "imu_data.h"
-#include "imu_error.h"
-#include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
 
 
@@ -332,7 +330,7 @@ class ExpLandmarkOptSLAM {
 
             ObservationData* feature_obs_ptr = new ObservationData(state_vec_.at(i)->timestamp_);
             feature_obs_ptr->landmark_id_ = m;
-            feature_obs_ptr->feature_pos_ = feature_pt + obs_cov_ * Eigen::Vector2d::Random();
+            feature_obs_ptr->feature_pos_ = feature_pt + sqrt(obs_cov_) * Eigen::Vector2d::Random();
             feature_obs_ptr->cov_ = obs_cov_;
 
             observation_vec_.at(i).push_back(feature_obs_ptr);
