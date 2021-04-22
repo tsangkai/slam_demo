@@ -13,6 +13,7 @@
 
 
 #include <ceres/ceres.h>
+#include <Eigen/QR>
 
 #include "so3.h"
 
@@ -116,7 +117,8 @@ class PreIntImuError :
     delta_2_residual.block<3,3>(3,3) = (-1) * q_t0.toRotationMatrix();
     delta_2_residual.block<3,3>(6,6) = (-1) * q_t0.toRotationMatrix();
 
-    Eigen::LLT<covariance_t> lltOfInformation(cov_.inverse());
+    // Eigen::LLT<covariance_t> lltOfInformation(cov_.inverse());
+    Eigen::LLT<covariance_t> lltOfInformation(cov_.completeOrthogonalDecomposition().pseudoInverse());
     covariance_t squareRootInformation_ = delta_2_residual * lltOfInformation.matrixL().transpose();
 
     // weight
