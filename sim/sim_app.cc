@@ -666,7 +666,7 @@ int main(int argc, char **argv) {
 
   std::cout << "The entire time is " << dt << " sec." << std::endl;
 
-  slam_problem.OutputResult("result/sim/opt.csv");
+  // slam_problem.OutputResult("result/sim/opt.csv");
   slam_problem.OutputLandmarks("result/sim/");
   slam_problem.OutputGroundtruth("result/sim/");
 
