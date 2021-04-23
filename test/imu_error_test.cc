@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 
   // parameters
   const double dt = 0.01;                                     // time discretization  
-  const size_t step = 10;
+  // const size_t step = 10;
   Eigen::Vector3d gravity = Eigen::Vector3d(0, 0, -9.81007);      
   double sigma_g_c = 6.0e-4;
   double sigma_a_c = 2.0e-3;
@@ -159,7 +159,6 @@ int main(int argc, char **argv) {
 
   // Build the problem.
   ceres::Problem optimization_problem;
-  ceres::LocalParameterization* quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
 
   // create the pose parameter blocks
   Transformation T_disturb;
@@ -173,11 +172,11 @@ int main(int argc, char **argv) {
   State* state_1 = new State(t1);
 
 
-  optimization_problem.AddParameterBlock(state_0->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
+  optimization_problem.AddParameterBlock(state_0->GetRotationBlock()->parameters(), 4);
   optimization_problem.AddParameterBlock(state_0->GetVelocityBlock()->parameters(), 3);
   optimization_problem.AddParameterBlock(state_0->GetPositionBlock()->parameters(), 3);
 
-  optimization_problem.AddParameterBlock(state_1->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
+  optimization_problem.AddParameterBlock(state_1->GetRotationBlock()->parameters(), 4);
   optimization_problem.AddParameterBlock(state_1->GetVelocityBlock()->parameters(), 3);
   optimization_problem.AddParameterBlock(state_1->GetPositionBlock()->parameters(), 3);
 
