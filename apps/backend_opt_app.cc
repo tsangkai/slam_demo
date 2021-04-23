@@ -20,7 +20,6 @@
 #include "quat_parameter_block.h"
 #include "triangularization.h"
 #include "imu_data.h"
-#include "imu_error.h"
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
 

@@ -19,7 +19,6 @@
 #include "quat_parameter_block.h"
 #include "triangularization.h"
 #include "imu_data.h"
-#include "imu_error.h"
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
 
@@ -586,7 +585,7 @@ class ExpLandmarkBoemSLAM {
         Eigen::Vector3d imu_dv = imu_v1 - state_vec_.at(i+1)->GetVelocityBlock()->estimate();
         Eigen::Vector3d imu_dp = imu_p1 - state_vec_.at(i+1)->GetPositionBlock()->estimate();
 
-        double kf_constant = 0.1;
+        double kf_constant = 0.2; //0.1;
         state_estimate.at(i)->q_ = state_vec_.at(i+1)->GetRotationBlock()->estimate() * Exp_q(kf_constant * imu_dq);
         state_estimate.at(i)->v_ = state_vec_.at(i+1)->GetVelocityBlock()->estimate() + kf_constant * imu_dv;
         state_estimate.at(i)->p_ = state_vec_.at(i+1)->GetPositionBlock()->estimate() + kf_constant * imu_dp;
@@ -671,7 +670,7 @@ class ExpLandmarkBoemSLAM {
           }
         }
 
-        if (k_p.norm() < 0.7) {
+        if (k_p.norm() < 0.6) {
 
 
           state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * k_R;
