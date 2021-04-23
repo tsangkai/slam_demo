@@ -36,7 +36,7 @@ fig_height = 4.38
 
 gt_data = pd.read_csv("result/sim/gt.csv")
 dr_data = pd.read_csv("result/sim/dr.csv")
-opt_data = pd.read_csv("result/sim/opt.csv")
+opt_data = pd.read_csv("result/sim/opt2.csv")
 em_data = pd.read_csv("result/sim/em.csv")
 boem_data = pd.read_csv("result/sim/boem.csv")
 
@@ -77,16 +77,16 @@ fig.set_size_inches(fig_width, fig_height)
 
 line_width = 1.2
 ax1.plot(dr_data['timestamp'], dr_rot_error, color = plot_color['dr'], label='dead reckoning')
-# ax1.plot(opt_data['timestamp'], opt_rot_error, color = plot_color['opt'], label='opt.')
+ax1.plot(opt_data['timestamp'], opt_rot_error, color = plot_color['opt'], label='opt.')
 ax1.plot(em_data['timestamp'], em_rot_error, color = plot_color['em'], label='EM')
 ax1.plot(boem_data['timestamp'], boem_rot_error, color = plot_color['boem'], label='BOEM')
 ax1.set(ylabel='rotation RMSE [deg]')
-#ax1.set_ylim(-0.2, 12.1)
+ax1.set_ylim(top=5)
 ax1.legend(loc = 1)
 
 
-ax2.plot(dr_data['timestamp'], dr_rot_error, color = plot_color['dr'])
-# ax2.plot(opt_data['timestamp'], opt_pos_error, color = plot_color['opt'])
+ax2.plot(dr_data['timestamp'], dr_pos_error, color = plot_color['dr'])
+ax2.plot(opt_data['timestamp'], opt_pos_error, color = plot_color['opt'])
 ax2.plot(em_data['timestamp'], em_pos_error, color = plot_color['em'])
 ax2.plot(boem_data['timestamp'], boem_pos_error, color = plot_color['boem'])
 ax2.set(ylabel='position RMSE [m]')
