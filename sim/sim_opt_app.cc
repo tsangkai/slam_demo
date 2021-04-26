@@ -464,7 +464,7 @@ class ExpLandmarkOptSLAM {
     optimization_options_.num_threads = 6;
     optimization_options_.function_tolerance = 1e-20;
     optimization_options_.parameter_tolerance = 1e-25;
-    optimization_options_.max_num_iterations = 100;
+    optimization_options_.max_num_iterations = 80; //100;
 
     // M step
     // ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);

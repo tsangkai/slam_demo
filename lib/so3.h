@@ -239,5 +239,17 @@ Eigen::Matrix3d RightJacobianInv(const Eigen::Vector3d & v) {
   return right_jacobian_inv;
 }
 
+Eigen::Quaterniond quat_postive(const Eigen::Quaterniond & q_input){
+  Eigen::Quaterniond q = q_input;
+  if (q.w() < 0) {
+      q.w() = (-1)*q.w();
+      q.x() = (-1)*q.x();
+      q.y() = (-1)*q.y();
+      q.z() = (-1)*q.z();
+  }
+  return q;
+};
+
+
 
 #endif /* INCLUDE_SO3_H_ */

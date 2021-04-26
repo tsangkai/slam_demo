@@ -122,17 +122,6 @@ struct ObservationData {
 };
 
 
-Eigen::Quaterniond quat_pos(Eigen::Quaterniond q){
-    if (q.w() < 0) {
-        q.w() = (-1)*q.w();
-        q.x() = (-1)*q.x();
-        q.y() = (-1)*q.y();
-        q.z() = (-1)*q.z();
-    }
-    return q;
-};
-
-
 class ExpLandmarkOptSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -206,7 +195,7 @@ class ExpLandmarkOptSLAM {
       State* state_ptr = new State;
 
       state_ptr->timestamp_= T;
-      state_ptr->q_ = quat_pos(Eigen::Quaterniond(rot));
+      state_ptr->q_ = quat_postive(Eigen::Quaterniond(rot));
       state_ptr->v_ = vel;
       state_ptr->p_ = pos;
 
@@ -367,7 +356,7 @@ class ExpLandmarkOptSLAM {
 
       p0 = p0 + dt_ * v0 + 0.5 * dt_*dt_ * (q0.toRotationMatrix()* acc + gravity);
       v0 = v0 + dt_ * (q0.toRotationMatrix()* acc + gravity);
-      q0 = quat_pos(q0 * Exp_q(dt_ * gyr));
+      q0 = quat_postive(q0 * Exp_q(dt_ * gyr));
 
       state_para_ptr = new StatePara(state_vec_.at(i+1)->timestamp_);
       state_para_ptr->GetRotationBlock()->setEstimate(q0);
@@ -436,7 +425,7 @@ class ExpLandmarkOptSLAM {
     optimization_options_.num_threads = 6;
     optimization_options_.function_tolerance = 1e-20;
     optimization_options_.parameter_tolerance = 1e-25;
-    optimization_options_.max_num_iterations = 100;
+    optimization_options_.max_num_iterations = 50; //100;
 
     // M step
     // ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
@@ -472,7 +461,7 @@ class ExpLandmarkOptSLAM {
 
       state_estimate.at(i)->p_ = p0 + dt_ * v0 + 0.5 * dt_*dt_ * (q0.toRotationMatrix()* acc + gravity);
       state_estimate.at(i)->v_ = v0 + dt_ * (q0.toRotationMatrix()* acc + gravity);
-      state_estimate.at(i)->q_ = quat_pos(q0 * Exp_q(dt_ * gyr));
+      state_estimate.at(i)->q_ = quat_postive(q0 * Exp_q(dt_ * gyr));
 
 
       Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
@@ -519,15 +508,15 @@ class ExpLandmarkOptSLAM {
         Eigen::Matrix3d R_nb = state_estimate.at(i)->q_.toRotationMatrix();
         Eigen::Vector3d t_nb = state_estimate.at(i)->p_;
 
-        Eigen::Matrix4d T_bn = Eigen::Matrix4d::Identity();
-        T_bn.topLeftCorner<3, 3>() = state_estimate.at(i)->q_.toRotationMatrix().transpose();
-        T_bn.topRightCorner<3, 1>() = -1 * state_estimate.at(i)->q_.toRotationMatrix().transpose() * state_estimate.at(i)->p_;
+        // Eigen::Matrix4d T_bn = Eigen::Matrix4d::Identity();
+        // T_bn.topLeftCorner<3, 3>() = state_estimate.at(i)->q_.toRotationMatrix().transpose();
+        // T_bn.topRightCorner<3, 1>() = -1 * state_estimate.at(i)->q_.toRotationMatrix().transpose() * state_estimate.at(i)->p_;
 
-        // Eigen::Vector3d landmark_c = R_bc.transpose() * ((R_nb.transpose()*(landmark - t_nb)) - t_bc);
+        Eigen::Vector3d landmark_c = R_bc.transpose() * ((R_nb.transpose()*(landmark - t_nb)) - t_bc);
         
         Eigen::Vector4d landmark_n = Eigen::Vector4d(0, 0, 0, 1);
         landmark_n.head(3) = landmark_para_vec_.at(observation_vec_.at(i+1).at(j)->landmark_id_)->estimate();
-        Eigen::Vector4d landmark_c = T_bc_.transpose() * T_bn * landmark_n;
+        // Eigen::Vector4d landmark_c = T_bc_.transpose() * T_bn * landmark_n;
 
 
         Eigen::Vector2d landmark_proj;
@@ -575,7 +564,7 @@ class ExpLandmarkOptSLAM {
       // if (k_p.norm() < 0.65) {
       if (1) {
 
-        state_estimate.at(i)->q_ = quat_pos(Eigen::Quaterniond(state_estimate.at(i)->q_ * k_R));
+        state_estimate.at(i)->q_ = quat_postive(Eigen::Quaterniond(state_estimate.at(i)->q_ * k_R));
         state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + k_v;
         state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + k_p;
 
@@ -617,7 +606,7 @@ class ExpLandmarkOptSLAM {
       w_cov.block<3,3>(0,0) = (sigma_g_c_*sigma_g_c_/dt_)*Eigen::Matrix3d::Identity();
       w_cov.block<3,3>(3,3) = (sigma_a_c_*sigma_a_c_/dt_)*Eigen::Matrix3d::Identity();
 
-      Eigen::Quaterniond q1 = quat_pos(q0 * Exp_q(dt_ * gyr));
+      Eigen::Quaterniond q1 = quat_postive(q0 * Exp_q(dt_ * gyr));
       Eigen::Vector3d v1 = v0 + dt_ * (q0.toRotationMatrix()* acc + gravity);
       Eigen::Vector3d p1 = p0 + dt_ * v0 + 0.5 * dt_*dt_ * (q0.toRotationMatrix()* acc + gravity);
 
@@ -636,7 +625,7 @@ class ExpLandmarkOptSLAM {
       // std::cout << m << std::endl;
       // std::cin.get();
 
-      state_estimate.at(i)->q_ = quat_pos(state_estimate.at(i)->q_ * Exp_q(m.block<3,1>(0,0)));
+      state_estimate.at(i)->q_ = quat_postive(state_estimate.at(i)->q_ * Exp_q(m.block<3,1>(0,0)));
       state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + m.block<3,1>(3,0);
       state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + m.block<3,1>(6,0);
 
