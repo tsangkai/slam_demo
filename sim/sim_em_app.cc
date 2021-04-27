@@ -293,14 +293,13 @@ class ExpLandmarkOptSLAM {
 
     observation_vec_.resize(state_len_);
 
-    for (size_t i=0; i< state_len_; i++) { //x walls first
-
+    for (size_t i=0; i< state_len_; i++) {
 
       Eigen::Matrix4d T_bn = Eigen::Matrix4d::Identity();
       T_bn.topLeftCorner<3, 3>() = state_vec_.at(i)->q_.toRotationMatrix().transpose();
       T_bn.topRightCorner<3, 1>() = -1 * state_vec_.at(i)->q_.toRotationMatrix().transpose() * state_vec_.at(i)->p_;
 
-      for (size_t m=0; m<landmark_len_; m++) { //x walls first
+      for (size_t m=0; m<landmark_len_; m++) {
 
         // homogeneous transformation of the landmark to camera frame
         Eigen::Vector4d landmark_n = Eigen::Vector4d(0, 0, 0, 1);
@@ -508,17 +507,7 @@ class ExpLandmarkOptSLAM {
         Eigen::Matrix3d R_nb = state_estimate.at(i)->q_.toRotationMatrix();
         Eigen::Vector3d t_nb = state_estimate.at(i)->p_;
 
-        // Eigen::Matrix4d T_bn = Eigen::Matrix4d::Identity();
-        // T_bn.topLeftCorner<3, 3>() = state_estimate.at(i)->q_.toRotationMatrix().transpose();
-        // T_bn.topRightCorner<3, 1>() = -1 * state_estimate.at(i)->q_.toRotationMatrix().transpose() * state_estimate.at(i)->p_;
-
         Eigen::Vector3d landmark_c = R_bc.transpose() * ((R_nb.transpose()*(landmark - t_nb)) - t_bc);
-        
-        Eigen::Vector4d landmark_n = Eigen::Vector4d(0, 0, 0, 1);
-        landmark_n.head(3) = landmark_para_vec_.at(observation_vec_.at(i+1).at(j)->landmark_id_)->estimate();
-        // Eigen::Vector4d landmark_c = T_bc_.transpose() * T_bn * landmark_n;
-
-
         Eigen::Vector2d landmark_proj;
         landmark_proj << fu_ * landmark_c[0]/landmark_c[2] + cu_, 
                          fv_ * landmark_c[1]/landmark_c[2] + cv_;
