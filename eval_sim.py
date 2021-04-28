@@ -36,7 +36,7 @@ fig_height = 4.38
 
 gt_data = pd.read_csv("result/sim/gt.csv")
 dr_data = pd.read_csv("result/sim/dr.csv")
-opt_data = pd.read_csv("result/sim/opt2.csv")
+opt_data = pd.read_csv("result/sim/opt.csv")
 em_data = pd.read_csv("result/sim/em.csv")
 boem_data = pd.read_csv("result/sim/boem.csv")
 

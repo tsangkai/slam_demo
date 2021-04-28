@@ -226,7 +226,7 @@ class ExpLandmarkEmSLAM {
           }
 
           Eigen::Quaterniond init_rotation(init_q[0], init_q[1], init_q[2], init_q[3]);
-          state_vec_.at(i)->GetRotationBlock()->setEstimate(init_rotation);
+          state_vec_.at(i)->GetRotationBlock()->setEstimate(quat_postive(init_rotation));
 
           // velocity
           double init_v[3];
@@ -529,7 +529,7 @@ class ExpLandmarkEmSLAM {
                                                                    observation_vec_.at(i).at(j)->cov());
 
         optimization_problem_.AddResidualBlock(cost_function,
-                                               new ceres::HuberLoss(1.0),
+                                               NULL, //new ceres::HuberLoss(1.0),
                                                state_vec_.at(i+1)->GetRotationBlock()->parameters(),
                                                state_vec_.at(i+1)->GetPositionBlock()->parameters(),
                                                landmark_vec_.at(landmark_idx)->parameters());
@@ -552,6 +552,10 @@ class ExpLandmarkEmSLAM {
     optimization_options_.parameter_tolerance = 1e-25;
     optimization_options_.max_num_iterations = 100;
 
+    // M step
+    ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
+    std::cout << optimization_summary_.FullReport() << "\n";
+    std::cout << "Final cost " << optimization_summary_.final_cost << std::endl; // -1
 
 
     // E step
@@ -563,7 +567,7 @@ class ExpLandmarkEmSLAM {
       state_estimate.at(i) = new Estimate;
 
       // time update
-      Eigen::Quaterniond q0 = state_vec_.at(i)->GetRotationBlock()->estimate();
+      Eigen::Quaterniond q0 = quat_postive(state_vec_.at(i)->GetRotationBlock()->estimate());
       Eigen::Vector3d v0 = state_vec_.at(i)->GetVelocityBlock()->estimate();
       Eigen::Vector3d p0 = state_vec_.at(i)->GetPositionBlock()->estimate();
 
@@ -577,12 +581,14 @@ class ExpLandmarkEmSLAM {
       Eigen::Vector3d imu_v1 = v0 + q0.toRotationMatrix() * u_dv + gravity * u_dt;
       Eigen::Vector3d imu_p1 = p0 + u_dt*v0 + q0.toRotationMatrix() * u_dp + 0.5 * gravity * u_dt*u_dt;
 
+
       Eigen::Vector3d imu_dq = Log_q(state_vec_.at(i+1)->GetRotationBlock()->estimate().conjugate() * imu_q1);
       Eigen::Vector3d imu_dv = imu_v1 - state_vec_.at(i+1)->GetVelocityBlock()->estimate();
       Eigen::Vector3d imu_dp = imu_p1 - state_vec_.at(i+1)->GetPositionBlock()->estimate();
 
-      double kf_constant = 0.2; //0.1;
-      state_estimate.at(i)->q_ = state_vec_.at(i+1)->GetRotationBlock()->estimate() * Exp_q(kf_constant * imu_dq);
+      // double kf_constant = 0.1;
+      double kf_constant = 0.3;
+      state_estimate.at(i)->q_ = quat_postive(state_vec_.at(i+1)->GetRotationBlock()->estimate() * Exp_q(kf_constant * imu_dq));
       state_estimate.at(i)->v_ = state_vec_.at(i+1)->GetVelocityBlock()->estimate() + kf_constant * imu_dv;
       state_estimate.at(i)->p_ = state_vec_.at(i+1)->GetPositionBlock()->estimate() + kf_constant * imu_dp;
 
@@ -611,7 +617,8 @@ class ExpLandmarkEmSLAM {
       Eigen::Matrix3d k_R = Eigen::Matrix3d::Identity();
       Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
       Eigen::Vector3d k_p = Eigen::Vector3d::Zero();
-      Eigen::Matrix<double, 9, 9> obs_cov = state_estimate.at(i)->cov_;
+      Eigen::Matrix<double, 9, 9> obs_cov;
+      obs_cov = state_estimate.at(i)->cov_;
 
       for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
 
@@ -632,7 +639,8 @@ class ExpLandmarkEmSLAM {
 
         // exclude outliers
         Eigen::Vector2d innovation = measurement - landmark_proj;
-        if (innovation.norm() < 90) {  // if the threshold is too small, no loop closure can occur
+        // if (innovation.norm() < 90) {  // if the threshold is too small, no loop closure can occur
+        if (innovation.norm() < 5) {  // if the threshold is too small, no loop closure can occur
 
           Eigen::Matrix<double, 2, 2> H_cam;
           H_cam << fu_, 0.0,
@@ -662,20 +670,15 @@ class ExpLandmarkEmSLAM {
 
           Eigen::Matrix<double, 9, 9> IKH;
           IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-          obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();
+          obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
           
         }
       }
 
-      if (k_p.norm() < 0.65) {
+      // if (k_p.norm() < 0.7) {
+      if (1) {   // maybe 1.0
 
-        state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * k_R;
-        if (state_estimate.at(i)->q_.w() < 0) {
-          state_estimate.at(i)->q_.w() = (-1)*state_estimate.at(i)->q_.w();
-          state_estimate.at(i)->q_.x() = (-1)*state_estimate.at(i)->q_.x();
-          state_estimate.at(i)->q_.y() = (-1)*state_estimate.at(i)->q_.y();
-          state_estimate.at(i)->q_.z() = (-1)*state_estimate.at(i)->q_.z();
-        }
+        state_estimate.at(i)->q_ = quat_postive(Eigen::Quaterniond(state_estimate.at(i)->q_ * k_R));
         state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + k_v;
         state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + k_p;
 
@@ -725,19 +728,14 @@ class ExpLandmarkEmSLAM {
       residual.block<3,1>(6,0) = state_estimate.at(i+1)->p_ - p1;
 
       Eigen::Matrix<double, 9, 1> m;
-      m = 0.6 * C * residual;  // give the IMU results less weight
+      // m = 0.7 * C * residual;  // give the IMU results less weight
+      m = C * residual;  // give the IMU results less weight
 
 
       // std::cout << m << std::endl;
       // std::cin.get();
 
-      state_estimate.at(i)->q_ = state_estimate.at(i)->q_ * Exp(m.block<3,1>(0,0));
-      if (state_estimate.at(i)->q_.w() < 0) {
-        state_estimate.at(i)->q_.w() = (-1)*state_estimate.at(i)->q_.w();
-        state_estimate.at(i)->q_.x() = (-1)*state_estimate.at(i)->q_.x();
-        state_estimate.at(i)->q_.y() = (-1)*state_estimate.at(i)->q_.y();
-        state_estimate.at(i)->q_.z() = (-1)*state_estimate.at(i)->q_.z();
-      }
+      state_estimate.at(i)->q_ = quat_postive(Eigen::Quaterniond(state_estimate.at(i)->q_ * Exp(m.block<3,1>(0,0))));
       state_estimate.at(i)->v_ = state_estimate.at(i)->v_ + m.block<3,1>(3,0);
       state_estimate.at(i)->p_ = state_estimate.at(i)->p_ + m.block<3,1>(6,0);
 
@@ -752,10 +750,6 @@ class ExpLandmarkEmSLAM {
       state_vec_.at(i+1)->GetPositionBlock()->setEstimate(state_estimate.at(i)->p_);
     }
 
-    // M step
-    ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
-    std::cout << optimization_summary_.FullReport() << "\n";
-    std::cout << "Final cost " << optimization_summary_.final_cost << std::endl; // -1
 
     return true;
   }

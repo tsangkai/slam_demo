@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D 
 
 plot_color = {
-	'gt': [0, 0, 0],
+	'gt': [0.1, 0.1, 0.1],
 	'vo': [0.0000, 0.5490, 0.3765], # spruce
 	'opt': [0.8627, 0.2980, 0.2745],
 	'em': [0.8471, 0.6824, 0.2784],
@@ -54,7 +54,7 @@ ax = Axes3D(fig, rect=(0.0, 0.05, 1, 0.9))
 line_width = 1.2
 
 ax.plot(gt_data['p_x'], gt_data['p_y'], gt_data['p_z'], color = plot_color['gt'], linewidth=line_width, label='ground truth')
-ax.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], linewidth=line_width, label='VO')
+ax.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], linewidth=line_width, label='VIO')
 ax.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], linewidth=line_width, label='opt.')
 ax.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], linewidth=line_width, label='EM')
 ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], linewidth=line_width, label='BOEM')
@@ -91,7 +91,7 @@ plt.show()
 fig = plt.figure(2)
 fig.set_size_inches(fig_width, fig_height)
 
-line_width = 1.5
+line_width = 1.2
 
 
 vo_error = np.zeros_like(gt_data['p_x']);
@@ -106,23 +106,23 @@ for i in range(len(gt_data['p_x'])):
 	est_boem_error[i] = math.sqrt( (gt_data['p_x'][i]-est_boem_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_boem_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_boem_data['p_z'][i])**2)
 
 
-plt.plot(vo_data['timestamp'], vo_error, color = plot_color['vo'], linewidth=line_width, label='VO')
+plt.plot(vo_data['timestamp'], vo_error, color = plot_color['vo'], linewidth=line_width, label='VIO')
 plt.plot(est_opt_data['timestamp'], est_opt_error, color = plot_color['opt'], linewidth=line_width, label='opt.')
 plt.plot(est_em_data['timestamp'], est_em_error, color = plot_color['em'], linewidth=line_width, label='EM')
 plt.plot(est_boem_data['timestamp'], est_boem_error, color = plot_color['boem'], linewidth=line_width, label='BOEM')
 
 
-plt.legend()
+plt.legend(loc='upper right')
 
 plt.xlabel('time [s]')
 plt.ylabel('error [m]')
-plt.ylim([0,1.31])
+plt.ylim([0,1.21])
 
 plt.savefig("result/" + dataset + "/error.pdf")
 
 plt.show()
 
-print("duration:\t" + str(gt_data['timestamp'].iat[-1] - gt_data['timestamp'][0]))
+print("\ntime:\t" + str(gt_data['timestamp'].iat[-1] - gt_data['timestamp'][0]))
 
 print("VO:\t" + str(np.mean(vo_error)))
 print("opt.:\t" + str(np.mean(est_opt_error)))
