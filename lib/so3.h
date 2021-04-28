@@ -45,6 +45,18 @@ Eigen::Matrix3d Hat(Eigen::Vector3d v) {
 }
 
 
+Eigen::Quaterniond quat_postive(const Eigen::Quaterniond & q_input){
+  Eigen::Quaterniond q = q_input;
+  if (q.w() < 0) {
+      q.w() = (-1)*q.w();
+      q.x() = (-1)*q.x();
+      q.y() = (-1)*q.y();
+      q.z() = (-1)*q.z();
+  }
+  return q;
+}
+
+
 Eigen::Matrix3d Exp(Eigen::Vector3d omega) {
 
   if (omega.norm() < eps) {
@@ -104,16 +116,7 @@ Eigen::Quaterniond Exp_q(const Eigen::Vector3d v) {
 // [Kok et al] (3.39a)
 Eigen::Vector3d Log_q(const Eigen::Quaterniond q) {
 
-  Eigen::Quaterniond quat;
-  if (q.w() < 0) {
-    quat.w() = -q.w();
-    quat.x() = -q.x();
-    quat.y() = -q.y();
-    quat.z() = -q.z();
-  }
-  else {
-    quat = q;
-  }
+  Eigen::Quaterniond quat = quat_postive(q);
 
   double atan = atan2(quat.vec().norm(), quat.w());
   if (abs(atan) < eps) {
@@ -166,7 +169,6 @@ Eigen::Matrix<double, 3, 4> QuatLiftJacobian(const Eigen::Quaterniond & q) {
 }
 
 // [Chirikjian] p.40 (10.86)
-// TODO: approximation when the input norm is small
 Eigen::Matrix3d LeftJacobian(const Eigen::Vector3d & v) {
 
   Eigen::Matrix3d left_jacobian;
@@ -175,7 +177,6 @@ Eigen::Matrix3d LeftJacobian(const Eigen::Vector3d & v) {
   const double v_norm_2 = v_norm*v_norm;
   const double v_norm_3 = v_norm_2*v_norm;
   const Eigen::Matrix3d skewed_v = Skew(v);
-
 
   if (v_norm > eps) {
     left_jacobian = Eigen::Matrix3d::Identity() + ((1-cos(v_norm))/v_norm_2) * skewed_v + ((v_norm-sin(v_norm))/v_norm_3) * skewed_v * skewed_v;
@@ -216,9 +217,12 @@ Eigen::Matrix3d RightJacobian(const Eigen::Vector3d & v) {
   const double v_norm_3 = v_norm_2*v_norm;
   const Eigen::Matrix3d skewed_v = Skew(v);
 
-  assert(("norm is too small in RightJacobian", v_norm > eps));
-
-  right_jacobian = Eigen::Matrix3d::Identity() - ((1-cos(v_norm))/v_norm_2) * skewed_v + ((v_norm-sin(v_norm))/v_norm_3) * skewed_v * skewed_v;
+  if (v_norm > eps) {
+    right_jacobian = Eigen::Matrix3d::Identity() - ((1-cos(v_norm))/v_norm_2) * skewed_v + ((v_norm-sin(v_norm))/v_norm_3) * skewed_v * skewed_v;
+  }
+  else {
+    right_jacobian = Eigen::Matrix3d::Identity() - 0.5 * skewed_v;
+  }
 
   return right_jacobian;
 }
@@ -232,23 +236,17 @@ Eigen::Matrix3d RightJacobianInv(const Eigen::Vector3d & v) {
   const double v_norm_2 = v_norm*v_norm;
   const Eigen::Matrix3d skewed_v = Skew(v);
 
-  assert(("norm is too small in RightJacobianInv", v_norm > eps));
-
-  right_jacobian_inv = Eigen::Matrix3d::Identity() + 0.5 * skewed_v + (1/v_norm_2  - (1+cos(v_norm))/(2*v_norm*sin(v_norm))) * skewed_v * skewed_v;
+  if (v_norm > eps) {
+    right_jacobian_inv = Eigen::Matrix3d::Identity() + 0.5 * skewed_v + (1/v_norm_2  - (1+cos(v_norm))/(2*v_norm*sin(v_norm))) * skewed_v * skewed_v;
+  }
+  else {
+    right_jacobian_inv = Eigen::Matrix3d::Identity() + 0.5 * skewed_v;
+  }
 
   return right_jacobian_inv;
 }
 
-Eigen::Quaterniond quat_postive(const Eigen::Quaterniond & q_input){
-  Eigen::Quaterniond q = q_input;
-  if (q.w() < 0) {
-      q.w() = (-1)*q.w();
-      q.x() = (-1)*q.x();
-      q.y() = (-1)*q.y();
-      q.z() = (-1)*q.z();
-  }
-  return q;
-};
+
 
 
 

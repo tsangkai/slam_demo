@@ -56,18 +56,23 @@ struct PreIntIMUData {
 
 
     // covariance update
-    Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Identity();
-    F.block<3,3>(3,0) = (-1) * dR_ * Hat(acc) * imu_dt;
-    F.block<3,3>(6,0) = (-0.5) * dR_ * Hat(acc)*imu_dt*imu_dt;
+    Eigen::Matrix<double, 9, 9> F;
+    F.setZero();
+    F.block<3,3>(0,0) = Exp(gyr*imu_dt).transpose();            // eq. (59)
+    F.block<3,3>(3,0) = (-1) * dR_ * Hat(acc) * imu_dt;         // eq. (60)
+    F.block<3,3>(3,3) = Eigen::Matrix3d::Identity();
+    F.block<3,3>(6,0) = (-0.5) * dR_ * Hat(acc)*imu_dt*imu_dt;  // eq. (61)
     F.block<3,3>(6,3) = imu_dt * Eigen::Matrix3d::Identity();
+    F.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
 
     Eigen::Matrix<double, 9, 6> G;
     G.setZero();
-    G.block<3,3>(0,0) = dR_.transpose()*LeftJacobian(gyr*imu_dt)*imu_dt;
-    G.block<3,3>(3,3) = dR_.transpose()*imu_dt;
-    G.block<3,3>(6,3) = 0.5*dR_.transpose()*imu_dt*imu_dt;
+    G.block<3,3>(0,0) = RightJacobian(gyr*imu_dt)*imu_dt;       // eq. (59)
+    G.block<3,3>(3,3) = dR_*imu_dt;                             // eq. (60)
+    G.block<3,3>(6,3) = 0.5*dR_*imu_dt*imu_dt;                  // eq. (61)
 
-    Eigen::Matrix<double, 6, 6> Q = Eigen::Matrix<double, 6, 6>::Identity();
+    Eigen::Matrix<double, 6, 6> Q;
+    Q.setZero();
     Q.block<3,3>(0,0) = (sigma_g_c_ * sigma_g_c_ / imu_dt) * Eigen::Matrix3d::Identity();
     Q.block<3,3>(3,3) = (sigma_a_c_ * sigma_a_c_ / imu_dt) * Eigen::Matrix3d::Identity();
 
@@ -76,7 +81,7 @@ struct PreIntIMUData {
     // deviation update
     dp_ = dp_ + imu_dt * dv_ + 0.5 * (imu_dt * imu_dt) * dR_ * acc;
     dv_ = dv_ + imu_dt * dR_ * acc;
-    dR_ = dR_ * Exp(imu_dt * gyr);
+    dR_ = dR_ * Exp(gyr*imu_dt);
 
     dt_ = dt_ + imu_dt;
 
