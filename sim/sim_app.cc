@@ -21,8 +21,8 @@
 #include "quat_parameter_block.h"
 #include "imu_data.h"
 // #include "imu_error.h"
-#include "pre_int_imu_error.h"
-#include "reprojection_error.h"   
+// #include "pre_int_imu_error.h"
+// #include "reprojection_error.h"   
 
 
 
@@ -117,16 +117,6 @@ struct ObservationData {
 };
 
 
-Eigen::Quaterniond quat_pos(Eigen::Quaterniond q){
-    if (q.w() < 0) {
-        q.w() = (-1)*q.w();
-        q.x() = (-1)*q.x();
-        q.y() = (-1)*q.y();
-        q.z() = (-1)*q.z();
-    }
-    return q;
-};
-
 
 class ExpLandmarkOptSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -206,7 +196,7 @@ class ExpLandmarkOptSLAM {
       State* state_ptr = new State;
 
       state_ptr->timestamp_= T;
-      state_ptr->q_ = quat_pos(Eigen::Quaterniond(rot));
+      state_ptr->q_ = quat_postive(Eigen::Quaterniond(rot));
       state_ptr->v_ = vel;
       state_ptr->p_ = pos;
 
@@ -368,7 +358,7 @@ class ExpLandmarkOptSLAM {
 
       p0 = p0 + dt_ * v0 + 0.5 * dt_*dt_ * (q0.toRotationMatrix()* acc + gravity);
       v0 = v0 + dt_ * (q0.toRotationMatrix()* acc + gravity);
-      q0 = quat_pos(q0 * Exp_q(dt_ * gyr));
+      q0 = quat_postive(q0 * Exp_q(dt_ * gyr));
 
       state_para_ptr = new StatePara(state_vec_.at(i+1)->timestamp_);
       state_para_ptr->GetRotationBlock()->setEstimate(q0);
@@ -386,7 +376,7 @@ class ExpLandmarkOptSLAM {
       landmark_para_vec_.push_back(landmark_ptr);
     }
 
-
+    /***
     // add parameter blocks
     for (size_t i=0; i<state_len_; ++i) {
       optimization_problem_.AddParameterBlock(state_para_vec_.at(i)->GetRotationBlock()->parameters(), 4);
@@ -405,28 +395,8 @@ class ExpLandmarkOptSLAM {
       optimization_problem_.AddParameterBlock(landmark_para_vec_.at(i)->parameters(), 3);
     }
 
-   
     // imu constraints
     for (size_t i=0; i<imu_vec_.size(); ++i) {
-
-      /***
-      ceres::CostFunction* cost_function = new ImuError(imu_vec_.at(i)->gyr_,
-                                                        imu_vec_.at(i)->acc_,
-                                                        dt_,
-                                                        Eigen::Vector3d(0,0,0),
-                                                        Eigen::Vector3d(0,0,0),
-                                                        sigma_g_c_,
-                                                        sigma_a_c_);
-
-      optimization_problem_.AddResidualBlock(cost_function,
-                                             NULL,
-                                             state_para_vec_.at(i+1)->GetRotationBlock()->parameters(),
-                                             state_para_vec_.at(i+1)->GetVelocityBlock()->parameters(),
-                                             state_para_vec_.at(i+1)->GetPositionBlock()->parameters(),
-                                             state_para_vec_.at(i)->GetRotationBlock()->parameters(),
-                                             state_para_vec_.at(i)->GetVelocityBlock()->parameters(),
-                                             state_para_vec_.at(i)->GetPositionBlock()->parameters());
-      ***/
 
       PreIntIMUData* int_imu_data_ptr = new PreIntIMUData(Eigen::Vector3d(0,0,0),
                                                           Eigen::Vector3d(0,0,0),
@@ -472,13 +442,13 @@ class ExpLandmarkOptSLAM {
                                                landmark_para_vec_.at(landmark_idx)->parameters());
       }
     }
-
+    ***/
 
     return true;
   }
 
 
-
+  /***
   bool SolveOptProblem() {
 
     optimization_options_.linear_solver_type = ceres::SPARSE_SCHUR;
@@ -507,6 +477,7 @@ class ExpLandmarkOptSLAM {
 
     return true;
   }
+  ***/
 
   bool OutputGroundtruth(std::string output_folder_name) {
     std::ofstream traj_output_file(output_folder_name + "gt.csv");
@@ -621,7 +592,6 @@ class ExpLandmarkOptSLAM {
   // ground truth containers
   std::vector<State*>                         state_vec_;
   std::vector<Eigen::Vector3d>                landmark_vec_;
-
 
   // parameter containers
   std::vector<StatePara*>                     state_para_vec_;
