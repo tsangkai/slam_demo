@@ -106,8 +106,6 @@ Eigen::Quaterniond Exp_q(const Eigen::Vector3d v) {
   q.w() = cos_v_half_norm;  
   q.vec() = 0.5 * sinc_v_half_norm * v;
 
-  assert(("norm is too small in Exp_q", v_half_norm > eps));
-
   return q;
 }
 
@@ -245,9 +243,6 @@ Eigen::Matrix3d RightJacobianInv(const Eigen::Vector3d & v) {
 
   return right_jacobian_inv;
 }
-
-
-
 
 
 #endif /* INCLUDE_SO3_H_ */
