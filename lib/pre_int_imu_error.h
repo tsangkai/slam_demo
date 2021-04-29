@@ -106,7 +106,8 @@ class PreIntImuError :
     Eigen::Map<Eigen::Vector3d > r_v(residuals+3);      
     Eigen::Map<Eigen::Vector3d > r_p(residuals+6);
 
-    Eigen::Vector3d r_q0 = Log((q_t0.toRotationMatrix()*dR_).transpose() * q_t1);     // q_t1 (-) (q_t0*dR_)
+    // [Foster et al.] (33)
+    Eigen::Vector3d r_q0 = Log((q_t0*dR_).transpose() * q_t1);     // q_t1 (-) (q_t0*dR_)
     Eigen::Vector3d r_v0 = v_t1 - (q_t0.toRotationMatrix()*dv_ + v_t0 + gravity*dt_);
     Eigen::Vector3d r_p0 = p_t1 - (q_t0.toRotationMatrix()*dp_ + p_t0 + v_t0*dt_ + 0.5*gravity*dt_*dt_);
 
@@ -137,7 +138,7 @@ class PreIntImuError :
         Eigen::Map<Eigen::Matrix<double, 9, 4, Eigen::RowMajor> > J_q_t1(jacobians[0]);      
         J_q_t1.setZero();
 
-        Eigen::Matrix<double, 3, 3> J_res_q_2_q1 = RightJacobianInv(r_q0);       // [Sola, et al.] (149)+(142)
+        Eigen::Matrix<double, 3, 3> J_res_q_2_q1 = RightJacobianInv(r_q0) * (q_t0*dR_).transpose();     // ?????
       
         J_q_t1.block<3,4>(0,0) = squareRootInformation_.block<3,3>(0,0) * J_res_q_2_q1 * QuatLiftJacobian(q_t1);
       }  
@@ -167,7 +168,7 @@ class PreIntImuError :
         Eigen::Map<Eigen::Matrix<double, 9, 4, Eigen::RowMajor> > J_q_t0(jacobians[3]);      
         J_q_t0.setZero();
 
-        Eigen::Matrix<double, 3, 3> J_res_q_2_q0 = (-1) * LeftJacobianInv(r_q0) * dR_.transpose();
+        Eigen::Matrix<double, 3, 3> J_res_q_2_q0 = (-1) * LeftJacobianInv(r_q0) * (q_t0*dR_).transpose();         // ???
         Eigen::Matrix<double, 3, 3> J_res_v_2_q0 = q_t0.toRotationMatrix() * Skew(dv_);
         Eigen::Matrix<double, 3, 3> J_res_p_2_q0 = q_t0.toRotationMatrix() * Skew(dp_);
 

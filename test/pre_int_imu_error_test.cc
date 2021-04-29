@@ -67,14 +67,9 @@ int main(int argc, char **argv) {
 
 
   // set the imu parameters
-  const double a_max = 1000.0;
-  const double g_max = 1000.0;
   const size_t rate = 1000; // 1 kHz
   const double sigma_g_c = 6.0e-4;
   const double sigma_a_c = 2.0e-3;
-  const double sigma_gw_c = 3.0e-6;
-  const double sigma_aw_c = 2.0e-5;
-  const double tau = 3600.0;
 
   // generate random motion
   const double w_omega_S_x = Eigen::internal::random(0.1,10.0); // circular frequency
@@ -96,9 +91,9 @@ int main(int argc, char **argv) {
   const double m_a_W_y = Eigen::internal::random(0.1,10.0);
   const double m_a_W_z = Eigen::internal::random(0.1,10.0);
 
+
   // generate randomized measurements
   // the interval can not be too large
-  // try duration = 0.3, and preintegration fails
   const double duration = 0.1;    
   Transformation T_WS;
   T_WS.SetRandom(10.0, M_PI);
@@ -112,36 +107,37 @@ int main(int argc, char **argv) {
   Eigen::Vector3d p = T_WS.t();
 
   // start
+  double t0;
   Eigen::Quaterniond q0;
   Eigen::Vector3d v0;
   Eigen::Vector3d p0;
-  double t0;
 
   // end
+  double t1;
   Eigen::Quaterniond q1;
   Eigen::Vector3d v1;
   Eigen::Vector3d p1;
-  double t1;
 
   PreIntIMUData pre_int_imu_data(Eigen::Vector3d(0, 0, 0),
                                  Eigen::Vector3d(0, 0, 0),
                                  sigma_g_c, 
                                  sigma_a_c);
 
+  // generate the trajectory
   for(size_t i=0; i < size_t(duration*rate); ++i) {
     double time = double(i)/rate;
 
     if (i==10){ // set this as starting pose
+      t0 = time;
       q0 = q;
       v0 = v;
       p0 = p;
-      t0 = time;
     }
     if (i==size_t(duration*rate)-10){ // set this as end pose
+      t1 = time;
       q1 = q;
       v1 = v;
       p1 = p;
-      t1 = time;
     }
 
     Eigen::Vector3d omega_S(m_omega_S_x*sin(w_omega_S_x*time+p_omega_S_x),
@@ -170,34 +166,10 @@ int main(int argc, char **argv) {
 
   }
 
-  // TEST 1
-  // set gyr_noise and acc_noise to (0,0,0), and test whether preintergation is correct
-  // the interval can not be too large
-  /***
-  std::cout << "t1 from group truth = \n" << t_1 << std::endl;
-  std::cout << "q1 from group truth = \n" << q_1.coeffs() << std::endl;
-  std::cout << "v1 from group truth = \n" << v_1 << std::endl;
-  std::cout << "p1 from group truth = \n" << p_1 << std::endl;
-  std::cout << "t1 from preintegration = \n" << t_0 + pre_int_imu_data.dt_ << std::endl;
-  std::cout << "q1 from preintegration = \n" << (q_0 * Eigen::Quaterniond(pre_int_imu_data.dR_)).coeffs() << std::endl;
-  std::cout << "v1 from preintegration = \n" << v_0 + gravity * pre_int_imu_data.dt_ + pre_int_imu_data.dR_*pre_int_imu_data.dv_ << std::endl;
-  std::cout << "p1 from preintegration = \n" << p_0 + v_0 * pre_int_imu_data.dt_ + 0.5 * gravity * (pre_int_imu_data.dt_*pre_int_imu_data.dt_) + pre_int_imu_data.dR_*pre_int_imu_data.dp_ << std::endl;
-  ***/
-
 
   //=========================================================================================================
-
-  // Build the problem.
   ceres::Problem optimization_problem;
   ceres::LocalParameterization* quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
-
-  // create the pose parameter blocks
-  Transformation T_disturb;
-  T_disturb.SetRandom(1, 0.2);
-  Transformation T_WS_0_disturbed = Transformation(q0, p0) * T_disturb;
-  Eigen::Vector3d v0_disturbed = v0 + 5*Eigen::Vector3d::Random();
-  Eigen::Vector3d p0_disturbed = p0 + 5*Eigen::Vector3d::Random();
-
 
   State* state0 = new State(t0);
   State* state1 = new State(t1);
@@ -210,19 +182,6 @@ int main(int argc, char **argv) {
   optimization_problem.AddParameterBlock(state1->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
   optimization_problem.AddParameterBlock(state1->GetVelocityBlock()->parameters(), 3);
   optimization_problem.AddParameterBlock(state1->GetPositionBlock()->parameters(), 3);
-
-
-  state0->GetRotationBlock()->setEstimate(T_WS_0_disturbed.q());
-  state0->GetVelocityBlock()->setEstimate(v0_disturbed);
-  state0->GetPositionBlock()->setEstimate(T_WS_0_disturbed.t());
-
-  state1->GetRotationBlock()->setEstimate(q1);
-  state1->GetVelocityBlock()->setEstimate(v1);
-  state1->GetPositionBlock()->setEstimate(p1);
-
-  optimization_problem.SetParameterBlockConstant(state1->GetRotationBlock()->parameters());
-  optimization_problem.SetParameterBlockConstant(state1->GetVelocityBlock()->parameters());
-  optimization_problem.SetParameterBlockConstant(state1->GetPositionBlock()->parameters());
 
   // add constraints
   ceres::CostFunction* cost_function = new PreIntImuError(pre_int_imu_data.dt_,
@@ -240,39 +199,97 @@ int main(int argc, char **argv) {
                                         state0->GetVelocityBlock()->parameters(),
                                         state0->GetPositionBlock()->parameters());   
 
-  // Run the solver!
-  std::cout << "run the solver... " << std::endl;
   ceres::Solver::Options optimization_options;
   ceres::Solver::Summary optimization_summary;
 
+  std::cout << "\n\n";
+  std::cout << "====================================================" << std::endl;
+  std::cout << "Set state 1 constant and add disturbance to state 0." << std::endl;
+
+  Transformation T_dis;
+  T_dis.SetRandom(1, 0.2);
+  Transformation T_nb_0_dis = Transformation(q0, p0) * T_dis;
+  Eigen::Vector3d v0_dis = v0 + 5*Eigen::Vector3d::Random();
+  Eigen::Vector3d p0_dis = p0 + 5*Eigen::Vector3d::Random();
+
+  state0->GetRotationBlock()->setEstimate(T_nb_0_dis.q());
+  state0->GetVelocityBlock()->setEstimate(v0_dis);
+  state0->GetPositionBlock()->setEstimate(T_nb_0_dis.t());
+
+  state1->GetRotationBlock()->setEstimate(q1);
+  state1->GetVelocityBlock()->setEstimate(v1);
+  state1->GetPositionBlock()->setEstimate(p1);
+
+  optimization_problem.SetParameterBlockConstant(state1->GetRotationBlock()->parameters());
+  optimization_problem.SetParameterBlockConstant(state1->GetVelocityBlock()->parameters());
+  optimization_problem.SetParameterBlockConstant(state1->GetPositionBlock()->parameters());
+
+
+  // solve the optimization problem
   ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
-
-
-  // print some infos about the optimization
   std::cout << optimization_summary.FullReport() << "\n";
-
-  
-  // Transformation T_WS_1_opt = Transformation(state1->GetRotationBlock()->estimate(), state1->GetPositionBlock()->estimate());
-  // Eigen::Vector3d v1_opt = state_1->GetVelocityBlock()->estimate();
 
   Eigen::Quaterniond q0_opt = state0->GetRotationBlock()->estimate();
   Eigen::Vector3d v0_opt = state0->GetVelocityBlock()->estimate();
   Eigen::Vector3d p0_opt = state0->GetPositionBlock()->estimate();
 
-  /***
-  std::cout << "initial T_WS_1 : " << T_WS_1_disturbed.T() << "\n"
-            << "optimized T_WS_1 : " << T_WS_1_opt.T() << "\n"
-            << "correct T_WS_1 : " << Transformation().T() << "\n";
-  ***/
 
-  std::cout << "rotation difference of the initial T_nb : " << 2*(q0 * T_WS_0_disturbed.q().inverse()).vec().norm() << "\n";
-  std::cout << "rotation difference of the optimized T_nb : " << 2*(q0 * q0_opt.inverse()).vec().norm() << "\n";
+  // output the optimization result
+  std::cout << "rotation difference before opt.: \t" << 2*(q0 * T_nb_0_dis.q().inverse()).vec().norm() << "\n";
+  std::cout << "rotation difference after opt.: \t" << 2*(q0 * q0_opt.inverse()).vec().norm() << "\n";
 
-  std::cout << "velocity difference of the initial T_nb : " << (v0 - v0_disturbed).norm() << "\n";
-  std::cout << "velocity difference of the optimized T_nb : " << (v0 - v0_opt).norm() << "\n";
+  std::cout << "velocity difference before opt.: \t" << (v0 - v0_dis).norm() << "\n";
+  std::cout << "velocity difference after opt.: \t" << (v0 - v0_opt).norm() << "\n";
 
-  std::cout << "translation difference of the initial T_nb : " << (p0 - T_WS_0_disturbed.t()).norm() << "\n";
-  std::cout << "translation difference of the optimized T_nb : " << (p0 - p0_opt).norm() << "\n";
+  std::cout << "position difference before opt.: \t" << (p0 - T_nb_0_dis.t()).norm() << "\n";
+  std::cout << "position difference after opt.: \t" << (p0 - p0_opt).norm() << "\n";
+
+
+  std::cout << "\n\n";
+  std::cout << "====================================================" << std::endl;
+  std::cout << "Set state 0 constant and add disturbance to state 1." << std::endl;
+
+  T_dis.SetRandom(1, 0.2);
+  Transformation T_nb_1_dis = Transformation(q1, p1) * T_dis;
+  Eigen::Vector3d v1_dis = v1 + 5*Eigen::Vector3d::Random();
+  Eigen::Vector3d p1_dis = p1 + 5*Eigen::Vector3d::Random();
+
+  state0->GetRotationBlock()->setEstimate(q0);
+  state0->GetVelocityBlock()->setEstimate(v0);
+  state0->GetPositionBlock()->setEstimate(p0);
+
+  state1->GetRotationBlock()->setEstimate(T_nb_1_dis.q());
+  state1->GetVelocityBlock()->setEstimate(v1_dis);
+  state1->GetPositionBlock()->setEstimate(T_nb_1_dis.t());
+
+  optimization_problem.SetParameterBlockConstant(state0->GetRotationBlock()->parameters());
+  optimization_problem.SetParameterBlockConstant(state0->GetVelocityBlock()->parameters());
+  optimization_problem.SetParameterBlockConstant(state0->GetPositionBlock()->parameters());
+
+  optimization_problem.SetParameterBlockVariable(state1->GetRotationBlock()->parameters());
+  optimization_problem.SetParameterBlockVariable(state1->GetVelocityBlock()->parameters());
+  optimization_problem.SetParameterBlockVariable(state1->GetPositionBlock()->parameters());
+
+
+  // solve the optimization problem
+  ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
+  std::cout << optimization_summary.FullReport() << "\n";
+
+  Eigen::Quaterniond q1_opt = state1->GetRotationBlock()->estimate();
+  Eigen::Vector3d v1_opt = state1->GetVelocityBlock()->estimate();
+  Eigen::Vector3d p1_opt = state1->GetPositionBlock()->estimate();
+
+  
+  // output the optimization result
+  std::cout << "rotation difference before opt.: \t" << 2*(q1 * T_nb_1_dis.q().inverse()).vec().norm() << "\n";
+  std::cout << "rotation difference after opt.: \t"  << 2*(q1 * q1_opt.inverse()).vec().norm() << "\n";
+
+  std::cout << "velocity difference before opt.: \t" << (v1 - v1_dis).norm() << "\n";
+  std::cout << "velocity difference after opt.: \t"  << (v1 - v1_opt).norm() << "\n";
+
+  std::cout << "position difference before opt.: \t" << (p1 - T_nb_1_dis.t()).norm() << "\n";
+  std::cout << "position difference after opt.: \t"  << (p1 - p1_opt).norm() << "\n";
+
 
   return 0;
 }
