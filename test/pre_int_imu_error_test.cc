@@ -5,6 +5,7 @@
 
 #include <ceres/ceres.h>
 #include <Eigen/Core>
+#include <EigenRand/EigenRand>
 
 #include "transformation.h"
 #include "so3.h"
@@ -61,6 +62,7 @@ class State {
 int main(int argc, char **argv) {
   // initialize random number generator
   srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
+  Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
 
   Eigen::Vector3d gravity = Eigen::Vector3d(0, 0, -9.81007);      
@@ -148,8 +150,8 @@ int main(int argc, char **argv) {
                         m_a_W_z*sin(w_a_W_z*time+p_a_W_z));
 
     // generate imu measurements
-    Eigen::Vector3d gyr_noise = sigma_g_c/sqrt(dt)*Eigen::Vector3d::Random();
-    Eigen::Vector3d acc_noise = sigma_a_c/sqrt(dt)*Eigen::Vector3d::Random();
+    Eigen::Vector3d gyr_noise = sigma_g_c/sqrt(dt)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
+    Eigen::Vector3d acc_noise = sigma_a_c/sqrt(dt)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
 
     Eigen::Vector3d gyr = omega_S + gyr_noise;
     Eigen::Vector3d acc = q.toRotationMatrix().transpose() * (a_W - gravity) + acc_noise;

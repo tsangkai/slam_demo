@@ -12,6 +12,7 @@
 
 #include <ceres/ceres.h>
 #include <Eigen/Core>
+#include <EigenRand/EigenRand>
 
 #include "transformation.h"
 #include "vec_3d_parameter_block.h"
@@ -79,6 +80,7 @@ Eigen::Vector3d CreateRandomVisiblePoint(double du, double dv,
 
 int main(int argc, char **argv) {
   srand((unsigned int) time(0));
+  Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
   google::InitGoogleLogging(argv[0]);
 
@@ -112,7 +114,7 @@ int main(int argc, char **argv) {
   QuatParameterBlock*  rotation_block_ptr = new QuatParameterBlock(T_nb.q());
   Vec3dParameterBlock* position_block_ptr = new Vec3dParameterBlock(T_nb.t());
 
-  optimization_problem.AddParameterBlock(rotation_block_ptr->parameters(), 4); //, quat_parameterization_ptr_);
+  optimization_problem.AddParameterBlock(rotation_block_ptr->parameters(), 4, quat_parameterization_ptr_);
   optimization_problem.AddParameterBlock(position_block_ptr->parameters(), 3);  
   std::cout << " [ OK ] " << std::endl;
 
@@ -139,7 +141,7 @@ int main(int argc, char **argv) {
     // get a randomized projection
     Eigen::Vector2d keypoint = Project(landmark_c, fu, fv, cu, cv);
 
-    keypoint += noise_deviation * Eigen::Vector2d::Random();
+    keypoint += noise_deviation * Eigen::Rand::normal<Eigen::Vector2d>(2, 1, urng);
 
     ceres::CostFunction* cost_function = new ReprojectionError(keypoint,
                                                                T_bc.T(),
@@ -163,19 +165,16 @@ int main(int argc, char **argv) {
   ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
   std::cout << optimization_summary.FullReport() << "\n";
 
-  std::cout << "initial T_nb : " << "\n" << T_nb_init.T() << "\n"
-            << "optimized T_nb : " << "\n" << Transformation(rotation_block_ptr->estimate(), position_block_ptr->estimate()).T() << "\n"
-            << "correct T_nb : " << "\n" << T_nb.T() << "\n";
+  std::cout << "initial T_nb : " << "\n" << T_nb_init.T() << "\n\n"
+            << "optimized T_nb : " << "\n" << Transformation(rotation_block_ptr->estimate(), position_block_ptr->estimate()).T() << "\n\n"
+            << "correct T_nb : " << "\n" << T_nb.T() << "\n\n\n";
 
-  std::cout << "rotation difference of the initial T_nb : " << 2*(T_nb.q() * T_nb_init.q().inverse()).vec().norm() << "\n";
-  std::cout << "rotation difference of the optimized T_nb : " << 2*(T_nb.q() * rotation_block_ptr->estimate().inverse()).vec().norm() << "\n";
+  std::cout << "initial rotation difference: \t" << 2*(T_nb.q() * T_nb_init.q().inverse()).vec().norm() << "\n";
+  std::cout << "optimized rotation difference: \t" << 2*(T_nb.q() * rotation_block_ptr->estimate().inverse()).vec().norm() << "\n\n";
 
-  std::cout << "translation difference of the initial T_nb : " << (T_nb.t() - T_nb_init.t()).norm() << "\n";
-  std::cout << "translation difference of the optimized T_nb : " << (T_nb.t() - position_block_ptr->estimate()).norm() << "\n";
+  std::cout << "initial position difference: \t" << (T_nb.t() - T_nb_init.t()).norm() << "\n";
+  std::cout << "optimized position difference: \t" << (T_nb.t() - position_block_ptr->estimate()).norm() << "\n\n";
 
-  // make sure it converged
-  assert(("quaternions not close enough", 2*(T_nb.q() * rotation_block_ptr->estimate().inverse()).vec().norm() < 1e-3));
-  assert(("translation not close enough", (T_nb.t() - position_block_ptr->estimate()).norm() < 1e-3));
 
   return 0;
 }

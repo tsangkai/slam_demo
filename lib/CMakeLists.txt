@@ -6,7 +6,6 @@ add_library(lib STATIC
   quat_parameter_block.h
   triangularization.h
   imu_data.h
-  imu_error.h
   pre_int_imu_error.h
   reprojection_error.h
 )
