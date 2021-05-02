@@ -1,4 +1,5 @@
 add_library(lib STATIC
+  constant.h
   so3.h
   parameter_block.h
   sized_parameter_block.h

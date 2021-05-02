@@ -45,7 +45,7 @@ Eigen::Matrix3d Hat(Eigen::Vector3d v) {
 }
 
 
-Eigen::Quaterniond quat_postive(const Eigen::Quaterniond & q_input){
+Eigen::Quaterniond quat_positive(const Eigen::Quaterniond & q_input){
   Eigen::Quaterniond q = q_input;
   if (q.w() < 0) {
       q.w() = (-1)*q.w();
@@ -114,7 +114,7 @@ Eigen::Quaterniond Exp_q(const Eigen::Vector3d v) {
 // [Kok et al] (3.39a)
 Eigen::Vector3d Log_q(const Eigen::Quaterniond q) {
 
-  Eigen::Quaterniond quat = quat_postive(q);
+  Eigen::Quaterniond quat = quat_positive(q);
 
   double atan = atan2(quat.vec().norm(), quat.w());
   if (abs(atan) < eps) {

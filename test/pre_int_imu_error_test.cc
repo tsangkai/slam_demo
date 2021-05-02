@@ -8,6 +8,7 @@
 #include <EigenRand/EigenRand>
 
 #include "transformation.h"
+#include "constant.h"
 #include "so3.h"
 #include "imu_data.h"
 #include "vec_3d_parameter_block.h"
@@ -63,9 +64,6 @@ int main(int argc, char **argv) {
   // initialize random number generator
   srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
-
-
-  Eigen::Vector3d gravity = Eigen::Vector3d(0, 0, -9.81007);      
 
 
   // set the imu parameters
