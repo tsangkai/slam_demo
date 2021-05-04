@@ -1,17 +1,20 @@
 %YAML:1.0
 
 
-state_len: 500
-landmark_len: 240
+landmark_len: 200
 
-dt: 0.04
+duration: 40 #16 # sec
+
+dt: 0.02 #0.04
+
+keyframe_rate_ratio: 5 #1
 
 trajectory:
   r: 5.5 # circle radius x-y plane
-  w: .76 # angular velocity
+  w: .46 # angular velocity, roughly 13.65 sec for a round
   r_z: 0.25
   w_z: 1.748
-  z_h: 0.0 # height of the uav    
+  z_h: 0.0 # height of the uav
 
 imu_param:
   sigma_g_c: 1.0e-4 # gyro noise density [rad/s/sqrt(Hz)]
@@ -22,7 +25,7 @@ landmark_generation:
   box_xy: 2.0 # box offset from the circle
   box_z: 1 # box offset from uav height
   
-landmark_init_noise: 0.1 #0.0005
+landmark_init_noise: 0.03 #0.0005
 
 camera:
   T_bc:

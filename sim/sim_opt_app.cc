@@ -450,7 +450,7 @@ class ExpLandmarkOptSLAM {
         cov = F_t * cov * F_t.transpose() + G_t * w_cov * G_t.transpose();
       }
 
-
+      
       // observation update
       Eigen::Matrix3d k_R = Eigen::Matrix3d::Identity();
       Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
