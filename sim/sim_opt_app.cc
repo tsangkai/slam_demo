@@ -400,6 +400,24 @@ class ExpLandmarkOptSLAM {
     }
 
 
+    // create parameter block
+    state_para_vec_.resize(state_len_);
+    for (size_t i=0; i < state_len_; ++i) {
+      state_para_vec_.at(i) = new StatePara(state_vec_.at(i)->t_);
+    }
+
+
+    landmark_para_vec_.resize(landmark_len_);
+    for (size_t i=0; i<landmark_len_; ++i) {
+      landmark_para_vec_.at(i) = new Vec3dParameterBlock();
+    }
+
+
+    return true;
+  }
+
+  bool InitializeTrajectory() {
+
     // forward filtering
     state_est_vec_.at(0)->q_ = state_vec_.at(0)->q_;
     state_est_vec_.at(0)->v_ = state_vec_.at(0)->v_;
@@ -618,28 +636,34 @@ class ExpLandmarkOptSLAM {
 
   bool SolveOptProblem() {
 
-    quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
+
+
+    // ceres parameter
+    ceres::Problem                  optimization_problem;
+    ceres::Solver::Options          optimization_options;
+    ceres::Solver::Summary          optimization_summary;
+    ceres::LocalParameterization*   quat_parameterization_ptr;
+
+    optimization_options.linear_solver_type = ceres::SPARSE_SCHUR;
+    optimization_options.minimizer_progress_to_stdout = true;
+    optimization_options.num_threads = 6;
+    optimization_options.function_tolerance = 1e-20;
+    optimization_options.parameter_tolerance = 1e-25;
+    optimization_options.max_num_iterations = 80; //100;
+
+    quat_parameterization_ptr = new ceres::QuaternionParameterization();
 
 
     // create parameter block
-    state_para_vec_.resize(state_len_);
-
     for (size_t i=0; i<state_len_; ++i) {
-
-      state_para_vec_.at(i) = new StatePara(state_vec_.at(i)->t_);
-
       state_para_vec_.at(i)->GetRotationBlock()->setEstimate(state_est_vec_.at(i)->q_);
       state_para_vec_.at(i)->GetVelocityBlock()->setEstimate(state_est_vec_.at(i)->v_);
       state_para_vec_.at(i)->GetPositionBlock()->setEstimate(state_est_vec_.at(i)->p_);
     }
 
 
-    landmark_para_vec_.resize(landmark_len_);
 
     for (size_t i=0; i<landmark_len_; ++i) {
-
-      landmark_para_vec_.at(i) = new Vec3dParameterBlock();
-
       landmark_para_vec_.at(i)->setEstimate(*landmark_est_vec_.at(i));
     }
 
@@ -647,18 +671,18 @@ class ExpLandmarkOptSLAM {
     // add parameter blocks
     for (size_t i=0; i<state_len_; ++i) {
 
-      optimization_problem_.AddParameterBlock(state_para_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
-      optimization_problem_.AddParameterBlock(state_para_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
-      optimization_problem_.AddParameterBlock(state_para_vec_.at(i)->GetPositionBlock()->parameters(), 3); 
+      optimization_problem.AddParameterBlock(state_para_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr);
+      optimization_problem.AddParameterBlock(state_para_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
+      optimization_problem.AddParameterBlock(state_para_vec_.at(i)->GetPositionBlock()->parameters(), 3); 
     }
 
-    optimization_problem_.SetParameterBlockConstant(state_para_vec_.at(0)->GetRotationBlock()->parameters());
-    optimization_problem_.SetParameterBlockConstant(state_para_vec_.at(0)->GetVelocityBlock()->parameters());
-    optimization_problem_.SetParameterBlockConstant(state_para_vec_.at(0)->GetPositionBlock()->parameters());     
+    optimization_problem.SetParameterBlockConstant(state_para_vec_.at(0)->GetRotationBlock()->parameters());
+    optimization_problem.SetParameterBlockConstant(state_para_vec_.at(0)->GetVelocityBlock()->parameters());
+    optimization_problem.SetParameterBlockConstant(state_para_vec_.at(0)->GetPositionBlock()->parameters());     
 
 
     for (size_t i=0; i<landmark_len_; ++i) {
-      optimization_problem_.AddParameterBlock(landmark_para_vec_.at(i)->parameters(), 3);
+      optimization_problem.AddParameterBlock(landmark_para_vec_.at(i)->parameters(), 3);
     }
 
 
@@ -680,14 +704,14 @@ class ExpLandmarkOptSLAM {
                                                               int_imu_data_ptr->dp_,
                                                               int_imu_data_ptr->cov_);
 
-      optimization_problem_.AddResidualBlock(cost_function,
-                                             NULL,
-                                             state_para_vec_.at(i+1)->GetRotationBlock()->parameters(),
-                                             state_para_vec_.at(i+1)->GetVelocityBlock()->parameters(),
-                                             state_para_vec_.at(i+1)->GetPositionBlock()->parameters(),
-                                             state_para_vec_.at(i)->GetRotationBlock()->parameters(),
-                                             state_para_vec_.at(i)->GetVelocityBlock()->parameters(),
-                                             state_para_vec_.at(i)->GetPositionBlock()->parameters());
+      optimization_problem.AddResidualBlock(cost_function,
+                                            NULL,
+                                            state_para_vec_.at(i+1)->GetRotationBlock()->parameters(),
+                                            state_para_vec_.at(i+1)->GetVelocityBlock()->parameters(),
+                                            state_para_vec_.at(i+1)->GetPositionBlock()->parameters(),
+                                            state_para_vec_.at(i)->GetRotationBlock()->parameters(),
+                                            state_para_vec_.at(i)->GetVelocityBlock()->parameters(),
+                                            state_para_vec_.at(i)->GetPositionBlock()->parameters());
     }
 
     for (size_t i=0; i<observation_vec_.size(); ++i) {
@@ -701,25 +725,18 @@ class ExpLandmarkOptSLAM {
                                                                    cu_, cv_,
                                                                    observation_vec_.at(i).at(j)->cov());
 
-        optimization_problem_.AddResidualBlock(cost_function,
-                                               NULL,
-                                               state_para_vec_.at(i+1)->GetRotationBlock()->parameters(),
-                                               state_para_vec_.at(i+1)->GetPositionBlock()->parameters(),
-                                               landmark_para_vec_.at(landmark_idx)->parameters());
+        optimization_problem.AddResidualBlock(cost_function,
+                                              NULL,
+                                              state_para_vec_.at(i+1)->GetRotationBlock()->parameters(),
+                                              state_para_vec_.at(i+1)->GetPositionBlock()->parameters(),
+                                              landmark_para_vec_.at(landmark_idx)->parameters());
       }
     }
 
 
     // solve the optimization problem
-    optimization_options_.linear_solver_type = ceres::SPARSE_SCHUR;
-    optimization_options_.minimizer_progress_to_stdout = true;
-    optimization_options_.num_threads = 6;
-    optimization_options_.function_tolerance = 1e-20;
-    optimization_options_.parameter_tolerance = 1e-25;
-    optimization_options_.max_num_iterations = 80; //100;
-
-    ceres::Solve(optimization_options_, &optimization_problem_, &optimization_summary_);
-    std::cout << optimization_summary_.FullReport() << "\n";
+    ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
+    std::cout << optimization_summary.FullReport() << "\n";
 
 
     // store results
@@ -837,30 +854,24 @@ class ExpLandmarkOptSLAM {
   std::vector<State*>                         state_vec_;              // state_len
   std::vector<Eigen::Vector3d*>               landmark_vec_;           // landmark_len
 
+  // data containers
+  std::vector<std::vector<IMUData*>>          imu_vec_;                // state_len-1
+  std::vector<std::vector<ObservationData*>>  observation_vec_;        // state_len-1
+
+  // estimator containers
   std::vector<Estimate*>                      state_est_vec_;          // state_len
   std::vector<Eigen::Vector3d*>               landmark_est_vec_;       // landmark_len
 
   // parameter containers
   std::vector<StatePara*>                     state_para_vec_;         // state_len
   std::vector<Vec3dParameterBlock*>           landmark_para_vec_;      // landmark_len
-
-  std::vector<std::vector<IMUData*>>          imu_vec_;                // state_len-1
-  std::vector<std::vector<ObservationData*>>  observation_vec_;        // state_len-1
-  
-
-  // ceres parameter
-  ceres::Problem                              optimization_problem_;
-  ceres::Solver::Options                      optimization_options_;
-  ceres::Solver::Summary                      optimization_summary_;
-  ceres::LocalParameterization*               quat_parameterization_ptr_;
-
 };
 
 
 
 int main(int argc, char **argv) {
 
-
+  std::cout << "simulate optimization based SLAM..." << std::endl;
 
   google::InitGoogleLogging(argv[0]);
 
@@ -872,13 +883,14 @@ int main(int argc, char **argv) {
   slam_problem.CreateImuData();
   slam_problem.CreateObservationData();
 
-  slam_problem.OutputGroundtruth("result/sim/gt.csv");
+  // slam_problem.OutputGroundtruth("result/sim/gt.csv");
 
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
   slam_problem.InitializeSLAMProblem();
-  slam_problem.OutputResult("result/sim/dr.csv");
+  slam_problem.InitializeTrajectory();
+  slam_problem.OutputResult("result/sim/pre.csv");
 
   slam_problem.SolveOptProblem();
 
