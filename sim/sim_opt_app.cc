@@ -229,45 +229,41 @@ class ExpLandmarkOptSLAM {
   bool CreateLandmark() {
 
     for (size_t i=0; i< landmark_len_/4; i++) { //x walls first
-      Eigen::Vector3d landmark_pos;
-      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
 
-      landmark_pos(0) = (r_+box_xy_)*random_3d_vec(0);
-      landmark_pos(1) = (r_+box_xy_);
-      landmark_pos(2) = box_z_ * random_3d_vec(2) + z_h_;
+      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
+      Eigen::Vector3d* landmark_pos = new Eigen::Vector3d((r_+box_xy_)*random_3d_vec(0),
+                                                          (r_+box_xy_),
+                                                          box_z_ * random_3d_vec(2) + z_h_);
 
       landmark_vec_.push_back(landmark_pos);
     }
 
     for (size_t i=landmark_len_/4; i<landmark_len_/2; i++) {
-      Eigen::Vector3d landmark_pos;
-      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
 
-      landmark_pos(0) = (r_+box_xy_)*random_3d_vec(0);
-      landmark_pos(1) = -(r_+box_xy_);
-      landmark_pos(2) = box_z_ * random_3d_vec(2) + z_h_;
+      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
+      Eigen::Vector3d* landmark_pos = new Eigen::Vector3d((r_+box_xy_)*random_3d_vec(0),
+                                                          -(r_+box_xy_),
+                                                          box_z_ * random_3d_vec(2) + z_h_);
 
       landmark_vec_.push_back(landmark_pos);
     }
 
     for (size_t i=landmark_len_/2; i< 3*landmark_len_/4; i++) {
-      Eigen::Vector3d landmark_pos;
+
       Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
-      
-      landmark_pos(0) = (r_+box_xy_);
-      landmark_pos(1) = (r_+box_xy_)*random_3d_vec(1);
-      landmark_pos(2) = box_z_ * random_3d_vec(2) + z_h_;
+      Eigen::Vector3d* landmark_pos = new Eigen::Vector3d((r_+box_xy_),
+                                                          (r_+box_xy_)*random_3d_vec(1),
+                                                          box_z_ * random_3d_vec(2) + z_h_);
 
       landmark_vec_.push_back(landmark_pos);
     }
 
     for (size_t i=3*landmark_len_/4; i< landmark_len_; i++) {
-      Eigen::Vector3d landmark_pos;
+
       Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
-      
-      landmark_pos(0) = -(r_+box_xy_);
-      landmark_pos(1) = (r_+box_xy_)*random_3d_vec(1);
-      landmark_pos(2) = box_z_ * random_3d_vec(2) + z_h_;
+      Eigen::Vector3d* landmark_pos = new Eigen::Vector3d(-(r_+box_xy_),
+                                                          (r_+box_xy_)*random_3d_vec(1),
+                                                          box_z_ * random_3d_vec(2) + z_h_);
 
       landmark_vec_.push_back(landmark_pos);
     }
@@ -282,12 +278,6 @@ class ExpLandmarkOptSLAM {
     size_t state_idx = 0;
 
     imu_vec_.resize(state_len_-1);
-
-    PreIntIMUData* int_imu_data_ptr = new PreIntIMUData(Eigen::Vector3d(0, 0, 0),
-                                                        Eigen::Vector3d(0, 0, 0),
-                                                        sigma_g_c_,
-                                                        sigma_a_c_);
-
     
     while (T <= duration_ && (state_idx+1) < state_vec_.size()) {
 
@@ -352,7 +342,7 @@ class ExpLandmarkOptSLAM {
 
         // homogeneous transformation of the landmark to camera frame
         Eigen::Vector4d landmark_n = Eigen::Vector4d(0, 0, 0, 1);
-        landmark_n.head(3) = landmark_vec_.at(m);
+        landmark_n.head(3) = *landmark_vec_.at(m);
         Eigen::Vector4d landmark_c = T_bc_.transpose() * T_bn * landmark_n;
 
         if (landmark_c(2) > 0) {
@@ -392,7 +382,9 @@ class ExpLandmarkOptSLAM {
     
     // state estimate
     state_est_vec_.resize(state_len_);
+
     for (size_t i=0; i<state_len_; ++i) {
+
       Estimate* state_est_ptr = new Estimate;
       state_est_ptr->t_ = state_vec_.at(i)->t_;
       state_est_vec_.at(i) = state_est_ptr;
@@ -400,8 +392,10 @@ class ExpLandmarkOptSLAM {
 
     // landmark estimate
     landmark_est_vec_.resize(landmark_len_);
+
     for (size_t i=0; i<landmark_len_; ++i) {
-      Eigen::Vector3d landmark_est = landmark_vec_.at(i) + landmark_init_noise_ * Eigen::Vector3d::Random();
+
+      Eigen::Vector3d landmark_est = *landmark_vec_.at(i) + landmark_init_noise_ * Eigen::Vector3d::Random();
       landmark_est_vec_.at(i) = new Eigen::Vector3d(landmark_est);
     }
 
@@ -423,6 +417,7 @@ class ExpLandmarkOptSLAM {
       // forward update for state_est_vec_.at(i+1)
 
       for (size_t j=0; j<imu_vec_.at(i).size(); ++j) {
+
         Eigen::Vector3d gyr = imu_vec_.at(i).at(j)->gyr_;  
         Eigen::Vector3d acc = imu_vec_.at(i).at(j)->acc_;
 
@@ -551,6 +546,7 @@ class ExpLandmarkOptSLAM {
 
 
       for (size_t j=0; j<imu_vec_.at(i).size(); ++j) {
+
         Eigen::Vector3d gyr = imu_vec_.at(i).at(j)->gyr_;  
         Eigen::Vector3d acc = imu_vec_.at(i).at(j)->acc_;
 
@@ -627,7 +623,9 @@ class ExpLandmarkOptSLAM {
 
     // create parameter block
     state_para_vec_.resize(state_len_);
+
     for (size_t i=0; i<state_len_; ++i) {
+
       state_para_vec_.at(i) = new StatePara(state_vec_.at(i)->t_);
 
       state_para_vec_.at(i)->GetRotationBlock()->setEstimate(state_est_vec_.at(i)->q_);
@@ -635,8 +633,11 @@ class ExpLandmarkOptSLAM {
       state_para_vec_.at(i)->GetPositionBlock()->setEstimate(state_est_vec_.at(i)->p_);
     }
 
+
     landmark_para_vec_.resize(landmark_len_);
+
     for (size_t i=0; i<landmark_len_; ++i) {
+
       landmark_para_vec_.at(i) = new Vec3dParameterBlock();
 
       landmark_para_vec_.at(i)->setEstimate(*landmark_est_vec_.at(i));
@@ -645,6 +646,7 @@ class ExpLandmarkOptSLAM {
 
     // add parameter blocks
     for (size_t i=0; i<state_len_; ++i) {
+
       optimization_problem_.AddParameterBlock(state_para_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
       optimization_problem_.AddParameterBlock(state_para_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
       optimization_problem_.AddParameterBlock(state_para_vec_.at(i)->GetPositionBlock()->parameters(), 3); 
@@ -722,9 +724,9 @@ class ExpLandmarkOptSLAM {
 
     // store results
     for (size_t i=1; i<state_len_; ++i) {
-      state_vec_.at(i)->q_ = state_para_vec_.at(i)->GetRotationBlock()->estimate();
-      state_vec_.at(i)->v_ = state_para_vec_.at(i)->GetVelocityBlock()->estimate();
-      state_vec_.at(i)->p_ = state_para_vec_.at(i)->GetPositionBlock()->estimate();
+      state_est_vec_.at(i)->q_ = state_para_vec_.at(i)->GetRotationBlock()->estimate();
+      state_est_vec_.at(i)->v_ = state_para_vec_.at(i)->GetVelocityBlock()->estimate();
+      state_est_vec_.at(i)->p_ = state_para_vec_.at(i)->GetPositionBlock()->estimate();
     }
 
     for (size_t i=0; i<landmark_len_; ++i) {
@@ -833,7 +835,7 @@ class ExpLandmarkOptSLAM {
 
   // ground truth containers
   std::vector<State*>                         state_vec_;              // state_len
-  std::vector<Eigen::Vector3d>                landmark_vec_;           // landmark_len
+  std::vector<Eigen::Vector3d*>               landmark_vec_;           // landmark_len
 
   std::vector<Estimate*>                      state_est_vec_;          // state_len
   std::vector<Eigen::Vector3d*>               landmark_est_vec_;       // landmark_len
@@ -886,7 +888,7 @@ int main(int argc, char **argv) {
 
   std::cout << "The entire time is " << dt << " sec." << std::endl;
 
-  // slam_problem.OutputResult("result/sim/opt.csv");
+  slam_problem.OutputResult("result/sim/opt.csv");
 
   return 0;
 }
