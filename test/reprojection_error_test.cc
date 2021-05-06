@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 #include <ceres/ceres.h>
 #include <Eigen/Core>
@@ -90,60 +91,73 @@ int main(int argc, char **argv) {
   double fv = 457.296696463;
   double cu = 367.215803962;      // principal point
   double cv = 248.375340610;
-  double noise_deviation = 1.0;   // this is the key factor. change to 3 and we can see bad performance
+  double noise_deviation = 0.8;
+
+  const size_t N = 100;           // number of landmarks
+
+  std::vector<Eigen::Vector3d> landmark_vec;
+  std::vector<Eigen::Vector2d> keypoint_vec;
+  std::vector<Vec3dParameterBlock*> landmark_para_vec;
 
 
-  // Build the problem.
-  ceres::Problem optimization_problem;
-  ceres::LocalParameterization* quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
 
-  // set up a random geometry
-  std::cout << "set up a random geometry... " << std::flush;
+
+  std::cout << "create simulation scenario... " << std::flush;
 
   Transformation T_nb;                         // navigation to body
   T_nb.SetRandom(10.0, M_PI);
 
-  Transformation T_disturb;
-  T_disturb.SetRandom(1, 0.1);
-
-  Transformation T_nb_init = T_nb * T_disturb; // navigation to body
-
   Transformation T_bc;                         // body to camera
   T_bc.SetRandom(0.2, M_PI);
 
-  QuatParameterBlock*  rotation_block_ptr = new QuatParameterBlock(T_nb.q());
-  Vec3dParameterBlock* position_block_ptr = new Vec3dParameterBlock(T_nb.t());
-
-  optimization_problem.AddParameterBlock(rotation_block_ptr->parameters(), 4, quat_parameterization_ptr_);
-  optimization_problem.AddParameterBlock(position_block_ptr->parameters(), 3);  
-  std::cout << " [ OK ] " << std::endl;
-
-
-  // get some random points and build error terms
-  const size_t N = 100;
-  std::cout << "create N=" << N << " visible points and add respective reprojection error terms... " << std::flush;
+  // create random visible point
   for (size_t i=0; i<N; ++i){
-
-    // create random visible point
     double max_dist = 100;
     double min_dist = double(i%10)*3 + 2.0;
 
     Eigen::Vector3d landmark_c = CreateRandomVisiblePoint(du, dv, fu, fv, cu, cv, min_dist, max_dist);
-
+    
     Eigen::Vector4d h_landmark_c(landmark_c[0], landmark_c[1], landmark_c[2], 1);
     Eigen::Vector4d h_landmark_n = T_nb.T() *T_bc.T() * h_landmark_c;
     Eigen::Vector3d landmark = h_landmark_n.head<3>();
 
-    Vec3dParameterBlock* landmark_ptr = new Vec3dParameterBlock(landmark);
-    optimization_problem.AddParameterBlock(landmark_ptr->parameters(), 3);
-    optimization_problem.SetParameterBlockConstant(landmark_ptr->parameters());
 
-    // get a randomized projection
     Eigen::Vector2d keypoint = Project(landmark_c, fu, fv, cu, cv);
-
     keypoint += noise_deviation * Eigen::Rand::normal<Eigen::Vector2d>(2, 1, urng);
 
-    ceres::CostFunction* cost_function = new ReprojectionError(keypoint,
+    landmark_vec.push_back(landmark);
+    keypoint_vec.push_back(keypoint);
+  }
+
+  std::cout << " [ OK ] " << std::endl;
+
+
+
+
+  std::cout << "build the optimization problem... " << std::flush;
+
+  ceres::Problem optimization_problem;
+  ceres::Solver::Options optimization_options;
+  ceres::Solver::Summary optimization_summary;
+
+  optimization_options.max_num_iterations = 100;
+  ceres::LocalParameterization* quat_parameterization_ptr = new ceres::QuaternionParameterization();
+
+
+  QuatParameterBlock*  rotation_block_ptr = new QuatParameterBlock();
+  Vec3dParameterBlock* position_block_ptr = new Vec3dParameterBlock();
+
+  optimization_problem.AddParameterBlock(rotation_block_ptr->parameters(), 4, quat_parameterization_ptr);
+  optimization_problem.AddParameterBlock(position_block_ptr->parameters(), 3); 
+
+  for (size_t i=0; i<N; ++i){
+
+    Vec3dParameterBlock* landmark_ptr = new Vec3dParameterBlock();
+    landmark_para_vec.push_back(landmark_ptr);
+
+    optimization_problem.AddParameterBlock(landmark_ptr->parameters(), 3);
+
+    ceres::CostFunction* cost_function = new ReprojectionError(keypoint_vec.at(i),
                                                                T_bc.T(),
                                                                fu, fv,
                                                                cu, cv);
@@ -151,30 +165,91 @@ int main(int argc, char **argv) {
                                           NULL, 
                                           rotation_block_ptr->parameters(),
                                           position_block_ptr->parameters(),
-                                          landmark_ptr->parameters());
+                                          landmark_para_vec.at(i)->parameters());
+
   }
 
   std::cout << " [ OK ] " << std::endl;
 
 
-  std::cout << "run the solver... " << std::endl;
-  ceres::Solver::Options optimization_options;
-  optimization_options.max_num_iterations = 100;
-  ceres::Solver::Summary optimization_summary;
+
+
+
+
+  std::cout << "\n\n====================================================" << std::endl;
+  std::cout << "    Set landmarks constant and add disturbance to state." << std::endl;
+  std::cout << "====================================================\n\n" << std::endl;
+
+
+  Transformation T_disturb;
+  T_disturb.SetRandom(0.5, 0.1);
+
+  Transformation T_nb_init = T_nb * T_disturb; // navigation to body
+
+  rotation_block_ptr->setEstimate(T_nb_init.q());
+  position_block_ptr->setEstimate(T_nb_init.t());
+
+
+  for (size_t i=0; i<N; ++i) {
+    landmark_para_vec.at(i)->setEstimate(landmark_vec.at(i));
+    optimization_problem.SetParameterBlockConstant(landmark_para_vec.at(i)->parameters());
+  }
+
 
   ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
   std::cout << optimization_summary.FullReport() << "\n";
 
-  std::cout << "initial T_nb : " << "\n" << T_nb_init.T() << "\n\n"
-            << "optimized T_nb : " << "\n" << Transformation(rotation_block_ptr->estimate(), position_block_ptr->estimate()).T() << "\n\n"
-            << "correct T_nb : " << "\n" << T_nb.T() << "\n\n\n";
 
-  std::cout << "initial rotation difference: \t" << 2*(T_nb.q() * T_nb_init.q().inverse()).vec().norm() << "\n";
-  std::cout << "optimized rotation difference: \t" << 2*(T_nb.q() * rotation_block_ptr->estimate().inverse()).vec().norm() << "\n\n";
+  // output the optimization result
+  std::cout << "rotation difference before opt.: \t" << 2*(T_nb.q() * T_nb_init.q().inverse()).vec().norm() << "\n";
+  std::cout << "rotation difference after opt.:  \t" << 2*(T_nb.q() * rotation_block_ptr->estimate().inverse()).vec().norm() << "\n\n";
 
-  std::cout << "initial position difference: \t" << (T_nb.t() - T_nb_init.t()).norm() << "\n";
-  std::cout << "optimized position difference: \t" << (T_nb.t() - position_block_ptr->estimate()).norm() << "\n\n";
+  std::cout << "position difference before opt.: \t" << (T_nb.t() - T_nb_init.t()).norm() << "\n";
+  std::cout << "position difference after opt.:  \t" << (T_nb.t() - position_block_ptr->estimate()).norm() << "\n\n";
 
+
+
+
+  /*
+
+
+  std::cout << "\n\n====================================================" << std::endl;
+  std::cout << "Set state constant and add disturbance to landmarks." << std::endl;
+  std::cout << "====================================================\n\n" << std::endl;
+
+
+
+  rotation_block_ptr->setEstimate(T_nb.q());
+  position_block_ptr->setEstimate(T_nb.t());
+
+  optimization_problem.SetParameterBlockConstant(rotation_block_ptr->parameters());
+  optimization_problem.SetParameterBlockConstant(position_block_ptr->parameters());
+
+
+  for (size_t i=0; i<N; ++i) {
+    landmark_para_vec.at(i)->setEstimate(landmark_vec.at(i) + 0.5 * Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng));
+    optimization_problem.SetParameterBlockVariable(landmark_para_vec.at(i)->parameters());
+  }
+
+
+  double pre_opt_error = 0;
+  for (size_t i=0; i<N; ++i) {
+    pre_opt_error += (landmark_para_vec.at(i)->estimate() - landmark_vec.at(i)).norm() / N;
+  }  
+
+  ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
+  std::cout << optimization_summary.FullReport() << "\n";
+
+  double post_opt_error = 0;
+  for (size_t i=0; i<N; ++i) {
+    post_opt_error += (landmark_para_vec.at(i)->estimate() - landmark_vec.at(i)).norm() / N;
+  }  
+
+
+  std::cout << "landmark error before opt.: \t" << pre_opt_error << "\n";
+  std::cout << "landmark error after opt.:  \t" << post_opt_error << "\n\n";
+
+  */
 
   return 0;
 }

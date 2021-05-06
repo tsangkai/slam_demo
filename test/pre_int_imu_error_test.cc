@@ -169,17 +169,17 @@ int main(int argc, char **argv) {
 
   //=========================================================================================================
   ceres::Problem optimization_problem;
-  ceres::LocalParameterization* quat_parameterization_ptr_ = new ceres::QuaternionParameterization();
+  ceres::LocalParameterization* quat_parameterization_ptr = new ceres::QuaternionParameterization();
 
   State* state0 = new State(t0);
   State* state1 = new State(t1);
 
 
-  optimization_problem.AddParameterBlock(state0->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
+  optimization_problem.AddParameterBlock(state0->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr);
   optimization_problem.AddParameterBlock(state0->GetVelocityBlock()->parameters(), 3);
   optimization_problem.AddParameterBlock(state0->GetPositionBlock()->parameters(), 3);
 
-  optimization_problem.AddParameterBlock(state1->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr_);
+  optimization_problem.AddParameterBlock(state1->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr);
   optimization_problem.AddParameterBlock(state1->GetVelocityBlock()->parameters(), 3);
   optimization_problem.AddParameterBlock(state1->GetPositionBlock()->parameters(), 3);
 
@@ -202,9 +202,10 @@ int main(int argc, char **argv) {
   ceres::Solver::Options optimization_options;
   ceres::Solver::Summary optimization_summary;
 
-  std::cout << "\n\n";
-  std::cout << "====================================================" << std::endl;
-  std::cout << "Set state 1 constant and add disturbance to state 0." << std::endl;
+
+  std::cout << "\n\n====================================================" << std::endl;
+  std::cout << "    Set state 1 constant and add disturbance to state 0." << std::endl;
+  std::cout << "====================================================\n\n" << std::endl;
 
   Transformation T_dis;
   T_dis.SetRandom(1, 0.2);
@@ -245,9 +246,11 @@ int main(int argc, char **argv) {
   std::cout << "position difference after opt.: \t" << (p0 - p0_opt).norm() << "\n";
 
 
-  std::cout << "\n\n";
-  std::cout << "====================================================" << std::endl;
-  std::cout << "Set state 0 constant and add disturbance to state 1." << std::endl;
+
+  std::cout << "\n\n====================================================" << std::endl;
+  std::cout << "    Set state 0 constant and add disturbance to state 1." << std::endl;
+  std::cout << "====================================================\n\n" << std::endl;
+
 
   T_dis.SetRandom(1, 0.2);
   Transformation T_nb_1_dis = Transformation(q1, p1) * T_dis;
@@ -282,13 +285,13 @@ int main(int argc, char **argv) {
   
   // output the optimization result
   std::cout << "rotation difference before opt.: \t" << 2*(q1 * T_nb_1_dis.q().inverse()).vec().norm() << "\n";
-  std::cout << "rotation difference after opt.: \t"  << 2*(q1 * q1_opt.inverse()).vec().norm() << "\n";
+  std::cout << "rotation difference after opt.:  \t" << 2*(q1 * q1_opt.inverse()).vec().norm() << "\n";
 
   std::cout << "velocity difference before opt.: \t" << (v1 - v1_dis).norm() << "\n";
-  std::cout << "velocity difference after opt.: \t"  << (v1 - v1_opt).norm() << "\n";
+  std::cout << "velocity difference after opt.:  \t" << (v1 - v1_opt).norm() << "\n";
 
   std::cout << "position difference before opt.: \t" << (p1 - T_nb_1_dis.t()).norm() << "\n";
-  std::cout << "position difference after opt.: \t"  << (p1 - p1_opt).norm() << "\n";
+  std::cout << "position difference after opt.:  \t" << (p1 - p1_opt).norm() << "\n";
 
 
   return 0;
