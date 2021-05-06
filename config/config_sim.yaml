@@ -5,9 +5,9 @@ landmark_len: 200
 
 duration: 40 #16 # sec
 
-dt: 0.02 #0.04
+dt: 0.02
 
-keyframe_rate_ratio: 5 #1
+keyframe_rate_ratio: 5
 
 trajectory:
   r: 5.5 # circle radius x-y plane

@@ -813,6 +813,30 @@ class ExpLandmarkOptSLAM {
 
     return true;
   }
+
+
+  bool OutputError(std::string output_file_name) {
+
+    std::ofstream output_file(output_file_name);
+
+    output_file << "timestamp,d_q,d_v,d_p\n";
+
+    for (size_t i=0; i<state_len_; ++i) {
+
+      double q_diff = Log_q(state_est_vec_.at(i)->q_*state_vec_.at(i)->q_.conjugate()).norm();
+      double v_diff = (state_est_vec_.at(i)->v_ - state_vec_.at(i)->v_).norm();
+      double p_diff = (state_est_vec_.at(i)->p_ - state_vec_.at(i)->p_).norm();
+
+      output_file << std::to_string(state_est_vec_.at(i)->t_) << ",";
+      output_file << std::to_string(q_diff) << ",";
+      output_file << std::to_string(v_diff) << ",";
+      output_file << std::to_string(p_diff) << std::endl;
+    }
+
+    output_file.close();
+
+    return true;
+  }  
   
 
  private:
@@ -893,6 +917,7 @@ int main(int argc, char **argv) {
   slam_problem.InitializeSLAMProblem();
   slam_problem.InitializeTrajectory();
   slam_problem.OutputResult("result/sim/dr.csv");
+  slam_problem.OutputError("result/sim/dr_error.csv");
 
   return 0;
 }
