@@ -86,9 +86,9 @@ ax1.legend(loc = 1)
 
 
 ax2.plot(dr_data['timestamp'], dr_pos_error, color = plot_color['dr'])
-#ax2.plot(opt_data['timestamp'], opt_pos_error, color = plot_color['opt'])
-#ax2.plot(em_data['timestamp'], em_pos_error, color = plot_color['em'])
-#ax2.plot(boem_data['timestamp'], boem_pos_error, color = plot_color['boem'])
+ax2.plot(opt_data['timestamp'], opt_pos_error, color = plot_color['opt'])
+ax2.plot(em_data['timestamp'], em_pos_error, color = plot_color['em'])
+ax2.plot(boem_data['timestamp'], boem_pos_error, color = plot_color['boem'])
 ax2.set(ylabel='position RMSE [m]')
 ax2.set(xlabel='time [s]')
 ax2.set_ylim(top=1+0.01, bottom=0-0.01)
