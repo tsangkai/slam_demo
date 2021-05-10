@@ -136,12 +136,12 @@ struct ObservationData {
 
 
 
-class ExpLandmarkOptSLAM {
+class ExpLandmarkSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
  public:
 
-  ExpLandmarkOptSLAM(std::string config_file_path) {
+  ExpLandmarkSLAM(std::string config_file_path) {
 
     cv::FileStorage config_file(config_file_path, cv::FileStorage::READ);
 
@@ -174,7 +174,7 @@ class ExpLandmarkOptSLAM {
 
     du_ = (double) config_file["camera"]["image_dimension"][0];  // image dimension
     dv_ = (double) config_file["camera"]["image_dimension"][1];
-    fu_ = (double) config_file["camera"]["focal_length"][0];  // focal length
+    fu_ = (double) config_file["camera"]["focal_length"][0];     // focal length
     fv_ = (double) config_file["camera"]["focal_length"][1];
     cu_ = (double) config_file["camera"]["principal_point"][0];  // principal point
     cv_ = (double) config_file["camera"]["principal_point"][1];
@@ -278,7 +278,16 @@ class ExpLandmarkOptSLAM {
     size_t state_idx = 0;
 
     imu_vec_.resize(state_len_-1);
-    
+    pre_int_imu_vec_.resize(state_len_-1);
+
+    // pre int IMU
+    pre_int_imu_vec_.at(state_idx) = new PreIntIMUData(Eigen::Vector3d::Zero(),
+                                                       Eigen::Vector3d::Zero(),
+                                                       sigma_g_c_,
+                                                       sigma_a_c_);
+    //
+
+
     while (T <= duration_ && (state_idx+1) < state_vec_.size()) {
 
       Eigen::Matrix3d rot;
@@ -301,6 +310,17 @@ class ExpLandmarkOptSLAM {
       imu_ptr->acc_ = rot.transpose() * (a_N - gravity) + acc_noise;
 
       imu_vec_.at(state_idx).push_back(imu_ptr);
+
+      // pre int IMU
+      if (imu_vec_.at(state_idx).size()==1) {
+          pre_int_imu_vec_.at(state_idx) = new PreIntIMUData(Eigen::Vector3d::Zero(),
+                                                             Eigen::Vector3d::Zero(),
+                                                             sigma_g_c_,
+                                                             sigma_a_c_);
+      }
+
+      pre_int_imu_vec_.at(state_idx)->IntegrateSingleIMU(*imu_ptr, dt_);
+      //
 
 
       if (T + dt_ >= state_vec_.at(state_idx+1)->t_) {
@@ -434,7 +454,7 @@ class ExpLandmarkOptSLAM {
       Eigen::Matrix<double, 9, 9> cov = state_est_vec_.at(i)->cov_;
 
       // forward update for state_est_vec_.at(i+1)
-
+      /*
       for (size_t j=0; j<imu_vec_.at(i).size(); ++j) {
 
         Eigen::Vector3d gyr = imu_vec_.at(i).at(j)->gyr_;  
@@ -468,6 +488,40 @@ class ExpLandmarkOptSLAM {
         p = p1;
         cov = F_t * cov * F_t.transpose() + G_t * w_cov * G_t.transpose();
       }
+      */
+      
+      double delta_t = pre_int_imu_vec_.at(i)->dt_;
+      Eigen::Matrix3d delta_R = pre_int_imu_vec_.at(i)->dR_;
+      Eigen::Vector3d delta_v = pre_int_imu_vec_.at(i)->dv_;
+      Eigen::Vector3d delta_p = pre_int_imu_vec_.at(i)->dp_;
+      Eigen::Matrix<double, 9, 9> delta_cov = pre_int_imu_vec_.at(i)->cov_;
+
+
+      Eigen::Quaterniond q1 = quat_positive(Eigen::Quaterniond(q * delta_R));
+      Eigen::Vector3d v1 = v + gravity * delta_t + q.toRotationMatrix() * delta_v;
+      Eigen::Vector3d p1 = p + v * delta_t + 0.5 * gravity * delta_t * delta_t + q.toRotationMatrix() * delta_p;
+
+      
+      Eigen::Matrix<double, 9, 9> F_t = Eigen::Matrix<double, 9, 9>::Zero();
+      F_t.block<3,3>(0,0) = delta_R.transpose();
+      F_t.block<3,3>(3,0) = (-1)*q.toRotationMatrix()*Skew(delta_v);
+      F_t.block<3,3>(3,3) = Eigen::Matrix3d::Identity();
+      F_t.block<3,3>(6,0) = (-1)*q.toRotationMatrix()*Skew(delta_p);
+      F_t.block<3,3>(6,3) = dt_*Eigen::Matrix3d::Identity();
+      F_t.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
+
+      Eigen::Matrix<double, 9, 9> G_t = Eigen::Matrix<double, 9, 9>::Zero();
+      G_t.block<3,3>(0,0) = Eigen::Matrix3d::Identity();
+      G_t.block<3,3>(3,3) = q.toRotationMatrix();
+      G_t.block<3,3>(6,6) = q.toRotationMatrix();      
+
+      
+      q = q1;
+      v = v1;
+      p = p1;
+      cov = F_t * cov * F_t.transpose() + G_t * delta_cov * G_t.transpose();
+
+
 
       
       // observation update
@@ -475,7 +529,7 @@ class ExpLandmarkOptSLAM {
       Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
       Eigen::Vector3d k_p = Eigen::Vector3d::Zero();
 
-      /*
+
       for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
 
         Eigen::Vector3d landmark = *landmark_est_vec_.at(observation_vec_.at(i).at(j)->landmark_id_);
@@ -540,7 +594,7 @@ class ExpLandmarkOptSLAM {
           
         }
       }
-      */
+
 
       // if (k_p.norm() < 0.65) {
       if (1) {
@@ -885,6 +939,7 @@ class ExpLandmarkOptSLAM {
 
   // data containers
   std::vector<std::vector<IMUData*>>          imu_vec_;                // state_len-1
+  std::vector<PreIntIMUData*>                 pre_int_imu_vec_;        // state_len-1
   std::vector<std::vector<ObservationData*>>  observation_vec_;        // state_len-1
 
   // estimator containers
@@ -904,7 +959,7 @@ int main(int argc, char **argv) {
 
   google::InitGoogleLogging(argv[0]);
 
-  ExpLandmarkOptSLAM slam_problem("config/config_sim.yaml");
+  ExpLandmarkSLAM slam_problem("config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark();
