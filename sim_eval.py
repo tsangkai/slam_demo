@@ -81,7 +81,7 @@ ax1.plot(opt_data['timestamp'], opt_rot_error, color = plot_color['opt'], label=
 ax1.plot(em_data['timestamp'], em_rot_error, color = plot_color['em'], label='EM')
 ax1.plot(boem_data['timestamp'], boem_rot_error, color = plot_color['boem'], label='BOEM')
 ax1.set(ylabel='rotation RMSE [deg]')
-ax1.set_ylim(top=5+0.01, bottom=0-0.01)
+#ax1.set_ylim(top=5+0.01, bottom=0-0.01)
 ax1.legend(loc = 1)
 
 

@@ -278,41 +278,38 @@ class ExpLandmarkSLAM {
 
   bool CreateImuData() {
 
-    double T = 0;
+    double T = 0.0;
     size_t state_idx = 0;
 
     imu_vec_.resize(state_len_-1);
     
-    while (T <= duration_ && (state_idx+1) < state_vec_.size()) {
 
-      Eigen::Matrix3d rot;
-      rot << cos(w_ * T), -sin(w_ * T), 0,
-             sin(w_ * T),  cos(w_ * T), 0,
-             0, 0, 1;
+    for (size_t i=0; i<state_len_-1; ++i) {
+      for (size_t j=0; j<keyframe_rate_ratio_; ++j) {
+         
+        Eigen::Matrix3d rot;
+        rot << cos(w_ * T), -sin(w_ * T), 0,
+               sin(w_ * T),  cos(w_ * T), 0,
+               0, 0, 1;
 
-      Eigen::Vector3d a_N = Eigen::Vector3d(-r_*(w_*w_)*cos(w_*T),
-                                            -r_*(w_*w_)*sin(w_*T),
-                                            -r_z_*(w_z_*w_z_)*sin(w_z_*T));
-      Eigen::Vector3d omega_B = Eigen::Vector3d(0, 0, w_);
+        Eigen::Vector3d a_N = Eigen::Vector3d(-r_*(w_*w_)*cos(w_*T),
+                                              -r_*(w_*w_)*sin(w_*T),
+                                              -r_z_*(w_z_*w_z_)*sin(w_z_*T));
+        Eigen::Vector3d omega_B = Eigen::Vector3d(0, 0, w_);
 
-      Eigen::Vector3d gyr_noise = sigma_g_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
-      Eigen::Vector3d acc_noise = sigma_a_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
+        Eigen::Vector3d gyr_noise = sigma_g_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
+        Eigen::Vector3d acc_noise = sigma_a_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
+  
+        IMUData* imu_ptr = new IMUData;
+        imu_ptr->timestamp_ = T;
+        imu_ptr->gyr_ = omega_B + gyr_noise;
+        imu_ptr->acc_ = rot.transpose() * (a_N - gravity) + acc_noise;
 
+        imu_vec_.at(i).push_back(imu_ptr);
 
-      IMUData* imu_ptr = new IMUData;
-      imu_ptr->timestamp_ = T;
-      imu_ptr->gyr_ = omega_B + gyr_noise;
-      imu_ptr->acc_ = rot.transpose() * (a_N - gravity) + acc_noise;
+        T = T + dt_;
 
-      imu_vec_.at(state_idx).push_back(imu_ptr);
-
-
-      if (T + dt_ >= state_vec_.at(state_idx+1)->t_) {
-        state_idx++;
       }
-      
-      T = T + dt_;
-    
     }
 
     std::cout << "imu_vec_ " << imu_vec_.size() << std::endl;
@@ -789,7 +786,20 @@ class ExpLandmarkSLAM {
 
     for (size_t i=0; i<state_len_; ++i) {
 
-      double q_diff = Log_q(state_est_vec_.at(i)->q_*state_vec_.at(i)->q_.conjugate()).norm();
+      // double q_diff = Log_q(state_est_vec_.at(i)->q_*state_vec_.at(i)->q_.conjugate()).norm();
+      
+      Eigen::Vector3d r1 = state_est_vec_.at(i)->q_.toRotationMatrix() * Eigen::Vector3d(1,0,0);
+      Eigen::Vector3d r2 = state_vec_.at(i)->q_.toRotationMatrix() * Eigen::Vector3d(1,0,0);
+      double q_cos_dis = 1 - r1.dot(r2);
+
+
+      Eigen::Quaterniond qqq = state_est_vec_.at(i)->q_*state_vec_.at(i)->q_.conjugate();
+      qqq.normalize();
+
+      double q_diff = Log_q(qqq).norm();
+
+
+
       double v_diff = (state_est_vec_.at(i)->v_ - state_vec_.at(i)->v_).norm();
       double p_diff = (state_est_vec_.at(i)->p_ - state_vec_.at(i)->p_).norm();
 
@@ -797,6 +807,9 @@ class ExpLandmarkSLAM {
       output_file << std::to_string(q_diff) << ",";
       output_file << std::to_string(v_diff) << ",";
       output_file << std::to_string(p_diff) << std::endl;
+
+
+
     }
 
     output_file.close();

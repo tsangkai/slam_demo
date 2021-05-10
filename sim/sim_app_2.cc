@@ -279,67 +279,58 @@ class ExpLandmarkSLAM {
 
   bool CreateImuData() {
 
-    double T = 0;
+    double T = 0.0;
     size_t state_idx = 0;
 
     imu_vec_.resize(state_len_-1);
     pre_int_imu_vec_.resize(state_len_-1);
-
-    // pre int IMU
-    pre_int_imu_vec_.at(state_idx) = new PreIntIMUData(Eigen::Vector3d::Zero(),
-                                                       Eigen::Vector3d::Zero(),
-                                                       sigma_g_c_,
-                                                       sigma_a_c_);
-    //
-
-
-    while (T <= duration_ && (state_idx+1) < state_vec_.size()) {
-
-      Eigen::Matrix3d rot;
-      rot << cos(w_ * T), -sin(w_ * T), 0,
-             sin(w_ * T),  cos(w_ * T), 0,
-             0, 0, 1;
-
-      Eigen::Vector3d a_N = Eigen::Vector3d(-r_*(w_*w_)*cos(w_*T),
-                                            -r_*(w_*w_)*sin(w_*T),
-                                            -r_z_*(w_z_*w_z_)*sin(w_z_*T));
-      Eigen::Vector3d omega_B = Eigen::Vector3d(0, 0, w_);
-
-      Eigen::Vector3d gyr_noise = sigma_g_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
-      Eigen::Vector3d acc_noise = sigma_a_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
-
-
-      IMUData* imu_ptr = new IMUData;
-      imu_ptr->timestamp_ = T;
-      imu_ptr->gyr_ = omega_B + gyr_noise;
-      imu_ptr->acc_ = rot.transpose() * (a_N - gravity) + acc_noise;
-
-      imu_vec_.at(state_idx).push_back(imu_ptr);
-
-      // pre int IMU
-      if (imu_vec_.at(state_idx).size()==1) {
-          pre_int_imu_vec_.at(state_idx) = new PreIntIMUData(Eigen::Vector3d::Zero(),
-                                                             Eigen::Vector3d::Zero(),
-                                                             sigma_g_c_,
-                                                             sigma_a_c_);
-      }
-
-      pre_int_imu_vec_.at(state_idx)->IntegrateSingleIMU(*imu_ptr, dt_);
-      //
-
-
-      if (T + dt_ >= state_vec_.at(state_idx+1)->t_) {
-        state_idx++;
-      }
-      
-      T = T + dt_;
     
+
+    for (size_t i=0; i<state_len_-1; ++i) {
+
+      PreIntIMUData* pre_int_imu_ptr = new PreIntIMUData(Eigen::Vector3d::Zero(),
+                                                         Eigen::Vector3d::Zero(),
+                                                         sigma_g_c_,
+                                                         sigma_a_c_);
+
+      for (size_t j=0; j<keyframe_rate_ratio_; ++j) {
+         
+        Eigen::Matrix3d rot;
+        rot << cos(w_ * T), -sin(w_ * T), 0,
+               sin(w_ * T),  cos(w_ * T), 0,
+               0, 0, 1;
+
+        Eigen::Vector3d a_N = Eigen::Vector3d(-r_*(w_*w_)*cos(w_*T),
+                                              -r_*(w_*w_)*sin(w_*T),
+                                              -r_z_*(w_z_*w_z_)*sin(w_z_*T));
+        Eigen::Vector3d omega_B = Eigen::Vector3d(0, 0, w_);
+
+        Eigen::Vector3d gyr_noise = sigma_g_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
+        Eigen::Vector3d acc_noise = sigma_a_c_/sqrt(dt_)*Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng);
+  
+        IMUData* imu_ptr = new IMUData;
+        imu_ptr->timestamp_ = T;
+        imu_ptr->gyr_ = omega_B + gyr_noise;
+        imu_ptr->acc_ = rot.transpose() * (a_N - gravity) + acc_noise;
+
+        // imu_vec_.at(i).push_back(imu_ptr);
+
+        pre_int_imu_ptr->IntegrateSingleIMU(*imu_ptr, dt_);
+
+        T = T + dt_;
+
+      }
+
+      pre_int_imu_vec_.at(i) = pre_int_imu_ptr;
+
+
     }
 
-    std::cout << "imu_vec_ " << imu_vec_.size() << std::endl;
+    std::cout << "pre_int_imu_vec_ " << pre_int_imu_vec_.size() << std::endl;
 
     return true;
   }
+
 
 
   bool CreateObservationData() {
@@ -451,7 +442,7 @@ class ExpLandmarkSLAM {
     state_est_vec_.at(0)->cov_ = Eigen::Matrix<double, 9, 9>::Zero();
 
 
-    for (size_t i=0; i<imu_vec_.size(); ++i) {
+    for (size_t i=0; i<pre_int_imu_vec_.size(); ++i) {
 
       Eigen::Quaterniond q = state_est_vec_.at(i)->q_;
       Eigen::Vector3d v = state_est_vec_.at(i)->v_;
@@ -613,7 +604,7 @@ class ExpLandmarkSLAM {
 
 
     // backward smoothing
-    for (size_t i=imu_vec_.size()-1; i>0; --i) {
+    for (size_t i=pre_int_imu_vec_.size()-1; i>0; --i) {
 
       // std::cout << "RTS smoother: " << i << std::endl;
 
