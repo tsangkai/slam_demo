@@ -18,12 +18,12 @@ find_package(Ceres REQUIRED)
 
 find_package(Boost COMPONENTS system REQUIRED)
 
+
+add_subdirectory(EigenRand)
 add_subdirectory(lib)
 add_subdirectory(apps)
 add_subdirectory(sim)
-add_subdirectory(sim_easy)
 
-add_subdirectory(EigenRand)
 
 
 if(BUILD_TEST)
