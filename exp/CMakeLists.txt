@@ -54,6 +54,7 @@ target_link_libraries(frontend_app
 
 add_executable(backend_opt_app 
   backend_opt_app.cc
+  backend.h
 )
 
 target_include_directories(backend_opt_app
