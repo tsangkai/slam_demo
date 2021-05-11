@@ -81,7 +81,7 @@ ax1.plot(opt_data['timestamp'], opt_rot_error, color = plot_color['opt'], label=
 ax1.plot(em_data['timestamp'], em_rot_error, color = plot_color['em'], label='EM')
 ax1.plot(boem_data['timestamp'], boem_rot_error, color = plot_color['boem'], label='BOEM')
 ax1.set(ylabel='rotation RMSE [deg]')
-ax1.set_ylim(top=5)
+#ax1.set_ylim(top=5+0.01, bottom=0-0.01)
 ax1.legend(loc = 1)
 
 
@@ -91,5 +91,6 @@ ax2.plot(em_data['timestamp'], em_pos_error, color = plot_color['em'])
 ax2.plot(boem_data['timestamp'], boem_pos_error, color = plot_color['boem'])
 ax2.set(ylabel='position RMSE [m]')
 ax2.set(xlabel='time [s]')
-#ax2.set_ylim(-0.01, 0.7)
+ax2.set_ylim(top=1+0.01, bottom=0-0.01)
+
 plt.show()

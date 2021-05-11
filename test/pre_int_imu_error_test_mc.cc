@@ -62,14 +62,67 @@ class State {
 
 int main(int argc, char **argv) {
   // initialize random number generator
-  srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
-  Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+  // srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
+  srand( 0 ); // disabled: make unit tests deterministic...
+  // Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+  Eigen::Rand::Vmt19937_64 urng{ 0 };
+
+
+  size_t num_trial = 100;
+
+
+
+  std::ofstream pre_rot_error("result/test/s0_fixed/pre_rot_error.csv");
+  std::ofstream post_rot_error("result/test/s0_fixed/post_rot_error.csv");
+  std::ofstream pre_pos_error("result/test/s0_fixed/pre_pos_error.csv");
+  std::ofstream post_pos_error("result/test/s0_fixed/post_pos_error.csv");
+
+
+  pre_rot_error << "noise";
+  post_rot_error << "noise";
+  pre_pos_error << "noise";
+  post_pos_error << "noise";
+
+  for (size_t trial=0; trial<num_trial; ++trial) {
+
+    pre_rot_error << "," << std::to_string(trial);
+    post_rot_error << "," << std::to_string(trial);
+    pre_pos_error << "," << std::to_string(trial);
+    post_pos_error << "," << std::to_string(trial);
+  }
+
+  pre_rot_error << "\n";
+  post_rot_error << "\n";
+  pre_pos_error << "\n";
+  post_pos_error << "\n";
+
+
+
+
+
 
 
   // set the imu parameters
   const size_t rate = 1000; // 1 kHz
-  const double sigma_g_c = 6.0e-4;
-  const double sigma_a_c = 2.0e-3;
+  // const double sigma_g_c = 6.0e-4;
+  // const double sigma_a_c = 2.0e-3;
+
+
+  for (size_t noise_idx=1; noise_idx<=10; ++noise_idx) {
+
+  const double sigma_g_c = 6.0e-4 * double(noise_idx);
+  const double sigma_a_c = 2.0e-3 * double(noise_idx);
+
+
+  pre_rot_error << std::to_string(sigma_g_c);
+  post_rot_error << std::to_string(sigma_g_c);
+  pre_pos_error << std::to_string(sigma_g_c);
+  post_pos_error << std::to_string(sigma_g_c);
+
+
+
+  for (size_t trial=0; trial<num_trial; ++trial) {
+
 
   // generate random motion
   const double w_omega_S_x = Eigen::internal::random(0.1,10.0); // circular frequency
@@ -203,9 +256,6 @@ int main(int argc, char **argv) {
   ceres::Solver::Summary optimization_summary;
 
 
-  std::cout << "\n\n  ==========================================================" << std::endl;
-  std::cout << "    Set state 1 constant and add disturbance to state 0." << std::endl;
-  std::cout << "  ==========================================================\n\n" << std::endl;
 
   Transformation T_dis;
   T_dis.SetRandom(1, 0.2);
@@ -213,6 +263,16 @@ int main(int argc, char **argv) {
   Eigen::Vector3d v0_dis = v0 + 5*Eigen::Vector3d::Random();
   Eigen::Vector3d p0_dis = p0 + 5*Eigen::Vector3d::Random();
 
+
+  /*
+  std::cout << "\n\n  ==========================================================" << std::endl;
+  std::cout << "    Set state 1 constant and add disturbance to state 0." << std::endl;
+  std::cout << "  ==========================================================\n\n" << std::endl;
+  */
+
+
+
+  /*
   state0->GetRotationBlock()->setEstimate(T_nb_0_dis.q());
   state0->GetVelocityBlock()->setEstimate(v0_dis);
   state0->GetPositionBlock()->setEstimate(T_nb_0_dis.t());
@@ -228,7 +288,7 @@ int main(int argc, char **argv) {
 
   // solve the optimization problem
   ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
-  std::cout << optimization_summary.FullReport() << "\n";
+  // std::cout << optimization_summary.FullReport() << "\n";
 
   Eigen::Quaterniond q0_opt = state0->GetRotationBlock()->estimate();
   Eigen::Vector3d v0_opt = state0->GetVelocityBlock()->estimate();
@@ -245,12 +305,18 @@ int main(int argc, char **argv) {
   std::cout << "position difference before opt.: \t" << (p0 - T_nb_0_dis.t()).norm() << "\n";
   std::cout << "position difference after opt.: \t" << (p0 - p0_opt).norm() << "\n";
 
+  pre_rot_error << "," << std::to_string(2*(q0 * T_nb_0_dis.q().inverse()).vec().norm());
+  post_rot_error << "," << std::to_string(2*(q0 * q0_opt.inverse()).vec().norm());
+  pre_pos_error << "," << std::to_string((p0 - T_nb_0_dis.t()).norm());
+  post_pos_error << "," << std::to_string((p0 - p0_opt).norm());
 
+  */
 
+  /*
   std::cout << "\n\n  ==========================================================" << std::endl;
   std::cout << "    Set state 0 constant and add disturbance to state 1." << std::endl;
   std::cout << "  ==========================================================\n\n" << std::endl;
-
+  */
 
   T_dis.SetRandom(1, 0.2);
   Transformation T_nb_1_dis = Transformation(q1, p1) * T_dis;
@@ -276,7 +342,7 @@ int main(int argc, char **argv) {
 
   // solve the optimization problem
   ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
-  std::cout << optimization_summary.FullReport() << "\n";
+  // std::cout << optimization_summary.FullReport() << "\n";
 
   Eigen::Quaterniond q1_opt = state1->GetRotationBlock()->estimate();
   Eigen::Vector3d v1_opt = state1->GetVelocityBlock()->estimate();
@@ -284,6 +350,7 @@ int main(int argc, char **argv) {
 
   
   // output the optimization result
+  /*
   std::cout << "rotation difference before opt.: \t" << 2*(q1 * T_nb_1_dis.q().inverse()).vec().norm() << "\n";
   std::cout << "rotation difference after opt.:  \t" << 2*(q1 * q1_opt.inverse()).vec().norm() << "\n";
 
@@ -292,7 +359,29 @@ int main(int argc, char **argv) {
 
   std::cout << "position difference before opt.: \t" << (p1 - T_nb_1_dis.t()).norm() << "\n";
   std::cout << "position difference after opt.:  \t" << (p1 - p1_opt).norm() << "\n";
+  */
 
+
+
+  pre_rot_error << "," << std::to_string(2*(q1 * T_nb_1_dis.q().inverse()).vec().norm());
+  post_rot_error << "," << std::to_string(2*(q1 * q1_opt.inverse()).vec().norm());
+  pre_pos_error << "," << std::to_string((p1 - T_nb_1_dis.t()).norm());
+  post_pos_error << "," << std::to_string((p1 - p1_opt).norm());
+
+
+  }
+
+  pre_rot_error << "\n";
+  post_rot_error << "\n";
+  pre_pos_error << "\n";
+  post_pos_error << "\n";
+
+  } // noise_idx
+
+  pre_rot_error.close();
+  post_rot_error.close();
+  pre_pos_error.close();
+  post_pos_error.close();
 
   return 0;
 }

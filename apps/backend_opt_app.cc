@@ -557,6 +557,14 @@ class ExpLandmarkOptSLAM {
 
   bool SolveOptimizationProblem() {
 
+
+    std::cout << "For debugging..." << std::endl;
+    std::cout << "state_vec_ " << state_vec_.size() << std::endl;
+    std::cout << "pre_int_imu_vec_ " << pre_int_imu_vec_.size() << std::endl;
+    std::cout << "observation_vec_ " << observation_vec_.size() << std::endl;
+
+
+
     std::cout << "Begin solving the optimization problem." << std::endl;
 
     optimization_options_.linear_solver_type = ceres::SPARSE_SCHUR;

@@ -1,5 +1,6 @@
 // This file generates the ground truth data and the dead reckoning data
-// For dead reckoning, this file uses IMU data directly.
+// For dead reckoning, this file preintegrates IMU data first, and then 
+// uses the preintegrated data.
 
 
 
@@ -178,7 +179,7 @@ class ExpLandmarkSLAM {
 
     du_ = (double) config_file["camera"]["image_dimension"][0];  // image dimension
     dv_ = (double) config_file["camera"]["image_dimension"][1];
-    fu_ = (double) config_file["camera"]["focal_length"][0];  // focal length
+    fu_ = (double) config_file["camera"]["focal_length"][0];     // focal length
     fv_ = (double) config_file["camera"]["focal_length"][1];
     cu_ = (double) config_file["camera"]["principal_point"][0];  // principal point
     cv_ = (double) config_file["camera"]["principal_point"][1];
@@ -282,9 +283,16 @@ class ExpLandmarkSLAM {
     size_t state_idx = 0;
 
     imu_vec_.resize(state_len_-1);
+    pre_int_imu_vec_.resize(state_len_-1);
     
 
     for (size_t i=0; i<state_len_-1; ++i) {
+
+      PreIntIMUData* pre_int_imu_ptr = new PreIntIMUData(Eigen::Vector3d::Zero(),
+                                                         Eigen::Vector3d::Zero(),
+                                                         sigma_g_c_,
+                                                         sigma_a_c_);
+
       for (size_t j=0; j<keyframe_rate_ratio_; ++j) {
          
         Eigen::Matrix3d rot;
@@ -305,17 +313,24 @@ class ExpLandmarkSLAM {
         imu_ptr->gyr_ = omega_B + gyr_noise;
         imu_ptr->acc_ = rot.transpose() * (a_N - gravity) + acc_noise;
 
-        imu_vec_.at(i).push_back(imu_ptr);
+        // imu_vec_.at(i).push_back(imu_ptr);
+
+        pre_int_imu_ptr->IntegrateSingleIMU(*imu_ptr, dt_);
 
         T = T + dt_;
 
       }
+
+      pre_int_imu_vec_.at(i) = pre_int_imu_ptr;
+
+
     }
 
-    std::cout << "imu_vec_ " << imu_vec_.size() << std::endl;
+    std::cout << "pre_int_imu_vec_ " << pre_int_imu_vec_.size() << std::endl;
 
     return true;
   }
+
 
 
   bool CreateObservationData() {
@@ -427,7 +442,7 @@ class ExpLandmarkSLAM {
     state_est_vec_.at(0)->cov_ = Eigen::Matrix<double, 9, 9>::Zero();
 
 
-    for (size_t i=0; i<imu_vec_.size(); ++i) {
+    for (size_t i=0; i<pre_int_imu_vec_.size(); ++i) {
 
       Eigen::Quaterniond q = state_est_vec_.at(i)->q_;
       Eigen::Vector3d v = state_est_vec_.at(i)->v_;
@@ -435,7 +450,7 @@ class ExpLandmarkSLAM {
       Eigen::Matrix<double, 9, 9> cov = state_est_vec_.at(i)->cov_;
 
       // forward update for state_est_vec_.at(i+1)
-
+      /*
       for (size_t j=0; j<imu_vec_.at(i).size(); ++j) {
 
         Eigen::Vector3d gyr = imu_vec_.at(i).at(j)->gyr_;  
@@ -469,6 +484,40 @@ class ExpLandmarkSLAM {
         p = p1;
         cov = F_t * cov * F_t.transpose() + G_t * w_cov * G_t.transpose();
       }
+      */
+      
+      double delta_t = pre_int_imu_vec_.at(i)->dt_;
+      Eigen::Matrix3d delta_R = pre_int_imu_vec_.at(i)->dR_;
+      Eigen::Vector3d delta_v = pre_int_imu_vec_.at(i)->dv_;
+      Eigen::Vector3d delta_p = pre_int_imu_vec_.at(i)->dp_;
+      Eigen::Matrix<double, 9, 9> delta_cov = pre_int_imu_vec_.at(i)->cov_;
+
+
+      Eigen::Quaterniond q1 = quat_positive(Eigen::Quaterniond(q * delta_R));
+      Eigen::Vector3d v1 = v + gravity * delta_t + q.toRotationMatrix() * delta_v;
+      Eigen::Vector3d p1 = p + v * delta_t + 0.5 * gravity * delta_t * delta_t + q.toRotationMatrix() * delta_p;
+
+      
+      Eigen::Matrix<double, 9, 9> F_t = Eigen::Matrix<double, 9, 9>::Zero();
+      F_t.block<3,3>(0,0) = delta_R.transpose();
+      F_t.block<3,3>(3,0) = (-1)*q.toRotationMatrix()*Skew(delta_v);
+      F_t.block<3,3>(3,3) = Eigen::Matrix3d::Identity();
+      F_t.block<3,3>(6,0) = (-1)*q.toRotationMatrix()*Skew(delta_p);
+      F_t.block<3,3>(6,3) = dt_*Eigen::Matrix3d::Identity();
+      F_t.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
+
+      Eigen::Matrix<double, 9, 9> G_t = Eigen::Matrix<double, 9, 9>::Zero();
+      G_t.block<3,3>(0,0) = Eigen::Matrix3d::Identity();
+      G_t.block<3,3>(3,3) = q.toRotationMatrix();
+      G_t.block<3,3>(6,6) = q.toRotationMatrix();      
+
+      
+      q = q1;
+      v = v1;
+      p = p1;
+      cov = F_t * cov * F_t.transpose() + G_t * delta_cov * G_t.transpose();
+
+
 
       
       // observation update
@@ -476,56 +525,72 @@ class ExpLandmarkSLAM {
       Eigen::Vector3d k_v = Eigen::Vector3d::Zero();
       Eigen::Vector3d k_p = Eigen::Vector3d::Zero();
 
-      /*
+
       for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
+
         Eigen::Vector3d landmark = *landmark_est_vec_.at(observation_vec_.at(i).at(j)->landmark_id_);
         Eigen::Vector2d measurement = observation_vec_.at(i).at(j)->feature_pos_;
         Eigen::Matrix2d R = observation_vec_.at(i).at(j)->cov();
+
         Eigen::Matrix3d R_bc = T_bc_.topLeftCorner<3,3>();
         Eigen::Vector3d t_bc = T_bc_.topRightCorner<3,1>();
+
         Eigen::Matrix3d R_nb = q.toRotationMatrix();
         Eigen::Vector3d t_nb = p;
+
         Eigen::Matrix4d T_bn = Eigen::Matrix4d::Identity();
         T_bn.topLeftCorner<3, 3>() = q.toRotationMatrix().transpose();
         T_bn.topRightCorner<3, 1>() = -1 * q.toRotationMatrix().transpose() * p;
+
         // Eigen::Vector3d landmark_c = R_bc.transpose() * ((R_nb.transpose()*(landmark - t_nb)) - t_bc);
         
         Eigen::Vector4d landmark_n = Eigen::Vector4d(0, 0, 0, 1);
         landmark_n.head(3) = landmark;
         Eigen::Vector4d landmark_c = T_bc_.transpose() * T_bn * landmark_n;
+
+
         Eigen::Vector2d landmark_proj;
         landmark_proj << fu_ * landmark_c[0]/landmark_c[2] + cu_, 
                          fv_ * landmark_c[1]/landmark_c[2] + cv_;
+
         // exclude outliers
         Eigen::Vector2d innovation = measurement - landmark_proj;
         // if (innovation.norm() < 80) {  
         if (1) {  
+
           Eigen::Matrix<double, 2, 2> H_cam;
           H_cam << fu_, 0.0,
                    0.0, fv_;
+
           Eigen::Matrix<double, 2, 3> H_proj;
           H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
                     0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
+
           Eigen::Matrix<double, 3, 9> H_trans;
           H_trans.setZero();
           H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
           H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
+
           Eigen::Matrix<double, 2, 9> H;
           H = H_cam * H_proj * H_trans;
+
+
           Eigen::Matrix<double, 9, 2> K;
           K = cov * H.transpose() * (H * cov * H.transpose() + R).inverse();
           Eigen::Matrix<double, 9, 1> m;
           m = K * (measurement - landmark_proj);
+
           k_R = k_R * Exp(m.block<3,1>(0,0));
           k_v = k_v + m.block<3,1>(3,0);
           k_p = k_p + m.block<3,1>(6,0);  
+
           Eigen::Matrix<double, 9, 9> IKH;
           IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
           cov = IKH * cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
           
         }
       }
-      */
+
 
       // if (k_p.norm() < 0.65) {
       if (1) {
@@ -539,20 +604,28 @@ class ExpLandmarkSLAM {
 
 
     // backward smoothing
-    /*
-    for (size_t i=imu_vec_.size()-1; i>0; --i) {
+    for (size_t i=pre_int_imu_vec_.size()-1; i>0; --i) {
+
       // std::cout << "RTS smoother: " << i << std::endl;
+
       Eigen::Quaterniond q = state_est_vec_.at(i)->q_;
       Eigen::Vector3d v = state_est_vec_.at(i)->v_;
       Eigen::Vector3d p = state_est_vec_.at(i)->p_;
       Eigen::Matrix<double, 9, 9> cov = state_est_vec_.at(i)->cov_;
+
       Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Identity();
+
+      /*
       for (size_t j=0; j<imu_vec_.at(i).size(); ++j) {
+
         Eigen::Vector3d gyr = imu_vec_.at(i).at(j)->gyr_;  
         Eigen::Vector3d acc = imu_vec_.at(i).at(j)->acc_;
+
         Eigen::Quaterniond q1 = quat_positive(q * Exp_q(dt_ * gyr));
         Eigen::Vector3d v1 = v + dt_ * (q.toRotationMatrix()* acc + gravity);
         Eigen::Vector3d p1 = p + dt_ * v + 0.5 * dt_*dt_ * (q.toRotationMatrix()* acc + gravity);
+
+
         Eigen::Matrix<double, 9, 9> F_t = Eigen::Matrix<double, 9, 9>::Zero();
         F_t.block<3,3>(0,0) = Exp(dt_*gyr).transpose();
         F_t.block<3,3>(3,0) = (-1)*dt_*q.toRotationMatrix()*Skew(acc);
@@ -560,33 +633,90 @@ class ExpLandmarkSLAM {
         F_t.block<3,3>(6,0) = (-0.5)*dt_*dt_*q.toRotationMatrix()*Skew(acc);
         F_t.block<3,3>(6,3) = dt_*Eigen::Matrix3d::Identity();
         F_t.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
+
         Eigen::Matrix<double, 9, 6> G_t = Eigen::Matrix<double, 9, 6>::Zero();
         G_t.block<3,3>(0,0) = (-1)*dt_*Eigen::Matrix3d::Identity();
         G_t.block<3,3>(3,3) = (-1)*dt_*q.toRotationMatrix();
         G_t.block<3,3>(6,3) = (-0.5)*dt_*dt_*q.toRotationMatrix();
+
         Eigen::Matrix<double, 6, 6> w_cov = Eigen::Matrix<double, 6, 6>::Zero();
         w_cov.block<3,3>(0,0) = (sigma_g_c_*sigma_g_c_/dt_)*Eigen::Matrix3d::Identity();
         w_cov.block<3,3>(3,3) = (sigma_a_c_*sigma_a_c_/dt_)*Eigen::Matrix3d::Identity();
+
+
         q = q1;
         v = v1;
         p = p1;
         cov = F_t * cov * F_t.transpose() + G_t * w_cov * G_t.transpose();
+
         F = F_t * F;
       }
+      */
+
+
+
+      // pre int IMU
+      double delta_t = pre_int_imu_vec_.at(i)->dt_;
+      Eigen::Matrix3d delta_R = pre_int_imu_vec_.at(i)->dR_;
+      Eigen::Vector3d delta_v = pre_int_imu_vec_.at(i)->dv_;
+      Eigen::Vector3d delta_p = pre_int_imu_vec_.at(i)->dp_;
+      Eigen::Matrix<double, 9, 9> delta_cov = pre_int_imu_vec_.at(i)->cov_;
+
+
+      Eigen::Quaterniond q1 = quat_positive(Eigen::Quaterniond(q * delta_R));
+      Eigen::Vector3d v1 = v + gravity * delta_t + q.toRotationMatrix() * delta_v;
+      Eigen::Vector3d p1 = p + v * delta_t + 0.5 * gravity * delta_t * delta_t + q.toRotationMatrix() * delta_p;
+
+      
+      Eigen::Matrix<double, 9, 9> F_t = Eigen::Matrix<double, 9, 9>::Zero();
+      F_t.block<3,3>(0,0) = delta_R.transpose();
+      F_t.block<3,3>(3,0) = (-1)*q.toRotationMatrix()*Skew(delta_v);
+      F_t.block<3,3>(3,3) = Eigen::Matrix3d::Identity();
+      F_t.block<3,3>(6,0) = (-1)*q.toRotationMatrix()*Skew(delta_p);
+      F_t.block<3,3>(6,3) = dt_*Eigen::Matrix3d::Identity();
+      F_t.block<3,3>(6,6) = Eigen::Matrix3d::Identity();
+
+      Eigen::Matrix<double, 9, 9> G_t = Eigen::Matrix<double, 9, 9>::Zero();
+      G_t.block<3,3>(0,0) = Eigen::Matrix3d::Identity();
+      G_t.block<3,3>(3,3) = q.toRotationMatrix();
+      G_t.block<3,3>(6,6) = q.toRotationMatrix();      
+
+      
+      q = q1;
+      v = v1;
+      p = p1;
+      cov = F_t * cov * F_t.transpose() + G_t * delta_cov * G_t.transpose();
+
+
+
+      //
+
+
+
+
+
+
+
       Eigen::Matrix<double, 9, 9> C;
-      C = state_est_vec_.at(i)->cov_ * F.transpose() * cov.inverse();
+      // C = state_est_vec_.at(i)->cov_ * F.transpose() * cov.inverse();
+      C = state_est_vec_.at(i)->cov_ * F_t.transpose() * cov.inverse();
+
       Eigen::Matrix<double, 9, 1> residual;
       residual.block<3,1>(0,0) = Log_q(q.conjugate() * state_est_vec_.at(i+1)->q_);
       residual.block<3,1>(3,0) = state_est_vec_.at(i+1)->v_ - v;
       residual.block<3,1>(6,0) = state_est_vec_.at(i+1)->p_ - p;
+
       Eigen::Matrix<double, 9, 1> m;
       m = C * residual;  // give the IMU results less weight
+
+
       state_est_vec_.at(i)->q_ = quat_positive(state_est_vec_.at(i)->q_ * Exp_q(m.block<3,1>(0,0)));
       state_est_vec_.at(i)->v_ = state_est_vec_.at(i)->v_ + m.block<3,1>(3,0);
       state_est_vec_.at(i)->p_ = state_est_vec_.at(i)->p_ + m.block<3,1>(6,0);
+
       // ignore sigma update
+
     }
-    */
 
     return true;
   }
@@ -776,6 +906,30 @@ class ExpLandmarkSLAM {
 
     return true;
   }
+
+
+  bool OutputError(std::string output_file_name) {
+
+    std::ofstream output_file(output_file_name);
+
+    output_file << "timestamp,d_q,d_v,d_p\n";
+
+    for (size_t i=0; i<state_len_; ++i) {
+
+      double q_diff = Log_q(state_est_vec_.at(i)->q_*state_vec_.at(i)->q_.conjugate()).norm();
+      double v_diff = (state_est_vec_.at(i)->v_ - state_vec_.at(i)->v_).norm();
+      double p_diff = (state_est_vec_.at(i)->p_ - state_vec_.at(i)->p_).norm();
+
+      output_file << std::to_string(state_est_vec_.at(i)->t_) << ",";
+      output_file << std::to_string(q_diff) << ",";
+      output_file << std::to_string(v_diff) << ",";
+      output_file << std::to_string(p_diff) << std::endl;
+    }
+
+    output_file.close();
+
+    return true;
+  }  
   
 
  private:
@@ -824,6 +978,7 @@ class ExpLandmarkSLAM {
 
   // data containers
   std::vector<std::vector<IMUData*>>          imu_vec_;                // state_len-1
+  std::vector<PreIntIMUData*>                 pre_int_imu_vec_;        // state_len-1
   std::vector<std::vector<ObservationData*>>  observation_vec_;        // state_len-1
 
   // estimator containers
@@ -856,6 +1011,7 @@ int main(int argc, char **argv) {
   slam_problem.InitializeSLAMProblem();
   slam_problem.InitializeTrajectory();
   slam_problem.OutputResult("result/sim/dr.csv");
+  slam_problem.OutputError("result/sim/dr_error.csv");
 
   return 0;
 }

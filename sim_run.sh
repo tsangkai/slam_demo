@@ -5,4 +5,4 @@
 ./build/sim/sim_em_app
 ./build/sim/sim_boem_app
 
-python3 eval_sim.py
+python3 sim_eval.py

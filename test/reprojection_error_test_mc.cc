@@ -80,8 +80,8 @@ Eigen::Vector3d CreateRandomVisiblePoint(double du, double dv,
 
 
 int main(int argc, char **argv) {
-  srand((unsigned int) time(0));
-  Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+  srand(0);
+  Eigen::Rand::Vmt19937_64 urng{ 0 };
 
   google::InitGoogleLogging(argv[0]);
 
@@ -91,9 +91,57 @@ int main(int argc, char **argv) {
   double fv = 457.296696463;
   double cu = 367.215803962;      // principal point
   double cv = 248.375340610;
-  double noise_deviation = 0.8;
+  // double noise_deviation = 0.8;
 
   const size_t N = 100;           // number of landmarks
+
+
+
+  size_t num_trial = 100;
+
+
+  std::ofstream pre_rot_error("result/test/reprojection/pre_rot_error.csv");
+  std::ofstream post_rot_error("result/test/reprojection/post_rot_error.csv");
+  std::ofstream pre_pos_error("result/test/reprojection/pre_pos_error.csv");
+  std::ofstream post_pos_error("result/test/reprojection/post_pos_error.csv");
+
+
+  pre_rot_error << "noise";
+  post_rot_error << "noise";
+  pre_pos_error << "noise";
+  post_pos_error << "noise";
+
+  for (size_t trial=0; trial<num_trial; ++trial) {
+    pre_rot_error << "," << std::to_string(trial);
+    post_rot_error << "," << std::to_string(trial);
+    pre_pos_error << "," << std::to_string(trial);
+    post_pos_error << "," << std::to_string(trial);
+  }
+
+  pre_rot_error << "\n";
+  post_rot_error << "\n";
+  pre_pos_error << "\n";
+  post_pos_error << "\n";
+
+
+
+
+
+  for (size_t noise_idx=1; noise_idx<=10; ++noise_idx) {
+
+
+  double noise_deviation = 0.1 * double(noise_idx);
+
+
+  pre_rot_error << std::to_string(noise_deviation);
+  post_rot_error << std::to_string(noise_deviation);
+  pre_pos_error << std::to_string(noise_deviation);
+  post_pos_error << std::to_string(noise_deviation);
+
+
+
+  for (size_t trial=0; trial<num_trial; ++trial) {
+
 
   std::vector<Eigen::Vector3d> landmark_vec;
   std::vector<Eigen::Vector2d> keypoint_vec;
@@ -102,7 +150,7 @@ int main(int argc, char **argv) {
 
 
 
-  std::cout << "create simulation scenario... " << std::flush;
+  // std::cout << "create simulation scenario... " << std::flush;
 
   Transformation T_nb;                         // navigation to body
   T_nb.SetRandom(10.0, M_PI);
@@ -129,12 +177,12 @@ int main(int argc, char **argv) {
     keypoint_vec.push_back(keypoint);
   }
 
-  std::cout << " [ OK ] " << std::endl;
+  // std::cout << " [ OK ] " << std::endl;
 
 
 
 
-  std::cout << "build the optimization problem... " << std::flush;
+  // std::cout << "build the optimization problem... " << std::flush;
 
   ceres::Problem optimization_problem;
   ceres::Solver::Options optimization_options;
@@ -169,17 +217,17 @@ int main(int argc, char **argv) {
 
   }
 
-  std::cout << " [ OK ] " << std::endl;
+  // std::cout << " [ OK ] " << std::endl;
 
 
 
 
 
-
+  /*
   std::cout << "\n\n  ==========================================================" << std::endl;
   std::cout << "    Set landmarks constant and add disturbance to state." << std::endl;
   std::cout << "  ==========================================================\n\n" << std::endl;
-
+  */
 
   Transformation T_disturb;
   T_disturb.SetRandom(0.5, 0.1);
@@ -197,59 +245,40 @@ int main(int argc, char **argv) {
 
 
   ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
-  std::cout << optimization_summary.FullReport() << "\n";
+  // std::cout << optimization_summary.FullReport() << "\n";
 
 
   // output the optimization result
+  /*
   std::cout << "rotation difference before opt.: \t" << 2*(T_nb.q() * T_nb_init.q().inverse()).vec().norm() << "\n";
   std::cout << "rotation difference after opt.:  \t" << 2*(T_nb.q() * rotation_block_ptr->estimate().inverse()).vec().norm() << "\n\n";
 
   std::cout << "position difference before opt.: \t" << (T_nb.t() - T_nb_init.t()).norm() << "\n";
   std::cout << "position difference after opt.:  \t" << (T_nb.t() - position_block_ptr->estimate()).norm() << "\n\n";
+  */
 
 
+  pre_rot_error << "," << std::to_string(2*(T_nb.q() * T_nb_init.q().inverse()).vec().norm());
+  post_rot_error << "," << std::to_string(2*(T_nb.q() * rotation_block_ptr->estimate().inverse()).vec().norm());
+  pre_pos_error << "," << std::to_string((T_nb.t() - T_nb_init.t()).norm());
+  post_pos_error << "," << std::to_string((T_nb.t() - position_block_ptr->estimate()).norm());
 
 
-  /*
-
-
-  std::cout << "\n\n====================================================" << std::endl;
-  std::cout << "Set state constant and add disturbance to landmarks." << std::endl;
-  std::cout << "====================================================\n\n" << std::endl;
-
-
-
-  rotation_block_ptr->setEstimate(T_nb.q());
-  position_block_ptr->setEstimate(T_nb.t());
-
-  optimization_problem.SetParameterBlockConstant(rotation_block_ptr->parameters());
-  optimization_problem.SetParameterBlockConstant(position_block_ptr->parameters());
-
-
-  for (size_t i=0; i<N; ++i) {
-    landmark_para_vec.at(i)->setEstimate(landmark_vec.at(i) + 0.5 * Eigen::Rand::normal<Eigen::Vector3d>(3, 1, urng));
-    optimization_problem.SetParameterBlockVariable(landmark_para_vec.at(i)->parameters());
   }
 
-
-  double pre_opt_error = 0;
-  for (size_t i=0; i<N; ++i) {
-    pre_opt_error += (landmark_para_vec.at(i)->estimate() - landmark_vec.at(i)).norm() / N;
-  }  
-
-  ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
-  std::cout << optimization_summary.FullReport() << "\n";
-
-  double post_opt_error = 0;
-  for (size_t i=0; i<N; ++i) {
-    post_opt_error += (landmark_para_vec.at(i)->estimate() - landmark_vec.at(i)).norm() / N;
-  }  
+  pre_rot_error << "\n";
+  post_rot_error << "\n";
+  pre_pos_error << "\n";
+  post_pos_error << "\n";
 
 
-  std::cout << "landmark error before opt.: \t" << pre_opt_error << "\n";
-  std::cout << "landmark error after opt.:  \t" << post_opt_error << "\n\n";
+  }
 
-  */
+  pre_rot_error.close();
+  post_rot_error.close();
+  pre_pos_error.close();
+  post_pos_error.close();
+
 
   return 0;
 }
