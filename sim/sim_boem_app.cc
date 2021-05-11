@@ -136,12 +136,12 @@ struct ObservationData {
 
 
 
-class ExpLandmarkOptSLAM {
+class ExpLandmarkSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
  public:
 
-  ExpLandmarkOptSLAM(std::string config_file_path) {
+  ExpLandmarkSLAM(std::string config_file_path) {
 
     cv::FileStorage config_file(config_file_path, cv::FileStorage::READ);
 
@@ -906,7 +906,7 @@ int main(int argc, char **argv) {
 
   google::InitGoogleLogging(argv[0]);
 
-  ExpLandmarkOptSLAM slam_problem("config/config_sim.yaml");
+  ExpLandmarkSLAM slam_problem("config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark();
