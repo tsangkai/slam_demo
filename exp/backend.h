@@ -287,6 +287,8 @@ class ExpLandmarkSLAM {
 
     size_t state_idx = 0;                 // the index of the last element
 
+    imu_vec_.resize(state_est_vec_.size()-1);
+
     PreIntIMUData* int_imu_data_ptr = new PreIntIMUData(state_est_vec_.at(state_idx)->b_gyr_,
                                                         state_est_vec_.at(state_idx)->b_acc_,
                                                         sigma_g_c_,
@@ -318,14 +320,16 @@ class ExpLandmarkSLAM {
         }
       }
 
-      IMUData imu_data(timestamp, gyr, acc);
+      // IMUData imu_data(timestamp, gyr, acc);
+      IMUData* imu_data_ptr = new IMUData(timestamp, gyr, acc);
       
       
-      if (state_est_vec_.front()->t_ <= imu_data.timestamp_) {
+      if (state_est_vec_.front()->t_ <= imu_data_ptr->timestamp_) {
 
         // case 1: the time stamp of the imu data is between two consecutive states
-        if (imu_data.timestamp_ < state_est_vec_.at(state_idx+1)->t_) {
-          int_imu_data_ptr->IntegrateSingleIMU(imu_data, imu_dt_);
+        if (imu_data_ptr->timestamp_ < state_est_vec_.at(state_idx+1)->t_) {
+          int_imu_data_ptr->IntegrateSingleIMU(*imu_data_ptr, imu_dt_);
+
         }
         // case 2: the imu data just enter the new interval of integration
         else {
@@ -340,14 +344,19 @@ class ExpLandmarkSLAM {
                                                sigma_g_c_,
                                                sigma_a_c_);
 
-          int_imu_data_ptr->IntegrateSingleIMU(imu_data, imu_dt_);
+          int_imu_data_ptr->IntegrateSingleIMU(*imu_data_ptr, imu_dt_);
 
         }
+
+        if (state_idx < state_est_vec_.size()-1) {
+          imu_vec_.at(state_idx).push_back(imu_data_ptr);
+        }        
       }
     }
 
     imu_file.close();
 
+    std::cout << "imu_vec_  " << imu_vec_.size() << std::endl;
     std::cout << "pre_int_imu_vec_  " << pre_int_imu_vec_.size() << std::endl;
     std::cout << "Finished reading IMU data." << std::endl;
     return true;
@@ -511,6 +520,7 @@ class ExpLandmarkSLAM {
 
 
   // data containers
+  std::vector<std::vector<IMUData*>>          imu_vec_;                // state_len-1
   std::vector<PreIntIMUData*>                 pre_int_imu_vec_;        // state_len-1
   std::vector<std::vector<ObservationData*>>  observation_vec_;        // state_len-1
 
@@ -521,7 +531,7 @@ class ExpLandmarkSLAM {
   // parameter containers
   std::vector<StatePara*>                     state_para_vec_;         // state_len
   std::vector<Vec3dParameterBlock*>           landmark_para_vec_;      // landmark_len
-  
+
 };
 
 
