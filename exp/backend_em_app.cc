@@ -23,7 +23,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
 
 
-  bool ExpectationStep() {
+  bool ExpectationStep(double kf_const, double rts_const) {
 
 
     double dt_ = imu_dt_;
@@ -73,16 +73,28 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         cov = F * cov * F.transpose() + G * w_cov * G.transpose();
       }
 
-      double kf_fwd = 0.7;
+      double kf_fwd = kf_const; // 0.2;
+
       Eigen::Quaterniond q_vio = state_est_vec_.at(i+1)->q_;
       Eigen::Vector3d v_vio = state_est_vec_.at(i+1)->v_;
       Eigen::Vector3d p_vio = state_est_vec_.at(i+1)->p_;
 
-      if ((p_vio - p0).norm() < 0.6) {
-        state_est_vec_.at(i+1)->q_ = quat_positive(q0 * Exp_q( kf_fwd * Log_q(q0.conjugate()*q_vio)));
-        state_est_vec_.at(i+1)->v_ = v0 + kf_fwd * (v_vio - v0);
-        state_est_vec_.at(i+1)->p_ = p0 + kf_fwd * (p_vio - p0);
+      if ((p0 - p_vio).norm() < 0.2) {
+      
+        state_est_vec_.at(i+1)->q_ = quat_positive(q_vio * Exp_q( kf_fwd * Log_q(q_vio.conjugate()*q0)));
+        state_est_vec_.at(i+1)->v_ = v_vio + kf_fwd * (v0 - v_vio);
+        state_est_vec_.at(i+1)->p_ = p_vio + kf_fwd * (p0 - p_vio);
       }
+
+      /*
+      if (1) {
+      
+        state_est_vec_.at(i+1)->q_ = quat_positive(state_est_vec_.at(i)->q_ * Exp_q( kf_const * Log_q(vio_est_vec_.at(i)->q_.conjugate()*vio_est_vec_.at(i+1)->q_)));
+        state_est_vec_.at(i+1)->v_ = state_est_vec_.at(i)->v_ + kf_const * (vio_est_vec_.at(i+1)->v_ - vio_est_vec_.at(i)->v_);
+        state_est_vec_.at(i+1)->p_ = state_est_vec_.at(i)->p_ + kf_const * (vio_est_vec_.at(i+1)->p_ - vio_est_vec_.at(i)->p_);
+      }
+      */
+
       state_est_vec_.at(i+1)->cov_ = cov;
 
 
@@ -111,7 +123,8 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
         // exclude outliers
         Eigen::Vector2d innovation = measurement - landmark_proj;
-        if (innovation.norm() < 90) {  // if the threshold is too small, no loop closure can occur
+        // std::cout << i << "\t" << observation_vec_.at(i).at(j)->landmark_id_-1 << "\t" << innovation.norm() << std::endl;
+        // if (innovation.norm() < 80) {  // if the threshold is too small, no loop closure can occur
 
           Eigen::Matrix<double, 2, 2> H_cam;
           H_cam << fu_, 0.0,
@@ -135,18 +148,21 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
           Eigen::Matrix<double, 9, 1> m;
           m = K * (measurement - landmark_proj);
 
-          k_R = k_R * Exp(m.block<3,1>(0,0));
-          k_v = k_v + m.block<3,1>(3,0);
-          k_p = k_p + m.block<3,1>(6,0);  
+          if (m.block<3,1>(6,0).norm() < 0.3) {
+            k_R = k_R * Exp(m.block<3,1>(0,0));
+            k_v = k_v + m.block<3,1>(3,0);
+            k_p = k_p + m.block<3,1>(6,0);  
 
-          Eigen::Matrix<double, 9, 9> IKH;
-          IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-          obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
-          
-        }
+            Eigen::Matrix<double, 9, 9> IKH;
+            IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
+            obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
+  
+          }
+        // }
       }
 
-      if (k_p.norm() < 0.4) {
+      // if (k_p.norm() < 1.0) {
+      if (1) {
 
         state_est_vec_.at(i+1)->q_ = quat_positive(Eigen::Quaterniond(state_est_vec_.at(i+1)->q_ * k_R));
         state_est_vec_.at(i+1)->v_ = state_est_vec_.at(i+1)->v_ + k_v;
@@ -154,7 +170,11 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
         state_est_vec_.at(i+1)->cov_ = obs_cov;
       }
+
+      // std::cin.get();
+
     }
+
 
 
     // backward RTS smoother
@@ -162,9 +182,18 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
       // std::cout << "RTS smoother: " << i << std::endl;
 
-      Eigen::Quaterniond q0 = state_est_vec_.at(i)->q_;
-      Eigen::Vector3d v0 = state_est_vec_.at(i)->v_;
-      Eigen::Vector3d p0 = state_est_vec_.at(i)->p_;
+      // Eigen::Quaterniond q0 = state_est_vec_.at(i)->q_;
+      // Eigen::Vector3d v0 = state_est_vec_.at(i)->v_;
+      // Eigen::Vector3d p0 = state_est_vec_.at(i)->p_;
+
+
+
+
+
+      Eigen::Quaterniond q0 = quat_positive(state_est_vec_.at(i)->q_ * Exp_q( Log_q(vio_est_vec_.at(i)->q_.conjugate()*vio_est_vec_.at(i+1)->q_)));
+      Eigen::Vector3d v0 = state_est_vec_.at(i)->v_ + (vio_est_vec_.at(i+1)->v_ - vio_est_vec_.at(i)->v_);
+      Eigen::Vector3d p0 = state_est_vec_.at(i)->p_ + (vio_est_vec_.at(i+1)->p_ - vio_est_vec_.at(i)->p_);
+
       Eigen::Matrix<double, 9, 9> cov = state_est_vec_.at(i)->cov_;
 
       Eigen::Matrix<double, 9, 9> F_all = Eigen::Matrix<double, 9, 9>::Identity();
@@ -196,9 +225,9 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         w_cov.block<3,3>(0,0) = (sigma_g_c_*sigma_g_c_/dt_)*Eigen::Matrix3d::Identity();
         w_cov.block<3,3>(3,3) = (sigma_a_c_*sigma_a_c_/dt_)*Eigen::Matrix3d::Identity();
 
-        q0 = q1;
-        v0 = v1;
-        p0 = p1;
+        // q0 = q1;
+        // v0 = v1;
+        // p0 = p1;
         cov = F * cov * F.transpose() + G * w_cov * G.transpose();
       }
 
@@ -212,7 +241,8 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       residual.block<3,1>(6,0) = state_est_vec_.at(i+1)->p_ - p0;
 
       Eigen::Matrix<double, 9, 1> m;
-      m = 0.8 * C * residual;  // give the IMU results less weight
+      m = rts_const * C * residual;  // give the IMU results less weight
+      // m = C * residual;  // give the IMU results less weight
 
 
       state_est_vec_.at(i)->q_ = quat_positive(state_est_vec_.at(i)->q_ * Exp_q(m.block<3,1>(0,0)));
@@ -222,6 +252,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       // ignore sigma update
 
     }
+
 
 
 
@@ -239,7 +270,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     ceres::Solver::Options                      opt_options;
     ceres::Solver::Summary                      opt_summary;
 
-    ceres::LocalParameterization*               quat_parameterization_ptr = new ceres::QuaternionParameterization();;
+    ceres::LocalParameterization*               quat_parameterization_ptr = new ceres::QuaternionParameterization();
     ceres::LossFunction*                        loss_function_ptr = NULL; //new ceres::HuberLoss(1.0);
 
     opt_options.linear_solver_type = ceres::SPARSE_SCHUR;
@@ -247,7 +278,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     opt_options.num_threads = 6;
     opt_options.function_tolerance = 1e-20;
     opt_options.parameter_tolerance = 1e-25;
-    opt_options.max_num_iterations = 100;
+    opt_options.max_num_iterations = 40;
 
 
     // create parameter blocks for ceres
@@ -379,10 +410,10 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
+  slam_problem.ExpectationStep(0.0, 0.9);
+  // slam_problem.MaximizationStep();
+  // slam_problem.ExpectationStep(0.1, 0);
 
-  slam_problem.MaximizationStep();
-
-  slam_problem.ExpectationStep();
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
   boost::posix_time::time_duration t = end_time - begin_time;

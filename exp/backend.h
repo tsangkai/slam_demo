@@ -269,6 +269,23 @@ class ExpLandmarkSLAM {
 
     std::cout << "state_est_vec_  " << state_est_vec_.size() << std::endl;
 
+
+    // 
+    for (size_t i=0; i<state_est_vec_.size(); ++i) {
+
+      Estimate* state_est_ptr = new Estimate;
+
+      state_est_ptr->t_ = state_est_vec_.at(i)->t_;
+      state_est_ptr->q_ = state_est_vec_.at(i)->q_;
+      state_est_ptr->v_ = state_est_vec_.at(i)->v_;
+      state_est_ptr->p_ = state_est_vec_.at(i)->p_;
+      state_est_ptr->b_gyr_ = state_est_vec_.at(i)->b_gyr_;
+      state_est_ptr->b_acc_ = state_est_vec_.at(i)->b_acc_;
+
+      vio_est_vec_.push_back(state_est_ptr);
+
+    }
+
     return true;
   }
 
@@ -441,8 +458,8 @@ class ExpLandmarkSLAM {
         size_t landmark_idx = observation_vec_.at(i).at(j)->landmark_id_-1;  
 
         TriangularData tri_data_instance(observation_vec_.at(i).at(j)->feature_pos_,
-                                       state_est_vec_.at(i+1)->q_,
-                                       state_est_vec_.at(i+1)->p_);
+                                         state_est_vec_.at(i+1)->q_,
+                                         state_est_vec_.at(i+1)->p_);
         tri_data.at(landmark_idx).push_back(tri_data_instance);
       }
     }    
@@ -451,14 +468,16 @@ class ExpLandmarkSLAM {
     for (size_t i=0; i<landmark_est_vec_.size(); ++i) {
 
       size_t idx_0 = 0;
-      size_t idx_1 = std::min(size_t(1), tri_data.at(i).size()-1);
+      size_t idx_1 = 1;
+      assert(("Landmark is only observed once.", tri_data.at(i).size() >= 2));
 
-      Eigen::Vector3d init_landmark_pos = EpipolarInitialize(tri_data.at(i).at(idx_0).keypoint_, 
-                                                             tri_data.at(i).at(idx_0).rotation_, 
-                                                             tri_data.at(i).at(idx_0).position_,
-                                                             tri_data.at(i).at(idx_1).keypoint_, 
-                                                             tri_data.at(i).at(idx_1).rotation_, 
-                                                             tri_data.at(i).at(idx_1).position_,
+
+      Eigen::Vector3d init_landmark_pos = EpipolarInitialize(tri_data.at(i).at(0).keypoint_, 
+                                                             tri_data.at(i).at(0).rotation_, 
+                                                             tri_data.at(i).at(0).position_,
+                                                             tri_data.at(i).at(1).keypoint_, 
+                                                             tri_data.at(i).at(1).rotation_, 
+                                                             tri_data.at(i).at(1).position_,
                                                              T_bc_, fu_, fv_, cu_, cv_);
 
       *landmark_est_vec_.at(i) = init_landmark_pos;
@@ -525,6 +544,7 @@ class ExpLandmarkSLAM {
   std::vector<std::vector<ObservationData*>>  observation_vec_;        // state_len-1
 
   // estimator containers
+  std::vector<Estimate*>                      vio_est_vec_;            // state_len
   std::vector<Estimate*>                      state_est_vec_;          // state_len
   std::vector<Eigen::Vector3d*>               landmark_est_vec_;       // landmark_len
 
