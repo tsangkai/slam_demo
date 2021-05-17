@@ -276,7 +276,7 @@ class Frontend {
         }
 
         cv::undistortPoints(src_points, undis_src_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), cv::noArray());
-        cv::undistortPoints(dst_points, undis_dst_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), cv::noArray());        
+        cv::undistortPoints(dst_points, undis_dst_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), cv::noArray());
 
 
         // RANSAC        
@@ -287,7 +287,8 @@ class Frontend {
           if (mask.at<bool>(k,0)) {
             matches_ransac.push_back(matches_distance[k]);
 
-            keypoint_matches_.push_back(KeypointMatch(i, matches_distance[k].queryIdx, j, matches_distance[k].trainIdx));
+            keypoint_matches_.push_back(KeypointMatch(i, matches_distance[k].queryIdx, 
+                                                      j, matches_distance[k].trainIdx));
           }
         }
 
@@ -392,7 +393,7 @@ class Frontend {
       }
     }
 
-    std::cout << "multiply assigned id number = " << multiple_assigned_id.size() << std::endl;
+    std::cout << "multiple assigned id number = " << multiple_assigned_id.size() << std::endl;
 
 
     // Step 4: remove those multiply assigned landmark id
@@ -450,7 +451,7 @@ class Frontend {
         size_t lm_id = it->second->GetLandmarkId();
 
 
-        if (lm_id > 0 && landmark_obs_count_[lm_id-1] > landmark_obs_threshold_) {
+        if (lm_id > 0 && landmark_obs_count_[lm_id-1] >= landmark_obs_threshold_) {
 
           // reassign landmark id
           if (landmark_id_remap.find(lm_id) == landmark_id_remap.end()) {
@@ -470,6 +471,14 @@ class Frontend {
                         << keyframes_.at(i).keypoints_[kp_id].size
                         << std::endl;          
         }
+      }
+    }
+
+
+    // debugging
+    for (std::map<size_t, size_t>::iterator it=landmark_id_remap.begin(); it!=landmark_id_remap.end(); ++it) {
+      if (it->second >0) {
+        std::cout << it->second << "\t" << landmark_obs_count_[it->first-1] << std::endl;
       }
     }
 
