@@ -393,6 +393,8 @@ class ExpLandmarkSLAM {
     // ignore the header
     std::string line;
     std::getline(feature_obs_file, line);
+    size_t max_landmark_id = 1;
+
 
     while (std::getline(feature_obs_file, line)) {
 
@@ -419,7 +421,7 @@ class ExpLandmarkSLAM {
           // landmark id
           std::getline(str_stream, data_str, ','); 
           feature_obs_ptr->landmark_id_ = std::stoi(data_str);
-
+          max_landmark_id = std::max(max_landmark_id, feature_obs_ptr->landmark_id_);
           // u, v
           for (int i=0; i<2; ++i) {                    
             std::getline(str_stream, data_str, ','); 
@@ -432,18 +434,20 @@ class ExpLandmarkSLAM {
 
 
           // resize landmark vector
+          /*
           size_t landmark_id = feature_obs_ptr->landmark_id_-1;
           if (landmark_id >= landmark_est_vec_.size()) {
             landmark_est_vec_.resize(landmark_id+1);
           }
+          */
         }
       }
     }
 
     feature_obs_file.close();
 
-
-    for (size_t i=0; i<landmark_est_vec_.size(); ++i) {
+    landmark_est_vec_.resize(max_landmark_id);
+    for (size_t i=0; i<max_landmark_id; ++i) {
       landmark_est_vec_.at(i) = new Eigen::Vector3d;
     }
 
@@ -455,7 +459,7 @@ class ExpLandmarkSLAM {
     for (size_t i=0; i<observation_vec_.size(); ++i) {
       for (size_t j=0; j<observation_vec_.at(i).size(); ++j) {
 
-        size_t landmark_idx = observation_vec_.at(i).at(j)->landmark_id_-1;  
+        size_t landmark_idx = observation_vec_.at(i).at(j)->landmark_id_-1;
 
         TriangularData tri_data_instance(observation_vec_.at(i).at(j)->feature_pos_,
                                          state_est_vec_.at(i+1)->q_,
@@ -472,11 +476,11 @@ class ExpLandmarkSLAM {
       assert(("Landmark is only observed once.", tri_data.at(i).size() >= 2));
 
 
-      Eigen::Vector3d init_landmark_pos = EpipolarInitialize(tri_data.at(i).at(0).keypoint_, 
-                                                             tri_data.at(i).at(0).rotation_, 
+      Eigen::Vector3d init_landmark_pos = EpipolarInitialize(tri_data.at(i).at(0).keypoint_,
+                                                             tri_data.at(i).at(0).rotation_,
                                                              tri_data.at(i).at(0).position_,
-                                                             tri_data.at(i).at(1).keypoint_, 
-                                                             tri_data.at(i).at(1).rotation_, 
+                                                             tri_data.at(i).at(1).keypoint_,
+                                                             tri_data.at(i).at(1).rotation_,
                                                              tri_data.at(i).at(1).position_,
                                                              T_bc_, fu_, fv_, cu_, cv_);
 

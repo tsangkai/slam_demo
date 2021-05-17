@@ -79,7 +79,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       Eigen::Vector3d v_vio = state_est_vec_.at(i+1)->v_;
       Eigen::Vector3d p_vio = state_est_vec_.at(i+1)->p_;
 
-      if ((p0 - p_vio).norm() < 0.2) {
+      if ((p0 - p_vio).norm() < 0.02) {
       
         state_est_vec_.at(i+1)->q_ = quat_positive(q_vio * Exp_q( kf_fwd * Log_q(q_vio.conjugate()*q0)));
         state_est_vec_.at(i+1)->v_ = v_vio + kf_fwd * (v0 - v_vio);
@@ -148,7 +148,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
           Eigen::Matrix<double, 9, 1> m;
           m = K * (measurement - landmark_proj);
 
-          if (m.block<3,1>(6,0).norm() < 0.3) {
+          if (m.block<3,1>(6,0).norm() < 0.1) {
             k_R = k_R * Exp(m.block<3,1>(0,0));
             k_v = k_v + m.block<3,1>(3,0);
             k_p = k_p + m.block<3,1>(6,0);  
@@ -410,9 +410,9 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
-  slam_problem.ExpectationStep(0.0, 0.9);
+  slam_problem.ExpectationStep(0, 1.0);
   // slam_problem.MaximizationStep();
-  // slam_problem.ExpectationStep(0.1, 0);
+  // slam_problem.ExpectationStep(1.0, 1.0);
 
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
