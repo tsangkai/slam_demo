@@ -410,9 +410,9 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
-  slam_problem.ExpectationStep(0, 1);
-  // slam_problem.MaximizationStep();
-  // slam_problem.ExpectationStep(1.0, 1.0);
+  slam_problem.ExpectationStep(0, 1.0);
+  slam_problem.MaximizationStep();
+  slam_problem.ExpectationStep(1.0, 1.0);
 
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
