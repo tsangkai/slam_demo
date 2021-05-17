@@ -148,7 +148,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
           Eigen::Matrix<double, 9, 1> m;
           m = K * (measurement - landmark_proj);
 
-          if (m.block<3,1>(6,0).norm() < 0.1) {
+          if (m.block<3,1>(6,0).norm() < 0.06) {
             k_R = k_R * Exp(m.block<3,1>(0,0));
             k_v = k_v + m.block<3,1>(3,0);
             k_p = k_p + m.block<3,1>(6,0);  
@@ -410,7 +410,7 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
-  slam_problem.ExpectationStep(0, 1.0);
+  slam_problem.ExpectationStep(0, 1);
   // slam_problem.MaximizationStep();
   // slam_problem.ExpectationStep(1.0, 1.0);
 

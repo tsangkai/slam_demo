@@ -471,10 +471,7 @@ class ExpLandmarkSLAM {
     // set landmark initial estimate
     for (size_t i=0; i<landmark_est_vec_.size(); ++i) {
 
-      size_t idx_0 = 0;
-      size_t idx_1 = 1;
       assert(("Landmark is only observed once.", tri_data.at(i).size() >= 2));
-
 
       Eigen::Vector3d init_landmark_pos = EpipolarInitialize(tri_data.at(i).at(0).keypoint_,
                                                              tri_data.at(i).at(0).rotation_,
