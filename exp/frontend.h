@@ -474,14 +474,6 @@ class Frontend {
       }
     }
 
-
-    // debugging
-    for (std::map<size_t, size_t>::iterator it=landmark_id_remap.begin(); it!=landmark_id_remap.end(); ++it) {
-      if (it->second >0) {
-        std::cout << it->second << "\t" << landmark_obs_count_[it->first-1] << std::endl;
-      }
-    }
-
     std::cout << "output landmark numbers: " << landmark_count << std::endl;
 
     return true;
