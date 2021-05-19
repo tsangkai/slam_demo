@@ -23,7 +23,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
 
 
-  bool ExpectationStep(double kf_const, double rts_const) {
+  bool ExpectationStep() {
 
 
     double dt_ = imu_dt_;
@@ -73,29 +73,13 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         cov = F * cov * F.transpose() + G * w_cov * G.transpose();
       }
 
-      double kf_fwd = kf_const; // 0.2;
 
-      Eigen::Quaterniond q_vio = state_est_vec_.at(i+1)->q_;
-      Eigen::Vector3d v_vio = state_est_vec_.at(i+1)->v_;
-      Eigen::Vector3d p_vio = state_est_vec_.at(i+1)->p_;
-
-      // if (kf_const > 0) {
-      if ((p0 - p_vio).norm() < 0.02) {
-        /*
-        state_est_vec_.at(i+1)->q_ = quat_positive(q_vio * Exp_q( kf_fwd * Log_q(q_vio.conjugate()*q0)));
-        state_est_vec_.at(i+1)->v_ = v_vio + kf_fwd * (v0 - v_vio);
-        state_est_vec_.at(i+1)->p_ = p_vio + kf_fwd * (p0 - p_vio);
-        */
+      if ((p0 - state_est_vec_.at(i+1)->p_).norm() < 0.02) {
 
         state_est_vec_.at(i+1)->q_ = quat_positive(q0);
         state_est_vec_.at(i+1)->v_ = v0;
         state_est_vec_.at(i+1)->p_ = p0;
-
-      // }
       }
-
-
-
       state_est_vec_.at(i+1)->cov_ = cov;
 
 
@@ -241,9 +225,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       residual.block<3,1>(6,0) = state_est_vec_.at(i+1)->p_ - p0;
 
       Eigen::Matrix<double, 9, 1> m;
-      m = rts_const * C * residual;  // give the IMU results less weight
-      // m = C * residual;  // give the IMU results less weight
-
+      m = C * residual;
 
       state_est_vec_.at(i)->q_ = quat_positive(state_est_vec_.at(i)->q_ * Exp_q(m.block<3,1>(0,0)));
       state_est_vec_.at(i)->v_ = state_est_vec_.at(i)->v_ + m.block<3,1>(3,0);
@@ -271,7 +253,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     ceres::Solver::Summary                      opt_summary;
 
     ceres::LocalParameterization*               quat_parameterization_ptr = new ceres::QuaternionParameterization();
-    ceres::LossFunction*                        loss_function_ptr = new ceres::HuberLoss(1.0);
+    ceres::LossFunction*                        loss_function_ptr = NULL; //new ceres::HuberLoss(1.0);
 
     opt_options.linear_solver_type = ceres::SPARSE_SCHUR;
     opt_options.minimizer_progress_to_stdout = true;
@@ -410,9 +392,9 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
-  slam_problem.ExpectationStep(0, 1.0);
+  slam_problem.ExpectationStep();
   slam_problem.MaximizationStep();
-  slam_problem.ExpectationStep(1.0, 1.0);
+  slam_problem.ExpectationStep();
 
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();

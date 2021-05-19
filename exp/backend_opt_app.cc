@@ -39,7 +39,7 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
     opt_options.num_threads = 6;
     opt_options.function_tolerance = 1e-20;
     opt_options.parameter_tolerance = 1e-25;
-    opt_options.max_num_iterations = 100;
+    opt_options.max_num_iterations = 80; //100;
 
 
     // create parameter blocks for ceres
