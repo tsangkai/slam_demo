@@ -79,21 +79,22 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       Eigen::Vector3d v_vio = state_est_vec_.at(i+1)->v_;
       Eigen::Vector3d p_vio = state_est_vec_.at(i+1)->p_;
 
+      // if (kf_const > 0) {
       if ((p0 - p_vio).norm() < 0.02) {
-      
+        /*
         state_est_vec_.at(i+1)->q_ = quat_positive(q_vio * Exp_q( kf_fwd * Log_q(q_vio.conjugate()*q0)));
         state_est_vec_.at(i+1)->v_ = v_vio + kf_fwd * (v0 - v_vio);
         state_est_vec_.at(i+1)->p_ = p_vio + kf_fwd * (p0 - p_vio);
+        */
+
+        state_est_vec_.at(i+1)->q_ = quat_positive(q0);
+        state_est_vec_.at(i+1)->v_ = v0;
+        state_est_vec_.at(i+1)->p_ = p0;
+
+      // }
       }
 
-      /*
-      if (1) {
-      
-        state_est_vec_.at(i+1)->q_ = quat_positive(state_est_vec_.at(i)->q_ * Exp_q( kf_const * Log_q(vio_est_vec_.at(i)->q_.conjugate()*vio_est_vec_.at(i+1)->q_)));
-        state_est_vec_.at(i+1)->v_ = state_est_vec_.at(i)->v_ + kf_const * (vio_est_vec_.at(i+1)->v_ - vio_est_vec_.at(i)->v_);
-        state_est_vec_.at(i+1)->p_ = state_est_vec_.at(i)->p_ + kf_const * (vio_est_vec_.at(i+1)->p_ - vio_est_vec_.at(i)->p_);
-      }
-      */
+
 
       state_est_vec_.at(i+1)->cov_ = cov;
 
@@ -123,46 +124,45 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
         // exclude outliers
         Eigen::Vector2d innovation = measurement - landmark_proj;
-        // std::cout << i << "\t" << observation_vec_.at(i).at(j)->landmark_id_-1 << "\t" << innovation.norm() << std::endl;
-        // if (innovation.norm() < 80) {  // if the threshold is too small, no loop closure can occur
-
-          Eigen::Matrix<double, 2, 2> H_cam;
-          H_cam << fu_, 0.0,
-                   0.0, fv_;
-
-          Eigen::Matrix<double, 2, 3> H_proj;
-          H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
-                    0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
-
-          Eigen::Matrix<double, 3, 9> H_trans;
-          H_trans.setZero();
-          H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
-          H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
-
-          Eigen::Matrix<double, 2, 9> H;
-          H = H_cam * H_proj * H_trans;
 
 
-          Eigen::Matrix<double, 9, 2> K;
-          K = obs_cov * H.transpose() * (H * obs_cov * H.transpose() + R).inverse();
-          Eigen::Matrix<double, 9, 1> m;
-          m = K * (measurement - landmark_proj);
+        Eigen::Matrix<double, 2, 2> H_cam;
+        H_cam << fu_, 0.0,
+                 0.0, fv_;
 
-          if (m.block<3,1>(6,0).norm() < 0.06) {
-            k_R = k_R * Exp(m.block<3,1>(0,0));
-            k_v = k_v + m.block<3,1>(3,0);
-            k_p = k_p + m.block<3,1>(6,0);  
+        Eigen::Matrix<double, 2, 3> H_proj;
+        H_proj << 1.0/(landmark_c[2]), 0, -(landmark_c[0])/(landmark_c[2]*landmark_c[2]),
+                  0, 1.0/(landmark_c[2]), -(landmark_c[1])/(landmark_c[2]*landmark_c[2]);
 
-            Eigen::Matrix<double, 9, 9> IKH;
-            IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
-            obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
+        Eigen::Matrix<double, 3, 9> H_trans;
+        H_trans.setZero();
+        H_trans.block<3,3>(0,0) = R_bc.transpose() * Skew(R_nb.transpose()*(landmark - t_nb));
+        H_trans.block<3,3>(0,6) = (-1) * R_bc.transpose() * R_nb.transpose();
+
+        Eigen::Matrix<double, 2, 9> H;
+        H = H_cam * H_proj * H_trans;
+
+
+        Eigen::Matrix<double, 9, 2> K;
+        K = obs_cov * H.transpose() * (H * obs_cov * H.transpose() + R).inverse();
+        Eigen::Matrix<double, 9, 1> m;
+        m = K * (measurement - landmark_proj);
+
+        if (m.block<3,1>(6,0).norm() < 0.06) {
+          k_R = k_R * Exp(m.block<3,1>(0,0));
+          k_v = k_v + m.block<3,1>(3,0);
+          k_p = k_p + m.block<3,1>(6,0);  
+
+          Eigen::Matrix<double, 9, 9> IKH;
+          IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
+          obs_cov = IKH * obs_cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
   
-          }
-        // }
+        }
       }
 
-      // if (k_p.norm() < 1.0) {
-      if (1) {
+      // std::cout << i << "\t" << k_p.norm() << std::endl;
+      // if (1) {
+      if (k_p.norm() < 1.0) {
 
         state_est_vec_.at(i+1)->q_ = quat_positive(Eigen::Quaterniond(state_est_vec_.at(i+1)->q_ * k_R));
         state_est_vec_.at(i+1)->v_ = state_est_vec_.at(i+1)->v_ + k_v;
@@ -271,7 +271,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     ceres::Solver::Summary                      opt_summary;
 
     ceres::LocalParameterization*               quat_parameterization_ptr = new ceres::QuaternionParameterization();
-    ceres::LossFunction*                        loss_function_ptr = NULL; //new ceres::HuberLoss(1.0);
+    ceres::LossFunction*                        loss_function_ptr = new ceres::HuberLoss(1.0);
 
     opt_options.linear_solver_type = ceres::SPARSE_SCHUR;
     opt_options.minimizer_progress_to_stdout = true;
