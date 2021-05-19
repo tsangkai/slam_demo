@@ -23,7 +23,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
 
 
-  bool ExpectationStep() {
+  bool ExpectationStep(double feature_threshold) {
 
 
     double dt_ = imu_dt_;
@@ -80,6 +80,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         state_est_vec_.at(i+1)->v_ = v0;
         state_est_vec_.at(i+1)->p_ = p0;
       }
+
       state_est_vec_.at(i+1)->cov_ = cov;
 
 
@@ -132,7 +133,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         Eigen::Matrix<double, 9, 1> m;
         m = K * (measurement - landmark_proj);
 
-        if (m.block<3,1>(6,0).norm() < 0.06) {
+        if (m.block<3,1>(6,0).norm() < feature_threshold) {
           k_R = k_R * Exp(m.block<3,1>(0,0));
           k_v = k_v + m.block<3,1>(3,0);
           k_p = k_p + m.block<3,1>(6,0);  
@@ -144,8 +145,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         }
       }
 
-      // std::cout << i << "\t" << k_p.norm() << std::endl;
-      // if (1) {
+
       if (k_p.norm() < 1.0) {
 
         state_est_vec_.at(i+1)->q_ = quat_positive(Eigen::Quaterniond(state_est_vec_.at(i+1)->q_ * k_R));
@@ -155,8 +155,6 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         state_est_vec_.at(i+1)->cov_ = obs_cov;
       }
 
-      // std::cin.get();
-
     }
 
 
@@ -164,19 +162,10 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     // backward RTS smoother
     for (size_t i=imu_vec_.size()-1; i>0; --i) {
 
-      // std::cout << "RTS smoother: " << i << std::endl;
-
-      // Eigen::Quaterniond q0 = state_est_vec_.at(i)->q_;
+      Eigen::Quaterniond q0 = state_est_vec_.at(i)->q_;
       // Eigen::Vector3d v0 = state_est_vec_.at(i)->v_;
       // Eigen::Vector3d p0 = state_est_vec_.at(i)->p_;
 
-
-
-
-
-      Eigen::Quaterniond q0 = quat_positive(state_est_vec_.at(i)->q_ * Exp_q( Log_q(vio_est_vec_.at(i)->q_.conjugate()*vio_est_vec_.at(i+1)->q_)));
-      Eigen::Vector3d v0 = state_est_vec_.at(i)->v_ + (vio_est_vec_.at(i+1)->v_ - vio_est_vec_.at(i)->v_);
-      Eigen::Vector3d p0 = state_est_vec_.at(i)->p_ + (vio_est_vec_.at(i+1)->p_ - vio_est_vec_.at(i)->p_);
 
       Eigen::Matrix<double, 9, 9> cov = state_est_vec_.at(i)->cov_;
 
@@ -187,8 +176,8 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         Eigen::Vector3d acc = imu_vec_.at(i).at(j)->acc_ - state_est_vec_.at(i)->b_acc_;
 
         Eigen::Quaterniond q1 = quat_positive(q0 * Exp_q(dt_ * gyr));
-        Eigen::Vector3d v1 = v0 + dt_ * (q0.toRotationMatrix()* acc + gravity);
-        Eigen::Vector3d p1 = p0 + dt_ * v0 + 0.5 * dt_*dt_ * (q0.toRotationMatrix()* acc + gravity);
+        // Eigen::Vector3d v1 = v0 + dt_ * (q0.toRotationMatrix()* acc + gravity);
+        // Eigen::Vector3d p1 = p0 + dt_ * v0 + 0.5 * dt_*dt_ * (q0.toRotationMatrix()* acc + gravity);
 
         Eigen::Matrix<double, 9, 9> F = Eigen::Matrix<double, 9, 9>::Zero();
         F.block<3,3>(0,0) = Exp(dt_*gyr).transpose();
@@ -209,20 +198,26 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         w_cov.block<3,3>(0,0) = (sigma_g_c_*sigma_g_c_/dt_)*Eigen::Matrix3d::Identity();
         w_cov.block<3,3>(3,3) = (sigma_a_c_*sigma_a_c_/dt_)*Eigen::Matrix3d::Identity();
 
-        // q0 = q1;
+        q0 = q1;
         // v0 = v1;
         // p0 = p1;
         cov = F * cov * F.transpose() + G * w_cov * G.transpose();
       }
 
 
+      Eigen::Quaterniond q_next = quat_positive(state_est_vec_.at(i)->q_ * Exp_q( Log_q(vio_est_vec_.at(i)->q_.conjugate()*vio_est_vec_.at(i+1)->q_)));
+      Eigen::Vector3d v_next = state_est_vec_.at(i)->v_ + (vio_est_vec_.at(i+1)->v_ - vio_est_vec_.at(i)->v_);
+      Eigen::Vector3d p_next = state_est_vec_.at(i)->p_ + (vio_est_vec_.at(i+1)->p_ - vio_est_vec_.at(i)->p_);
+
+
+
       Eigen::Matrix<double, 9, 9> C;
       C = state_est_vec_.at(i)->cov_ * F_all.transpose() * cov.inverse();
 
       Eigen::Matrix<double, 9, 1> residual;
-      residual.block<3,1>(0,0) = Log_q(q0.conjugate() * state_est_vec_.at(i+1)->q_);
-      residual.block<3,1>(3,0) = state_est_vec_.at(i+1)->v_ - v0;
-      residual.block<3,1>(6,0) = state_est_vec_.at(i+1)->p_ - p0;
+      residual.block<3,1>(0,0) = Log_q(q_next.conjugate() * state_est_vec_.at(i+1)->q_);
+      residual.block<3,1>(3,0) = state_est_vec_.at(i+1)->v_ - v_next;
+      residual.block<3,1>(6,0) = state_est_vec_.at(i+1)->p_ - p_next;
 
       Eigen::Matrix<double, 9, 1> m;
       m = C * residual;
@@ -232,7 +227,6 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       state_est_vec_.at(i)->p_ = state_est_vec_.at(i)->p_ + m.block<3,1>(6,0);
 
       // ignore sigma update
-
     }
 
 
@@ -392,9 +386,9 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
-  slam_problem.ExpectationStep();
+  slam_problem.ExpectationStep(0.08);    // 0.06 for MH 03
   slam_problem.MaximizationStep();
-  slam_problem.ExpectationStep();
+  slam_problem.ExpectationStep(0.08);
 
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
