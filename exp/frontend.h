@@ -79,7 +79,7 @@ class Camera {
   double du_;
   double dv_;
 
-  double boarder_ratio_ = 0.15;
+  double boarder_ratio_ = 0.1;
 
   double fu_;
   double fv_;
