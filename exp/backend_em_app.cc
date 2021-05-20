@@ -107,8 +107,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         landmark_proj << fu_ * landmark_c[0]/landmark_c[2] + cu_, 
                          fv_ * landmark_c[1]/landmark_c[2] + cv_;
 
-        // exclude outliers
-        Eigen::Vector2d innovation = measurement - landmark_proj;
+        // Eigen::Vector2d innovation = measurement - landmark_proj;
 
 
         Eigen::Matrix<double, 2, 2> H_cam;
@@ -133,6 +132,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         Eigen::Matrix<double, 9, 1> m;
         m = K * (measurement - landmark_proj);
 
+        // exclude outliers
         if (m.block<3,1>(6,0).norm() < feature_threshold) {
           k_R = k_R * Exp(m.block<3,1>(0,0));
           k_v = k_v + m.block<3,1>(3,0);
@@ -165,7 +165,6 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       Eigen::Quaterniond q0 = state_est_vec_.at(i)->q_;
       // Eigen::Vector3d v0 = state_est_vec_.at(i)->v_;
       // Eigen::Vector3d p0 = state_est_vec_.at(i)->p_;
-
 
       Eigen::Matrix<double, 9, 9> cov = state_est_vec_.at(i)->cov_;
 
@@ -240,7 +239,6 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
   bool MaximizationStep() {
 
-
     // ceres parameter
     ceres::Problem                              opt_problem;
     ceres::Solver::Options                      opt_options;
@@ -287,25 +285,6 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       opt_problem.AddParameterBlock(state_para_vec_.at(i)->GetPositionBlock()->parameters(), 3);
     }
     
-
-    // imu constraints
-    for (size_t i=0; i<pre_int_imu_vec_.size(); ++i) {
-      ceres::CostFunction* cost_function = new PreIntImuError(pre_int_imu_vec_.at(i)->dt_,
-                                                              pre_int_imu_vec_.at(i)->dR_,
-                                                              pre_int_imu_vec_.at(i)->dv_,
-                                                              pre_int_imu_vec_.at(i)->dp_,
-                                                              pre_int_imu_vec_.at(i)->cov_);
-
-      opt_problem.AddResidualBlock(cost_function,
-                                   NULL,
-                                   state_para_vec_.at(i+1)->GetRotationBlock()->parameters(),
-                                   state_para_vec_.at(i+1)->GetVelocityBlock()->parameters(),
-                                   state_para_vec_.at(i+1)->GetPositionBlock()->parameters(),
-                                   state_para_vec_.at(i)->GetRotationBlock()->parameters(),
-                                   state_para_vec_.at(i)->GetVelocityBlock()->parameters(),
-                                   state_para_vec_.at(i)->GetPositionBlock()->parameters());   
-    }
-
 
     // observation constraints
     for (size_t i=0; i<observation_vec_.size(); ++i) {
