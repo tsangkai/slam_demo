@@ -21,9 +21,15 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
   }
 
+  bool ReadExpConfig(std::string config_folder_path) {
+    cv::FileStorage exp_config_file(config_folder_path + "config_exp.yaml", cv::FileStorage::READ);
 
+    feature_threshold_ = (double) exp_config_file["em"]["feature_threshold"];
+    
+    return true;
+  }
 
-  bool ExpectationStep(double feature_threshold) {
+  bool ExpectationStep() {
 
 
     double dt_ = imu_dt_;
@@ -107,8 +113,6 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         landmark_proj << fu_ * landmark_c[0]/landmark_c[2] + cu_, 
                          fv_ * landmark_c[1]/landmark_c[2] + cv_;
 
-        // Eigen::Vector2d innovation = measurement - landmark_proj;
-
 
         Eigen::Matrix<double, 2, 2> H_cam;
         H_cam << fu_, 0.0,
@@ -133,7 +137,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         m = K * (measurement - landmark_proj);
 
         // exclude outliers
-        if (m.block<3,1>(6,0).norm() < feature_threshold) {
+        if (m.block<3,1>(6,0).norm() < feature_threshold_) {
           k_R = k_R * Exp(m.block<3,1>(0,0));
           k_v = k_v + m.block<3,1>(3,0);
           k_p = k_p + m.block<3,1>(6,0);  
@@ -144,7 +148,6 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
   
         }
       }
-
 
       if (k_p.norm() < 1.0) {
 
@@ -248,7 +251,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     ceres::LossFunction*                        loss_function_ptr = NULL; //new ceres::HuberLoss(1.0);
 
     opt_options.linear_solver_type = ceres::SPARSE_SCHUR;
-    opt_options.minimizer_progress_to_stdout = true;
+    opt_options.minimizer_progress_to_stdout = false;
     opt_options.num_threads = 6;
     opt_options.function_tolerance = 1e-20;
     opt_options.parameter_tolerance = 1e-25;
@@ -334,6 +337,9 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     return true;
   }
 
+
+ private:
+  double feature_threshold_;
 };
 
 
@@ -357,6 +363,8 @@ int main(int argc, char **argv) {
 
   ExpLandmarkEmSLAM slam_problem(config_folder_path);
 
+  slam_problem.ReadExpConfig("data/" + dataset + "/");
+
   // initialize the first state
   slam_problem.ReadInitialTraj("data/" + dataset + "/");
 
@@ -365,9 +373,9 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
-  slam_problem.ExpectationStep(0.08);    // 0.06 for MH 03
+  slam_problem.ExpectationStep();    // 0.06 for MH 03
   slam_problem.MaximizationStep();
-  slam_problem.ExpectationStep(0.08);
+  slam_problem.ExpectationStep();
 
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();

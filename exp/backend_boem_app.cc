@@ -21,8 +21,16 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
   }
 
+  bool ReadExpConfig(std::string config_folder_path) {
+    cv::FileStorage exp_config_file(config_folder_path + "config_exp.yaml", cv::FileStorage::READ);
 
-  bool BoemStep(double feature_threshold) {
+    init_block_size_ = (double) exp_config_file["boem"]["init_block_size"];
+    
+    return true;
+  }
+
+
+  bool BoemStep() {
 
     std::cout << "Begin solving the BOEM problem." << std::endl;
 
@@ -49,7 +57,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
     // block structure
     size_t n = 1;
     double a = 1.1;
-    double c = 15.25;
+    double c = init_block_size_;
 
     size_t block_size = floor(c * pow(n, a)); 
     size_t T = 0;
@@ -162,7 +170,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
           m = K * (measurement - landmark_proj);
 
           // exclude outliers
-          if (m.block<3,1>(6,0).norm() < 0.06) {
+          if (m.block<3,1>(6,0).norm() < 0.08) {
             k_R = k_R * Exp(m.block<3,1>(0,0));
             k_v = k_v + m.block<3,1>(3,0);
             k_p = k_p + m.block<3,1>(6,0);  
@@ -265,7 +273,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
       ceres::LocalParameterization*   quat_parameterization_ptr;
 
       opt_options.linear_solver_type = ceres::SPARSE_SCHUR;
-      opt_options.minimizer_progress_to_stdout = true;
+      opt_options.minimizer_progress_to_stdout = false;
       opt_options.num_threads = 6;
       opt_options.function_tolerance = 1e-20;
       opt_options.parameter_tolerance = 1e-25;
@@ -355,6 +363,9 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
     return true;
   }
 
+ private:
+  double init_block_size_;
+
 };
 
 
@@ -370,6 +381,8 @@ int main(int argc, char **argv) {
 
   ExpLandmarkBoemSLAM slam_problem(config_folder_path);
 
+  slam_problem.ReadExpConfig("data/" + dataset + "/");
+
   // initialize the first state
   slam_problem.ReadInitialTraj("data/" + dataset + "/");
 
@@ -378,7 +391,7 @@ int main(int argc, char **argv) {
 
   boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
-  slam_problem.BoemStep(0.08);
+  slam_problem.BoemStep();
 
   boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
   boost::posix_time::time_duration t = end_time - begin_time;

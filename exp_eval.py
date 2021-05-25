@@ -57,7 +57,7 @@ ax.plot(gt_data['p_x'], gt_data['p_y'], gt_data['p_z'], color = plot_color['gt']
 ax.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], linewidth=line_width, label='VIO')
 ax.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], linewidth=line_width, label='opt.')
 ax.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], linewidth=line_width, label='EM')
-# ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], linewidth=line_width, label='BOEM')
+ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], linewidth=line_width, label='BOEM')
 
 
 
@@ -119,7 +119,7 @@ for i in range(len(gt_data['p_x'])):
 plt.plot(vo_data['timestamp'], vo_error, color = plot_color['vo'], linewidth=line_width, label='VIO')
 plt.plot(est_opt_data['timestamp'], est_opt_error, color = plot_color['opt'], linewidth=line_width, label='opt.')
 plt.plot(est_em_data['timestamp'], est_em_error, color = plot_color['em'], linewidth=line_width, label='EM')
-# plt.plot(est_boem_data['timestamp'], est_boem_error, color = plot_color['boem'], linewidth=line_width, label='BOEM')
+plt.plot(est_boem_data['timestamp'], est_boem_error, color = plot_color['boem'], linewidth=line_width, label='BOEM')
 
 
 plt.legend(loc='upper right')
@@ -133,13 +133,6 @@ plt.savefig("result/" + dataset + "/error.pdf")
 plt.show()
 
 print("\ntime:\t" + str(gt_data['timestamp'].iat[-1] - gt_data['timestamp'][0]))
-
-'''
-print("VO:\t" + str(np.mean(vo_error)))
-print("opt.:\t" + str(np.mean(est_opt_error)))
-print("EM:\t" + str(np.mean(est_em_error)))
-print("BOEM:\t" + str(np.mean(est_boem_error)))
-'''
 
 print("VO:\t" + str(math.sqrt(vo_error_2_sum / len(gt_data['p_x']))))
 print("opt.:\t" + str(math.sqrt(est_opt_error_2_sum / len(gt_data['p_x']))))

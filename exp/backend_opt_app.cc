@@ -35,7 +35,7 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
     ceres::LossFunction*                        loss_function_ptr = new ceres::HuberLoss(1.0);
 
     opt_options.linear_solver_type = ceres::SPARSE_SCHUR;
-    opt_options.minimizer_progress_to_stdout = true;
+    opt_options.minimizer_progress_to_stdout = false;
     opt_options.num_threads = 6;
     opt_options.function_tolerance = 1e-20;
     opt_options.parameter_tolerance = 1e-25;
