@@ -14,7 +14,6 @@ target_include_directories(sim_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -23,7 +22,6 @@ target_link_libraries(sim_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 
@@ -40,7 +38,6 @@ target_include_directories(sim_opt_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -49,7 +46,6 @@ target_link_libraries(sim_opt_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 
@@ -66,7 +62,6 @@ target_include_directories(sim_em_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -75,7 +70,6 @@ target_link_libraries(sim_em_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 
@@ -92,7 +86,6 @@ target_include_directories(sim_boem_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -101,7 +94,6 @@ target_link_libraries(sim_boem_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 

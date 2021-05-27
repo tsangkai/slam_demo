@@ -8,7 +8,6 @@
 #include <cmath>
 #include <map>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
 #include <Eigen/Core>
@@ -879,20 +878,12 @@ int main(int argc, char **argv) {
   slam_problem.CreateObservationData();
 
 
-
-  boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
-
   slam_problem.InitializeSLAMProblem();
 
   slam_problem.E_step();
   slam_problem.M_step();
   slam_problem.E_step();
 
-  boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-  boost::posix_time::time_duration t = end_time - begin_time;
-  double dt = ((double)t.total_nanoseconds() * 1e-9);
-
-  std::cout << "The entire time is " << dt << " sec." << std::endl;
 
   slam_problem.OutputResult("result/sim/em.csv");
 

@@ -13,10 +13,6 @@ You will need to install the following dependencies,
 * Eigen3,
 
         sudo apt-get install libeigen3-dev
-
-* Boost,
-
-        sudo apt-get install libboost-dev libboost-filesystem-dev
         
 * ceres
 
@@ -29,3 +25,8 @@ cd build
 cmake [-DBUILD_TEST=OFF] ..
 cmake --build .
 ```
+
+
+## Evaluation
+
+We use `perf` to measure the execution time of each algorithm.
