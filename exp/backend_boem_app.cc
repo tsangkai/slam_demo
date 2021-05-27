@@ -113,11 +113,27 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
           cov = F * cov * F.transpose() + G * w_cov * G.transpose();
         }
 
-        if ((p0 - state_est_vec_.at(i+1)->p_).norm() < 0.02) {
+
+        double p_diff = (p0 - state_est_vec_.at(i+1)->p_).norm();
+
+        if (p_diff < 0.02) {
+        // if ((p0 - state_est_vec_.at(i+1)->p_).norm() >= 1) {
 
           state_est_vec_.at(i+1)->q_ = quat_positive(q0);
           state_est_vec_.at(i+1)->v_ = v0;
           state_est_vec_.at(i+1)->p_ = p0;
+        }
+        else if (p_diff >= 0.8) {
+
+          Eigen::Vector3d imu_dq = Log_q(state_est_vec_.at(i+1)->q_.conjugate() * q0);
+          Eigen::Vector3d imu_dv = v0 - state_est_vec_.at(i+1)->v_;
+          Eigen::Vector3d imu_dp = p0 - state_est_vec_.at(i+1)->p_;
+
+          double kf_constant = 0.2; //0.1;
+          state_est_vec_.at(i+1)->q_ = state_est_vec_.at(i+1)->q_ * Exp_q(kf_constant * imu_dq);
+          state_est_vec_.at(i+1)->v_ = state_est_vec_.at(i+1)->v_ + kf_constant * imu_dv;
+          state_est_vec_.at(i+1)->p_ = state_est_vec_.at(i+1)->p_ + kf_constant * imu_dp;
+
         }
 
         state_est_vec_.at(i+1)->cov_ = cov;
