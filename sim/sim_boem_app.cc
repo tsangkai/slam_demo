@@ -127,7 +127,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
           // exclude outliers
           Eigen::Vector2d innovation = measurement - landmark_proj;
           // if (innovation.norm() < 80) {  
-          if (1) {  
+          // if (1) {  
 
             Eigen::Matrix<double, 2, 2> H_cam;
             H_cam << fu_, 0.0,
@@ -159,16 +159,16 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
             IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
             cov = IKH * cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
           
-          }
+          // }
         }
 
         // if (k_p.norm() < 0.65) {
-        if (1) {
+        // if (1) {
           state_est_vec_.at(i+1)->q_ = quat_positive(Eigen::Quaterniond(q * k_R));
           state_est_vec_.at(i+1)->v_ = v + k_v;
           state_est_vec_.at(i+1)->p_ = p + k_p;
           state_est_vec_.at(i+1)->cov_ = cov;
-        }
+        // }
       }
 
 
