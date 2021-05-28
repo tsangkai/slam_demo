@@ -79,7 +79,7 @@ class Camera {
   double du_;
   double dv_;
 
-  double boarder_ratio_ = 0.15;
+  double boarder_ratio_ = 0.1;
 
   double fu_;
   double fv_;
@@ -204,7 +204,7 @@ class Frontend {
                              (double) config_file["cameras"][0]["distortion_coefficients"][2],
                              (double) config_file["cameras"][0]["distortion_coefficients"][3]);
 
-    landmark_obs_threshold_ = 1;
+    landmark_obs_threshold_ = 2;
   }
 
   bool AddKeyframe(Keyframe keyframe) {
@@ -276,7 +276,7 @@ class Frontend {
         }
 
         cv::undistortPoints(src_points, undis_src_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), cv::noArray());
-        cv::undistortPoints(dst_points, undis_dst_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), cv::noArray());        
+        cv::undistortPoints(dst_points, undis_dst_point, camera_ptr_->K(), camera_ptr_->GetDistortionCoeff(), cv::noArray(), cv::noArray());
 
 
         // RANSAC        
@@ -287,7 +287,8 @@ class Frontend {
           if (mask.at<bool>(k,0)) {
             matches_ransac.push_back(matches_distance[k]);
 
-            keypoint_matches_.push_back(KeypointMatch(i, matches_distance[k].queryIdx, j, matches_distance[k].trainIdx));
+            keypoint_matches_.push_back(KeypointMatch(i, matches_distance[k].queryIdx, 
+                                                      j, matches_distance[k].trainIdx));
           }
         }
 
@@ -369,7 +370,7 @@ class Frontend {
 
     
     // Step 3: check each landmark id only appears once in each keyframe
-    std::set<size_t> multiply_assigned_id;
+    std::set<size_t> multiple_assigned_id;
 
     for (size_t i=0; i<keyframes_.size(); ++i) {
       std::map<size_t, size_t> landmark_id_count_table;        // landmark id, counts
@@ -387,12 +388,12 @@ class Frontend {
 
       for (std::map<size_t, size_t>::iterator it=landmark_id_count_table.begin(); it!=landmark_id_count_table.end(); ++it) {
         if (it->second >= 2) {
-          multiply_assigned_id.insert(it->first);
+          multiple_assigned_id.insert(it->first);
         }
       }
     }
 
-    std::cout << "multiply assigned id number = " << multiply_assigned_id.size() << std::endl;
+    std::cout << "multiple assigned id number = " << multiple_assigned_id.size() << std::endl;
 
 
     // Step 4: remove those multiply assigned landmark id
@@ -404,7 +405,7 @@ class Frontend {
         size_t landmark_id = it->second->GetLandmarkId();
         
         if (landmark_id!= 0) {
-          if (multiply_assigned_id.find(landmark_id)!=multiply_assigned_id.end()) {
+          if (multiple_assigned_id.find(landmark_id)!=multiple_assigned_id.end()) {
             it->second->ResetLandmarkId();
           }
           else {
@@ -450,7 +451,7 @@ class Frontend {
         size_t lm_id = it->second->GetLandmarkId();
 
 
-        if (lm_id > 0 && landmark_obs_count_[lm_id-1] > landmark_obs_threshold_) {
+        if (lm_id > 0 && landmark_obs_count_[lm_id-1] >= landmark_obs_threshold_) {
 
           // reassign landmark id
           if (landmark_id_remap.find(lm_id) == landmark_id_remap.end()) {

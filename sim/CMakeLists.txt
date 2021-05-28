@@ -6,6 +6,7 @@
 ###
 
 add_executable(sim_app 
+  sim.h
   sim_app.cc
 )
 
@@ -14,7 +15,6 @@ target_include_directories(sim_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -23,7 +23,6 @@ target_link_libraries(sim_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 
@@ -32,6 +31,7 @@ target_link_libraries(sim_app
 ###
 
 add_executable(sim_opt_app 
+  sim.h
   sim_opt_app.cc
 )
 
@@ -40,7 +40,6 @@ target_include_directories(sim_opt_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -49,7 +48,6 @@ target_link_libraries(sim_opt_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 
@@ -58,6 +56,7 @@ target_link_libraries(sim_opt_app
 ###
 
 add_executable(sim_em_app 
+  sim.h
   sim_em_app.cc
 )
 
@@ -66,7 +65,6 @@ target_include_directories(sim_em_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -75,7 +73,6 @@ target_link_libraries(sim_em_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 
@@ -84,6 +81,7 @@ target_link_libraries(sim_em_app
 ###
 
 add_executable(sim_boem_app 
+  sim.h
   sim_boem_app.cc
 )
 
@@ -92,7 +90,6 @@ target_include_directories(sim_boem_app
   PUBLIC ${EIGEN3_INCLUDE_DIR}
   PUBLIC EigenRand
   PUBLIC ${CERES_INCLUDE_DIRS}
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC lib
 )
 
@@ -101,7 +98,6 @@ target_link_libraries(sim_boem_app
   PUBLIC ${EIGEN3_LIBS}
   PUBLIC EigenRand
   PUBLIC ceres
-  PUBLIC ${Boost_LIBRARIES}
   PUBLIC lib
 )
 

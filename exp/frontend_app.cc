@@ -37,10 +37,11 @@ int main(int argc, char **argv) {
   cv::FileStorage config_file("config/config_fpga_p2_euroc.yaml", cv::FileStorage::READ);
   Frontend frontend(config_file);
 
-  // Read the column names
-  // Extract the first line in the file
+
+
   std::string line;
-  std::getline(vo_data_file, line);
+  std::getline(vo_data_file, line);                  // the first line, column names
+  std::getline(vo_data_file, line);                  // we ignore the observation at s0
 
   while (std::getline(vo_data_file, line)) {
     std::stringstream s_stream(line);                // Create a stringstream of the current line

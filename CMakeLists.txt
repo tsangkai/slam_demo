@@ -16,13 +16,10 @@ message("-- Eigen3 version: ${Eigen3_VERSION}")
 
 find_package(Ceres REQUIRED)
 
-find_package(Boost COMPONENTS system REQUIRED)
-
 
 add_subdirectory(lib)
-add_subdirectory(apps)
 add_subdirectory(sim)
-
+add_subdirectory(exp)
 
 
 if(BUILD_TEST)

@@ -42,7 +42,7 @@ est_boem_data['timestamp'] = est_boem_data['timestamp'] - init_time
 
 
 fig = plt.figure(1)
-fig.set_size_inches(fig_width, fig_height)
+# fig.set_size_inches(fig_width, fig_height)
 
 #ax = fig.gca(projection='3d')
 ax = Axes3D(fig, rect=(0.0, 0.05, 1, 0.9))
@@ -89,21 +89,31 @@ plt.show()
 
 # error plot
 fig = plt.figure(2)
-fig.set_size_inches(fig_width, fig_height)
+#fig.set_size_inches(fig_width, fig_height)
 
 line_width = 1.2
 
 
-vo_error = np.zeros_like(gt_data['p_x']);
-est_opt_error = np.zeros_like(gt_data['p_x']);
-est_em_error = np.zeros_like(gt_data['p_x']);
-est_boem_error = np.zeros_like(gt_data['p_x']);
+vo_error = np.zeros_like(gt_data['p_x'])
+est_opt_error = np.zeros_like(gt_data['p_x'])
+est_em_error = np.zeros_like(gt_data['p_x'])
+est_boem_error = np.zeros_like(gt_data['p_x'])
+
+vo_error_2_sum = 0
+est_opt_error_2_sum = 0
+est_em_error_2_sum = 0
+est_boem_error_2_sum = 0
 
 for i in range(len(gt_data['p_x'])):
 	vo_error[i] = math.sqrt( (gt_data['p_x'][i]-vo_data['p_x'][i])**2 + (gt_data['p_y'][i]-vo_data['p_y'][i])**2 + (gt_data['p_z'][i]-vo_data['p_z'][i])**2)
 	est_opt_error[i]  = math.sqrt( (gt_data['p_x'][i]-est_opt_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_opt_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_opt_data['p_z'][i])**2)
 	est_em_error[i]   = math.sqrt( (gt_data['p_x'][i]-est_em_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_em_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_em_data['p_z'][i])**2)
 	est_boem_error[i] = math.sqrt( (gt_data['p_x'][i]-est_boem_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_boem_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_boem_data['p_z'][i])**2)
+
+	vo_error_2_sum += (gt_data['p_x'][i]-vo_data['p_x'][i])**2 + (gt_data['p_y'][i]-vo_data['p_y'][i])**2 + (gt_data['p_z'][i]-vo_data['p_z'][i])**2
+	est_opt_error_2_sum += (gt_data['p_x'][i]-est_opt_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_opt_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_opt_data['p_z'][i])**2
+	est_em_error_2_sum += (gt_data['p_x'][i]-est_em_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_em_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_em_data['p_z'][i])**2 
+	est_boem_error_2_sum += (gt_data['p_x'][i]-est_boem_data['p_x'][i])**2 + (gt_data['p_y'][i]-est_boem_data['p_y'][i])**2 + (gt_data['p_z'][i]-est_boem_data['p_z'][i])**2
 
 
 plt.plot(vo_data['timestamp'], vo_error, color = plot_color['vo'], linewidth=line_width, label='VIO')
@@ -116,7 +126,7 @@ plt.legend(loc='upper right')
 
 plt.xlabel('time [s]')
 plt.ylabel('error [m]')
-plt.ylim([0,1.21])
+plt.ylim([0,1.41])
 
 plt.savefig("result/" + dataset + "/error.pdf")
 
@@ -124,7 +134,7 @@ plt.show()
 
 print("\ntime:\t" + str(gt_data['timestamp'].iat[-1] - gt_data['timestamp'][0]))
 
-print("VO:\t" + str(np.mean(vo_error)))
-print("opt.:\t" + str(np.mean(est_opt_error)))
-print("EM:\t" + str(np.mean(est_em_error)))
-print("BOEM:\t" + str(np.mean(est_boem_error)))
+print("VO:\t" + str(math.sqrt(vo_error_2_sum / len(gt_data['p_x']))))
+print("opt.:\t" + str(math.sqrt(est_opt_error_2_sum / len(gt_data['p_x']))))
+print("EM:\t" + str(math.sqrt(est_em_error_2_sum / len(gt_data['p_x']))))
+print("BOEM:\t" + str(math.sqrt(est_boem_error_2_sum / len(gt_data['p_x']))))

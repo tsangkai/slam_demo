@@ -99,12 +99,16 @@ int main(int argc, char **argv) {
   Eigen::Vector3d ref_p_mean(0,0,0);
   Eigen::Vector3d input_p_mean(0,0,0);
 
-  double one_over_size = 1.0 / (double) ref_state_vec.size();
 
-  for (size_t i=0; i<ref_state_vec.size(); ++i) {
+  size_t N = ref_state_vec.size() / 5;  // = ref_state_vec.size()
+
+  double one_over_size = 1.0 / (double) N;
+
+  for (size_t i=0; i<N; ++i) {
     ref_p_mean += one_over_size * ref_state_vec.at(i)->p_;
     input_p_mean += one_over_size * input_state_vec.at(i)->p_;
   }
+
 
   std::cout << "ref p mean: \t" << ref_p_mean << std::endl;
   std::cout << "input p mean: \t" << input_p_mean << std::endl;
