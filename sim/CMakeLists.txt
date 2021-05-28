@@ -6,6 +6,7 @@
 ###
 
 add_executable(sim_app 
+  sim.h
   sim_app.cc
 )
 
@@ -30,6 +31,7 @@ target_link_libraries(sim_app
 ###
 
 add_executable(sim_opt_app 
+  sim.h
   sim_opt_app.cc
 )
 
@@ -54,6 +56,7 @@ target_link_libraries(sim_opt_app
 ###
 
 add_executable(sim_em_app 
+  sim.h
   sim_em_app.cc
 )
 
@@ -78,6 +81,7 @@ target_link_libraries(sim_em_app
 ###
 
 add_executable(sim_boem_app 
+  sim.h
   sim_boem_app.cc
 )
 
