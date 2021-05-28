@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <Eigen/Core>
 #include <ceres/ceres.h>
 
@@ -152,20 +151,14 @@ int main(int argc, char **argv) {
 
   // initialize the first state
   slam_problem.ReadInitialTraj("data/" + dataset + "/");
-  slam_problem.OutputResult("result/" + dataset + "/traj_vo.csv");
+  // slam_problem.OutputResult("result/" + dataset + "/traj_vo.csv");
 
   slam_problem.ReadImuData(euroc_dataset_path + "imu0/data.csv");
   slam_problem.ReadObservationData("data/" + dataset + "/");
   
-  boost::posix_time::ptime begin_time = boost::posix_time::microsec_clock::local_time();
 
   slam_problem.SolveOptProblem();
 
-  boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-  boost::posix_time::time_duration t = end_time - begin_time;
-  double dt = ((double)t.total_nanoseconds() * 1e-9);
-
-  std::cout << "The entire time is " << dt << " sec." << std::endl;
 
   slam_problem.OutputResult("result/" + dataset + "/traj_opt.csv");
   

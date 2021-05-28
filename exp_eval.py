@@ -42,7 +42,7 @@ est_boem_data['timestamp'] = est_boem_data['timestamp'] - init_time
 
 
 fig = plt.figure(1)
-fig.set_size_inches(fig_width, fig_height)
+# fig.set_size_inches(fig_width, fig_height)
 
 #ax = fig.gca(projection='3d')
 ax = Axes3D(fig, rect=(0.0, 0.05, 1, 0.9))
@@ -89,7 +89,7 @@ plt.show()
 
 # error plot
 fig = plt.figure(2)
-fig.set_size_inches(fig_width, fig_height)
+#fig.set_size_inches(fig_width, fig_height)
 
 line_width = 1.2
 
