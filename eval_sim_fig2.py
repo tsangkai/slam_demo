@@ -20,83 +20,77 @@ fig_height = 4.38
 
 
 # error plot
-gt_data = pd.read_csv("result/sim/long_traj/gt.csv")
+num_realizations = 2
+gt_data = pd.read_csv("result/sim/gt.csv")
 
-dr_error_p = np.zeros_like(gt_data['p_x'])
-est_opt_error_p = np.zeros_like(gt_data['p_x'])
-est_em_error_p = np.zeros_like(gt_data['p_x'])
-est_boem_error_p = np.zeros_like(gt_data['p_x'])
+dr_error_array = np.zeros((num_realizations, 2))   # error_p, error_q
+opt_error_array = np.zeros_like(dr_error_array)
+em_error_array = np.zeros_like(dr_error_array)
+boem_error_array = np.zeros_like(dr_error_array)
 
-dr_error_q = np.zeros_like(gt_data['p_x'])
-est_opt_error_q = np.zeros_like(gt_data['p_x'])
-est_em_error_q = np.zeros_like(gt_data['p_x'])
-est_boem_error_q = np.zeros_like(gt_data['p_x'])
 
-def quat_rot_angle(q2, x2, y2, z2, i):
-	q1, x1, y1, z1 = gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]
-	del_q = q1*q2 + x1*x2 + y1*y2 + z1*z2
-	del_x = q1*x2 - x1*q2 + y1*z2 - z1*y2
-	del_y = q1*y2 - y1*q2 - x1*z2 + z1*x2
-	del_z = q1*z2 - q2*z1 + x1*y2 - y1*x2
+def quat_diff(q1, q2):
+	[w1, x1, y1, z1] = q1
+	[w2, x2, y2, z2] = q2
+
+	del_q = w1*w2 + x1*x2 + y1*y2 + z1*z2
+	del_x = w1*x2 - x1*w2 + y1*z2 - z1*y2
+	del_y = w1*y2 - y1*w2 - x1*z2 + z1*x2
+	del_z = w1*z2 - w2*z1 + x1*y2 - y1*x2
 	del_xyz = [del_x, del_y, del_z]
 	theta = 2*np.arctan2(np.linalg.norm(del_xyz), np.abs(del_q))
 	theta = (180*theta/np.pi)
-	return theta*theta
 
-for i in range(len(gt_data['p_x'])):
-	dr_error_list_p = []
-	est_opt_error_list_p = []
-	est_em_error_list_p = []
-	est_boem_error_list_p = []
-
-	dr_error_list_q = []
-	est_opt_error_list_q = []
-	est_em_error_list_q = []
-	est_boem_error_list_q = []
-
-	for k in range(0,50):
-		dr_data = pd.read_csv("result/sim/long_traj/dr_%s.csv" %k)
-		est_opt_data = pd.read_csv("result/sim/long_traj/opt_%s.csv" %k)
-		est_em_data = pd.read_csv("result/sim/long_traj_bug_fix/em_%s.csv" %k)
-		est_boem_data = pd.read_csv("result/sim/long_traj_bug_fix/boem_%s.csv" %k)
-
-		dr_error_list_p.extend([(gt_data['p_x'][i]-dr_data['p_x'][i])**2, (gt_data['p_y'][i]-dr_data['p_y'][i])**2, (gt_data['p_z'][i]-dr_data['p_z'][i])**2])
-		est_opt_error_list_p.extend([(gt_data['p_x'][i]-est_opt_data['p_x'][i])**2, (gt_data['p_y'][i]-est_opt_data['p_y'][i])**2, (gt_data['p_z'][i]-est_opt_data['p_z'][i])**2])
-		est_em_error_list_p.extend([(gt_data['p_x'][i]-est_em_data['p_x'][i])**2, (gt_data['p_y'][i]-est_em_data['p_y'][i])**2, (gt_data['p_z'][i]-est_em_data['p_z'][i])**2])
-		est_boem_error_list_p.extend([(gt_data['p_x'][i]-est_boem_data['p_x'][i])**2, (gt_data['p_y'][i]-est_boem_data['p_y'][i])**2, (gt_data['p_z'][i]-est_boem_data['p_z'][i])**2])
-
-		dr_error_list_q.append(quat_rot_angle(dr_data['q_w'][i], dr_data['q_x'][i], dr_data['q_y'][i], dr_data['q_z'][i], i))
-		est_opt_error_list_q.append(quat_rot_angle(est_opt_data['q_w'][i], est_opt_data['q_x'][i], est_opt_data['q_y'][i], est_opt_data['q_z'][i], i))
-		est_em_error_list_q.append(quat_rot_angle(est_em_data['q_w'][i], est_em_data['q_x'][i], est_em_data['q_y'][i], est_em_data['q_z'][i], i))
-		est_boem_error_list_q.append(quat_rot_angle(est_boem_data['q_w'][i], est_boem_data['q_x'][i], est_boem_data['q_y'][i], est_boem_data['q_z'][i], i))
+	return theta
 
 
-	dr_error_p[i] = math.sqrt(sum(dr_error_list_p)/len(dr_error_list_p))
-	est_opt_error_p[i] = math.sqrt(sum(est_opt_error_list_p)/len(est_opt_error_list_p))
-	est_em_error_p[i] = math.sqrt(sum(est_em_error_list_p)/len(est_em_error_list_p))
-	est_boem_error_p[i] = math.sqrt(sum(est_boem_error_list_p)/len(est_boem_error_list_p))
+for k in range(num_realizations-1):
+	# dr_data = pd.read_csv("result/sim/dr_%s.csv" % (k,))
+	opt_data = pd.read_csv("result/sim/opt_%s.csv" % (k,))
+	em_data = pd.read_csv("result/sim/em_%s.csv" % (k,))
+	boem_data = pd.read_csv("result/sim/boem_%s.csv" % (k,))
+	for i in range(0,len(gt_data['p_x'])-1):
+		# dr_error_array[i,0] += math.sqrt( (gt_data['p_x'][i]-dr_data['p_x'][i])**2 + (gt_data['p_y'][i]-dr_data['p_y'][i])**2 + (gt_data['p_z'][i]-dr_data['p_z'][i])**2)
+		opt_error_array[i, 0] += math.sqrt( (gt_data['p_x'][i]-opt_data['p_x'][i])**2 + (gt_data['p_y'][i]-opt_data['p_y'][i])**2 + (gt_data['p_z'][i]-opt_data['p_z'][i])**2)
+		em_error_array[i, 0] += math.sqrt( (gt_data['p_x'][i]-em_data['p_x'][i])**2 + (gt_data['p_y'][i]-em_data['p_y'][i])**2 + (gt_data['p_z'][i]-em_data['p_z'][i])**2)
+		boem_error_array[i, 0] += math.sqrt( (gt_data['p_x'][i]-boem_data['p_x'][i])**2 + (gt_data['p_y'][i]-boem_data['p_y'][i])**2 + (gt_data['p_z'][i]-boem_data['p_z'][i])**2)
 
-	dr_error_q[i] = math.sqrt(sum(dr_error_list_q)/len(dr_error_list_q))
-	est_opt_error_q[i] = math.sqrt(sum(est_opt_error_list_q)/len(est_opt_error_list_q))
-	est_em_error_q[i] = math.sqrt(sum(est_em_error_list_q)/len(est_em_error_list_q))
-	est_boem_error_q[i] = math.sqrt(sum(est_boem_error_list_q)/len(est_boem_error_list_q))
+		# dr_error_array[i,1] += quat_diff([dr_data['q_w'][i], dr_data['q_x'][i], dr_data['q_y'][i], dr_data['q_z'][i]],
+		# 							 [gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]])
+		opt_error_array[i, 1] += quat_diff([opt_data['q_w'][i], opt_data['q_x'][i], opt_data['q_y'][i], opt_data['q_z'][i]],
+								  [gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]])
+		em_error_array[i, 1] += quat_diff([em_data['q_w'][i], em_data['q_x'][i], em_data['q_y'][i], em_data['q_z'][i]],
+										  [gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]])
+		boem_error_array[i, 1] += quat_diff([boem_data['q_w'][i], boem_data['q_x'][i], boem_data['q_y'][i], boem_data['q_z'][i]],
+										   [gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]])
+
+dr_error_q = dr_error_array[:,1]/num_realizations
+opt_error_q = opt_error_array[:,1]/num_realizations
+em_error_q = em_error_array[:,1]/num_realizations
+boem_error_q = boem_error_array[:,1]/num_realizations
+
+dr_error_p = dr_error_array[:,0]/num_realizations
+opt_error_p = opt_error_array[:,0]/num_realizations
+em_error_p = em_error_array[:,0]/num_realizations
+boem_error_p = boem_error_array[:,0]/num_realizations
+
 
 fig, (ax1, ax2) = plt.subplots(2)
 fig.set_size_inches(fig_width, fig_height)
 line_width = 1.2
 ax1.plot(gt_data['timestamp'], dr_error_q, color = plot_color['dr'], linewidth=line_width, label='dead reckoning')
-ax1.plot(gt_data['timestamp'], est_opt_error_q, color = plot_color['opt'], linewidth=line_width, label='opt.')
-ax1.plot(gt_data['timestamp'], est_em_error_q, color = plot_color['em'], linewidth=line_width, label='EM')
-ax1.plot(gt_data['timestamp'], est_boem_error_q, color = plot_color['boem'], linewidth=line_width, label='BOEM')
+ax1.plot(gt_data['timestamp'], opt_error_q, color = plot_color['opt'], linewidth=line_width, label='opt.')
+ax1.plot(gt_data['timestamp'], em_error_q, color = plot_color['em'], linewidth=line_width, label='EM')
+ax1.plot(gt_data['timestamp'], boem_error_q, color = plot_color['boem'], linewidth=line_width, label='BOEM')
 ax1.set(ylabel='rotation RMSE [deg]')
 ax1.set_ylim(-0.2, 12.1)
 ax1.legend(loc = 1)
 
 
 ax2.plot(gt_data['timestamp'], dr_error_p, color = plot_color['dr'], linewidth=line_width, label='dr')
-ax2.plot(gt_data['timestamp'], est_opt_error_p, color = plot_color['opt'], linewidth=line_width, label='opt.')
-ax2.plot(gt_data['timestamp'], est_em_error_p, color = plot_color['em'], linewidth=line_width, label='EM')
-ax2.plot(gt_data['timestamp'], est_boem_error_p, color = plot_color['boem'], linewidth=line_width, label='BOEM')
+ax2.plot(gt_data['timestamp'], opt_error_p, color = plot_color['opt'], linewidth=line_width, label='opt.')
+ax2.plot(gt_data['timestamp'], em_error_p, color = plot_color['em'], linewidth=line_width, label='EM')
+ax2.plot(gt_data['timestamp'], boem_error_p, color = plot_color['boem'], linewidth=line_width, label='BOEM')
 ax2.set(ylabel='position RMSE [m]')
 ax2.set(xlabel='time [s]')
 ax2.set_ylim(-0.01, 0.7)

@@ -101,5 +101,6 @@ target_link_libraries(sim_boem_app
   PUBLIC lib
 )
 
+add_subdirectory(sim_vis)
 
 

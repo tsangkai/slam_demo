@@ -1,0 +1,1154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="slam_demo"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\share\;CMake Files\..\..\..\..\usr\share\OpenCV\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\cmake\;CMake Files\..\..\..\..\usr\lib\cmake\eigen3\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\lib\;CMake Files\..\..\..\..\usr\local\lib\cmake\;CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\;CMake Files\lib\;CMake Files\sim\;CMake Files\exp\;CMake Files\test\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="EigenRand">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/libEigenRand.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 EigenRand"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="EigenRand/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/libEigenRand.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 EigenRand/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="lib">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/liblib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 lib"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="lib/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/liblib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 lib/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_opt_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_opt_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_opt_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_opt_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_opt_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_opt_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_em_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_em_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_em_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_em_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_em_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_em_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_boem_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_boem_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_boem_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_boem_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_boem_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 sim_boem_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="backend_boem_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/backend_boem_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 backend_boem_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="backend_boem_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/backend_boem_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 backend_boem_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gt_process_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/gt_process_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 gt_process_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gt_process_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/gt_process_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 gt_process_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="backend_em_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/backend_em_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 backend_em_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="backend_em_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/backend_em_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 backend_em_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="backend_opt_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/backend_opt_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 backend_opt_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="backend_opt_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/backend_opt_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 backend_opt_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="traj_process_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/traj_process_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 traj_process_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="traj_process_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/traj_process_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 traj_process_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="frontend_app">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/frontend_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 frontend_app"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="frontend_app/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/frontend_app" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexie/Documents/slam_demo-1/exp/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 frontend_app/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pre_int_imu_error_test_mc">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/pre_int_imu_error_test_mc" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 pre_int_imu_error_test_mc"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pre_int_imu_error_test_mc/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/pre_int_imu_error_test_mc" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 pre_int_imu_error_test_mc/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="eigenRand_test">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/eigenRand_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 eigenRand_test"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="eigenRand_test/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/eigenRand_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 eigenRand_test/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="reprojection_error_test">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/reprojection_error_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 reprojection_error_test"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="reprojection_error_test/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/reprojection_error_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 reprojection_error_test/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pre_int_imu_error_test">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/pre_int_imu_error_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 pre_int_imu_error_test"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="pre_int_imu_error_test/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/pre_int_imu_error_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 pre_int_imu_error_test/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="reprojection_error_test_mc">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/reprojection_error_test_mc" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 reprojection_error_test_mc"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="reprojection_error_test_mc/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/reprojection_error_test_mc" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/EigenRand"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/test/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 reprojection_error_test_mc/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/backend.h">
+			<Option target="backend_opt_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/backend_boem_app.cc">
+			<Option target="backend_boem_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/backend_em_app.cc">
+			<Option target="backend_em_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/backend_opt_app.cc">
+			<Option target="backend_opt_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/frontend.h">
+			<Option target="frontend_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/frontend_app.cc">
+			<Option target="frontend_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/gt_process_app.cc">
+			<Option target="gt_process_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/traj_process_app.cc">
+			<Option target="traj_process_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/Core.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/Dists/Basic.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/Dists/Discrete.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/Dists/GammaPoisson.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/Dists/NormalExp.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/EigenRand">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/Macro.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/MorePacketMath.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/MvDists/Multinomial.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/MvDists/MvNormal.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/PacketFilter.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/PacketRandomEngine.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/RandUtils.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/EigenRand/doc.h">
+			<Option target="EigenRand"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/constant.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/imu_data.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/parameter_block.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/pre_int_imu_error.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/quat_parameter_block.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/reprojection_error.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/sized_parameter_block.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/so3.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/triangularization.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/vec_3d_parameter_block.h">
+			<Option target="lib"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim.h">
+			<Option target="sim_app"/>
+			<Option target="sim_opt_app"/>
+			<Option target="sim_em_app"/>
+			<Option target="sim_boem_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_app.cc">
+			<Option target="sim_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_boem_app.cc">
+			<Option target="sim_boem_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_em_app.cc">
+			<Option target="sim_em_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_opt_app.cc">
+			<Option target="sim_opt_app"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/test/eigenRand_test.cc">
+			<Option target="eigenRand_test"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/test/pre_int_imu_error_test.cc">
+			<Option target="pre_int_imu_error_test"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/test/pre_int_imu_error_test_mc.cc">
+			<Option target="pre_int_imu_error_test_mc"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/test/reprojection_error_test.cc">
+			<Option target="reprojection_error_test"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/test/reprojection_error_test_mc.cc">
+			<Option target="reprojection_error_test_mc"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/test/transformation.h">
+			<Option target="pre_int_imu_error_test_mc"/>
+			<Option target="reprojection_error_test"/>
+			<Option target="pre_int_imu_error_test"/>
+			<Option target="reprojection_error_test_mc"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/share/OpenCV/OpenCVConfig-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/share/OpenCV/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/share/OpenCV/OpenCVModules-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/share/OpenCV/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\share\OpenCV\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/lib/cmake/eigen3/Eigen3Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\eigen3\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/lib/cmake/eigen3/Eigen3ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\eigen3\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/lib/cmake/eigen3/Eigen3Targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\eigen3\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/local/lib/cmake/Ceres/CeresConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/local/lib/cmake/Ceres/CeresConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/local/lib/cmake/Ceres/CeresTargets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/local/lib/cmake/Ceres/CeresTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/../../../../usr/local/lib/cmake/Ceres/FindGlog.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/lib/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lib\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sim\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\exp\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\test\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

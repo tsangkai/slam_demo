@@ -1,0 +1,9 @@
+/opt/clion-2020.3.1/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/alexie/Documents/slam_demo-1
+-- OpenCV version: 3.2.0
+-- Eigen3 version: 3.3.4
+-- Found required Ceres dependency: Eigen version 3.3.4 in /usr/include/eigen3
+-- Found required Ceres dependency: glog
+-- Found Ceres version: 2.0.0 installed in: /usr/local with components: [EigenSparse, SparseLinearAlgebraLibrary, SchurSpecializations, Multithreading]
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/alexie/Documents/slam_demo-1/cmake-build-debug

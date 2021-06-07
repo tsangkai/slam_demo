@@ -1,0 +1,2 @@
+/usr/bin/ar qc libEigenRand.a  
+/usr/bin/ranlib libEigenRand.a

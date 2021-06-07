@@ -354,30 +354,35 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
 
 
 int main(int argc, char **argv) {
+  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
 
   std::cout << "simulate optimization based SLAM..." << std::endl;
 
   google::InitGoogleLogging(argv[0]);
 
   ExpLandmarkOptSLAM slam_problem("config/config_sim.yaml");
+  for (size_t i = 0; i < 2; ++i) {
 
-  slam_problem.CreateTrajectory();
-  slam_problem.CreateLandmark();
+    slam_problem.CreateTrajectory();
+    slam_problem.CreateLandmark();
 
-  slam_problem.CreateImuData();
-  slam_problem.CreateObservationData();
+    slam_problem.CreateImuData();
+    slam_problem.CreateObservationData();
 
-  // slam_problem.OutputGroundtruth("result/sim/gt.csv");
-
-
-  slam_problem.InitializeSLAMProblem();
-  slam_problem.InitializeTrajectory();
-  // slam_problem.OutputResult("result/sim/pre.csv");
-
-  slam_problem.SolveOptProblem();
+    // slam_problem.OutputGroundtruth("result/sim/gt.csv");
 
 
-  slam_problem.OutputResult("result/sim/opt.csv");
+    slam_problem.InitializeSLAMProblem();
+    slam_problem.InitializeTrajectory();
+    // slam_problem.OutputResult("result/sim/pre.csv");
+
+    slam_problem.SolveOptProblem();
+
+
+    slam_problem.OutputResult("result/sim/opt_" + std::to_string(i) + ".csv");
+
+    std::cout << "Completed OPT trial " << std::to_string(i) << std::endl;
+  }
 
   return 0;
 }

@@ -388,8 +388,8 @@ int main(int argc, char **argv) {
 
 
     slam_problem.OutputResult("result/sim/boem_" + std::to_string(i) + ".csv");
-    
-    std::cout << "Completed trial " << std::to_string(i) << std::endl;
+
+    std::cout << "Completed BOEM trial " << std::to_string(i) << std::endl;
 
   }
   return 0;

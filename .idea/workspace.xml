@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="slam_demo" targetName="backend_opt_app" />
+      <config projectName="slam_demo" targetName="pre_int_imu_error_test" />
+      <config projectName="slam_demo" targetName="traj_process_app" />
+      <config projectName="slam_demo" targetName="sim_opt_app" />
+      <config projectName="slam_demo" targetName="gt_process_app" />
+      <config projectName="slam_demo" targetName="backend_boem_app" />
+      <config projectName="slam_demo" targetName="eigenRand_test" />
+      <config projectName="slam_demo" targetName="pre_int_imu_error_test_mc" />
+      <config projectName="slam_demo" targetName="lib" />
+      <config projectName="slam_demo" targetName="reprojection_error_test" />
+      <config projectName="slam_demo" targetName="EigenRand" />
+      <config projectName="slam_demo" targetName="frontend_app" />
+      <config projectName="slam_demo" targetName="sim_app" />
+      <config projectName="slam_demo" targetName="reprojection_error_test_mc" />
+      <config projectName="slam_demo" targetName="sim_boem_app" />
+      <config projectName="slam_demo" targetName="sim_em_app" />
+      <config projectName="slam_demo" targetName="backend_em_app" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" ENABLED="true" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="79909e2e-9624-4e47-b74e-699440f6a2b9" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/eval_sim_fig2.py" beforeDir="false" afterPath="$PROJECT_DIR$/eval_sim_fig2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/sim/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim/sim_vis/sim_boem_vis.cc" beforeDir="false" afterPath="$PROJECT_DIR$/sim/sim_vis/sim_boem_vis.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim/sim_vis/sim_em_vis.cc" beforeDir="false" afterPath="$PROJECT_DIR$/sim/sim_vis/sim_em_vis.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim/sim_vis/sim_opt_vis.cc" beforeDir="false" afterPath="$PROJECT_DIR$/sim/sim_vis/sim_opt_vis.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sim_run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/sim_run.sh" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1sDnXSzvwyfugC3JwQHNAjhARLx" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/sim/sim_vis" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sim/sim_vis" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="CMake Application.backend_boem_app">
+    <configuration name="EigenRand" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="EigenRand" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="backend_boem_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="backend_boem_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="backend_boem_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="backend_em_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="backend_em_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="backend_em_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="backend_opt_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="backend_opt_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="backend_opt_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="eigenRand_test" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="eigenRand_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="eigenRand_test">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="frontend_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="frontend_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="frontend_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="gt_process_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="gt_process_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="gt_process_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="lib" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="lib" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="pre_int_imu_error_test" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="pre_int_imu_error_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="pre_int_imu_error_test">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="pre_int_imu_error_test_mc" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="pre_int_imu_error_test_mc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="pre_int_imu_error_test_mc">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="reprojection_error_test" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="reprojection_error_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="reprojection_error_test">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="reprojection_error_test_mc" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="reprojection_error_test_mc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="reprojection_error_test_mc">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sim_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="sim_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="sim_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sim_boem_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="sim_boem_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="sim_boem_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sim_em_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="sim_em_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="sim_em_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sim_opt_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="sim_opt_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="sim_opt_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="traj_process_app" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="slam_demo" TARGET_NAME="traj_process_app" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="slam_demo" RUN_TARGET_NAME="traj_process_app">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.backend_boem_app" />
+      <item itemvalue="CMake Application.backend_em_app" />
+      <item itemvalue="CMake Application.backend_opt_app" />
+      <item itemvalue="CMake Application.frontend_app" />
+      <item itemvalue="CMake Application.gt_process_app" />
+      <item itemvalue="CMake Application.traj_process_app" />
+      <item itemvalue="CMake Application.EigenRand" />
+      <item itemvalue="CMake Application.lib" />
+      <item itemvalue="CMake Application.sim_app" />
+      <item itemvalue="CMake Application.sim_boem_app" />
+      <item itemvalue="CMake Application.sim_em_app" />
+      <item itemvalue="CMake Application.sim_opt_app" />
+      <item itemvalue="CMake Application.eigenRand_test" />
+      <item itemvalue="CMake Application.pre_int_imu_error_test" />
+      <item itemvalue="CMake Application.pre_int_imu_error_test_mc" />
+      <item itemvalue="CMake Application.reprojection_error_test" />
+      <item itemvalue="CMake Application.reprojection_error_test_mc" />
+    </list>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="79909e2e-9624-4e47-b74e-699440f6a2b9" name="Default Changelist" comment="" />
+      <created>1620416066745</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1620416066745</updated>
+      <workItem from="1620416068575" duration="6003000" />
+      <workItem from="1620424174563" duration="510000" />
+      <workItem from="1620431937237" duration="2720000" />
+      <workItem from="1620502257518" duration="506000" />
+      <workItem from="1620670645786" duration="1867000" />
+      <workItem from="1620675231508" duration="6529000" />
+      <workItem from="1620767262131" duration="1124000" />
+      <workItem from="1622155252700" duration="3558000" />
+      <workItem from="1622161189256" duration="627000" />
+      <workItem from="1622166327695" duration="32000" />
+      <workItem from="1622229175997" duration="3367000" />
+      <workItem from="1622233156356" duration="37000" />
+      <workItem from="1622234416860" duration="1006000" />
+      <workItem from="1622847662780" duration="957000" />
+      <workItem from="1623091972544" duration="7544000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+</project>
