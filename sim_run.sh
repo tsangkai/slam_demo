@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPEAT_VAR="2"
+REPEAT_VAR="50"
 
 ./build/sim/sim_vis/sim_vis $REPEAT_VAR
 ./build/sim/sim_vis/sim_opt_vis $REPEAT_VAR
@@ -17,4 +17,4 @@ REPEAT_VAR="2"
 
 
 #python sim_eval.py
-python eval_sim_fig2.py
+python eval_sim_fig2.py $REPEAT_VAR

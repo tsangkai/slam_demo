@@ -3,7 +3,7 @@
 
 landmark_len: 200
 
-duration: 40 #16 # sec
+duration: 50 #40 #16 #sec
 
 dt: 0.02
 
