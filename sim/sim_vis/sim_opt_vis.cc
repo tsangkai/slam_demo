@@ -354,14 +354,16 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
 
 
 int main(int argc, char **argv) {
-  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
+//  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
 
   std::cout << "simulate optimization based SLAM..." << std::endl;
 
   google::InitGoogleLogging(argv[0]);
 
-  ExpLandmarkOptSLAM slam_problem("config/config_sim.yaml");
-  for (size_t i = 0; i < 2; ++i) {
+  int num_real = atoi(argv[1]);
+
+  for (size_t i = 0; i < num_real; ++i) {
+    ExpLandmarkOptSLAM slam_problem("config/config_sim.yaml");
 
     slam_problem.CreateTrajectory();
     slam_problem.CreateLandmark();

@@ -41,8 +41,7 @@ def quat_diff(q1, q2):
 
 	return theta
 
-
-for k in range(1,num_realizations):
+for k in range(num_realizations):
 	dr_data = pd.read_csv("result/sim/dr_%s.csv" % (k,))
 	opt_data = pd.read_csv("result/sim/opt_%s.csv" % (k,))
 	em_data = pd.read_csv("result/sim/em_%s.csv" % (k,))

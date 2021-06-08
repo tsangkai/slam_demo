@@ -351,33 +351,28 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
 
 int main(int argc, char **argv) {
-//  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
 
   std::cout << "simulate EM SLAM..." << std::endl;
 
   google::InitGoogleLogging(argv[0]);
 
-  int num_real = atoi(argv[1]);
+  ExpLandmarkEmSLAM slam_problem("config/config_sim.yaml");
 
-  for (size_t i = 0; i < num_real; ++i) {
-    ExpLandmarkEmSLAM slam_problem("config/config_sim.yaml");
-    slam_problem.CreateTrajectory();
-    slam_problem.CreateLandmark();
+  slam_problem.CreateTrajectory();
+  slam_problem.CreateLandmark();
 
-    slam_problem.CreateImuData();
-    slam_problem.CreateObservationData();
+  slam_problem.CreateImuData();
+  slam_problem.CreateObservationData();
 
 
-    slam_problem.InitializeSLAMProblem();
+  slam_problem.InitializeSLAMProblem();
 
-    slam_problem.E_step();
-    slam_problem.M_step();
-    slam_problem.E_step();
+  slam_problem.E_step();
+  slam_problem.M_step();
+  slam_problem.E_step();
 
 
-    slam_problem.OutputResult("result/sim/em_" + std::to_string(i) + ".csv");
+  slam_problem.OutputResult("result/sim/em.csv");
 
-    std::cout << "Completed EM trial " << std::to_string(i) << std::endl;
-  }
   return 0;
 }

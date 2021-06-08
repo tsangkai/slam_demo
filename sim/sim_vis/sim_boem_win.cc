@@ -361,39 +361,49 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 };
 
 
 
 int main(int argc, char **argv) {
-//  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
 
   std::cout << "simulate BOEM SLAM..." << std::endl;
 
   google::InitGoogleLogging(argv[0]);
 
-  int num_real = atoi(argv[1]);
+  ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
 
-  for (size_t i = 0; i < num_real; ++i) {
-    ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
-    slam_problem.CreateTrajectory();
-    slam_problem.CreateLandmark();
+  slam_problem.CreateTrajectory();
+  slam_problem.CreateLandmark();
 
-    slam_problem.CreateImuData();
-    slam_problem.CreateObservationData();
+  slam_problem.CreateImuData();
+  slam_problem.CreateObservationData();
 
 
-    slam_problem.InitializeSLAMProblem();
-
-    slam_problem.BOEM_step();
 
 
-    slam_problem.OutputResult("result/sim/boem_" + std::to_string(i) + ".csv");
+  slam_problem.InitializeSLAMProblem();
 
-    std::cout << "Completed BOEM trial " << std::to_string(i) << std::endl;
+  slam_problem.BOEM_step();
 
-  }
+
+
+  slam_problem.OutputResult("result/sim/boem.csv");
+
   return 0;
 }
-
-
