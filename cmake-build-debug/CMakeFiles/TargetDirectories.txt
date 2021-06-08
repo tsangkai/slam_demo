@@ -10,6 +10,12 @@
 /home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/CMakeFiles/sim_opt_app.dir
 /home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/CMakeFiles/sim_em_app.dir
 /home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/CMakeFiles/sim_boem_app.dir
+/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/CMakeFiles/rebuild_cache.dir
+/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/CMakeFiles/edit_cache.dir
+/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/CMakeFiles/sim_opt_vis.dir
+/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/CMakeFiles/sim_em_vis.dir
+/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/CMakeFiles/sim_boem_vis.dir
+/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/CMakeFiles/sim_vis.dir
 /home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/CMakeFiles/edit_cache.dir
 /home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/CMakeFiles/backend_boem_app.dir
 /home/alexie/Documents/slam_demo-1/cmake-build-debug/exp/CMakeFiles/gt_process_app.dir

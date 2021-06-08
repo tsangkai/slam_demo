@@ -209,6 +209,58 @@ sim_boem_app/fast:
 .PHONY : sim_boem_app/fast
 
 #=============================================================================
+# Target rules for targets named sim_opt_vis
+
+# Build rule for target.
+sim_opt_vis: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sim_opt_vis
+.PHONY : sim_opt_vis
+
+# fast build rule for target.
+sim_opt_vis/fast:
+	$(MAKE) $(MAKESILENT) -f sim/sim_vis/CMakeFiles/sim_opt_vis.dir/build.make sim/sim_vis/CMakeFiles/sim_opt_vis.dir/build
+.PHONY : sim_opt_vis/fast
+
+#=============================================================================
+# Target rules for targets named sim_em_vis
+
+# Build rule for target.
+sim_em_vis: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sim_em_vis
+.PHONY : sim_em_vis
+
+# fast build rule for target.
+sim_em_vis/fast:
+	$(MAKE) $(MAKESILENT) -f sim/sim_vis/CMakeFiles/sim_em_vis.dir/build.make sim/sim_vis/CMakeFiles/sim_em_vis.dir/build
+.PHONY : sim_em_vis/fast
+
+#=============================================================================
+# Target rules for targets named sim_boem_vis
+
+# Build rule for target.
+sim_boem_vis: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sim_boem_vis
+.PHONY : sim_boem_vis
+
+# fast build rule for target.
+sim_boem_vis/fast:
+	$(MAKE) $(MAKESILENT) -f sim/sim_vis/CMakeFiles/sim_boem_vis.dir/build.make sim/sim_vis/CMakeFiles/sim_boem_vis.dir/build
+.PHONY : sim_boem_vis/fast
+
+#=============================================================================
+# Target rules for targets named sim_vis
+
+# Build rule for target.
+sim_vis: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sim_vis
+.PHONY : sim_vis
+
+# fast build rule for target.
+sim_vis/fast:
+	$(MAKE) $(MAKESILENT) -f sim/sim_vis/CMakeFiles/sim_vis.dir/build.make sim/sim_vis/CMakeFiles/sim_vis.dir/build
+.PHONY : sim_vis/fast
+
+#=============================================================================
 # Target rules for targets named backend_boem_app
 
 # Build rule for target.
@@ -373,8 +425,12 @@ help:
 	@echo "... reprojection_error_test_mc"
 	@echo "... sim_app"
 	@echo "... sim_boem_app"
+	@echo "... sim_boem_vis"
 	@echo "... sim_em_app"
+	@echo "... sim_em_vis"
 	@echo "... sim_opt_app"
+	@echo "... sim_opt_vis"
+	@echo "... sim_vis"
 	@echo "... traj_process_app"
 .PHONY : help
 

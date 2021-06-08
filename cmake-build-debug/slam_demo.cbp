@@ -5,7 +5,7 @@
 		<Option title="slam_demo"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\share\;CMake Files\..\..\..\..\usr\share\OpenCV\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\cmake\;CMake Files\..\..\..\..\usr\lib\cmake\eigen3\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\lib\;CMake Files\..\..\..\..\usr\local\lib\cmake\;CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\;CMake Files\lib\;CMake Files\sim\;CMake Files\exp\;CMake Files\test\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\share\;CMake Files\..\..\..\..\usr\share\OpenCV\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\cmake\;CMake Files\..\..\..\..\usr\lib\cmake\eigen3\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\lib\;CMake Files\..\..\..\..\usr\local\lib\cmake\;CMake Files\..\..\..\..\usr\local\lib\cmake\Ceres\;CMake Files\lib\;CMake Files\sim\;CMake Files\sim\sim_vis\;CMake Files\exp\;CMake Files\test\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug"/>
@@ -369,6 +369,230 @@
 					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_opt_vis">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_opt_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_opt_vis"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_opt_vis/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_opt_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_opt_vis/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_em_vis">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_em_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_em_vis"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_em_vis/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_em_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_em_vis/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_boem_vis">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_boem_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_boem_vis"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_boem_vis/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_boem_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_boem_vis/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_vis">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_vis"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sim_vis/fast">
+				<Option output="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/sim_vis" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCERES_EXPORT_INTERNAL_SYMBOLS"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/sim/sim_vis/lib"/>
+					<Add directory="/home/alexie/Documents/slam_demo-1/lib"/>
+					<Add directory="/usr/include/opencv"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 sim_vis/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="backend_boem_app">
@@ -1078,6 +1302,18 @@
 		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_opt_app.cc">
 			<Option target="sim_opt_app"/>
 		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_vis/sim_boem_vis.cc">
+			<Option target="sim_boem_vis"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_vis/sim_em_vis.cc">
+			<Option target="sim_em_vis"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_vis/sim_opt_vis.cc">
+			<Option target="sim_opt_vis"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_vis/sim_vis.cc">
+			<Option target="sim_vis"/>
+		</Unit>
 		<Unit filename="/home/alexie/Documents/slam_demo-1/test/eigenRand_test.cc">
 			<Option target="eigenRand_test"/>
 		</Unit>
@@ -1143,6 +1379,9 @@
 		</Unit>
 		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\sim\"/>
+		</Unit>
+		<Unit filename="/home/alexie/Documents/slam_demo-1/sim/sim_vis/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\sim\sim_vis\"/>
 		</Unit>
 		<Unit filename="/home/alexie/Documents/slam_demo-1/exp/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\exp\"/>

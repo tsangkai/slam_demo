@@ -17,13 +17,11 @@ plot_color = {
 fig_width = 5.84
 fig_height = 4.38
 
-
-
 # error plot
 num_realizations = 2
 gt_data = pd.read_csv("result/sim/gt.csv")
 
-dr_error_array = np.zeros((num_realizations, 2))   # error_p, error_q
+dr_error_array = np.zeros((len(gt_data['p_x']), 2))   # error_p, error_q
 opt_error_array = np.zeros_like(dr_error_array)
 em_error_array = np.zeros_like(dr_error_array)
 boem_error_array = np.zeros_like(dr_error_array)
@@ -44,19 +42,19 @@ def quat_diff(q1, q2):
 	return theta
 
 
-for k in range(num_realizations-1):
-	# dr_data = pd.read_csv("result/sim/dr_%s.csv" % (k,))
+for k in range(1,num_realizations):
+	dr_data = pd.read_csv("result/sim/dr_%s.csv" % (k,))
 	opt_data = pd.read_csv("result/sim/opt_%s.csv" % (k,))
 	em_data = pd.read_csv("result/sim/em_%s.csv" % (k,))
 	boem_data = pd.read_csv("result/sim/boem_%s.csv" % (k,))
-	for i in range(0,len(gt_data['p_x'])-1):
-		# dr_error_array[i,0] += math.sqrt( (gt_data['p_x'][i]-dr_data['p_x'][i])**2 + (gt_data['p_y'][i]-dr_data['p_y'][i])**2 + (gt_data['p_z'][i]-dr_data['p_z'][i])**2)
+	for i in range(len(gt_data['p_x'])):
+		dr_error_array[i,0] += math.sqrt( (gt_data['p_x'][i]-dr_data['p_x'][i])**2 + (gt_data['p_y'][i]-dr_data['p_y'][i])**2 + (gt_data['p_z'][i]-dr_data['p_z'][i])**2)
 		opt_error_array[i, 0] += math.sqrt( (gt_data['p_x'][i]-opt_data['p_x'][i])**2 + (gt_data['p_y'][i]-opt_data['p_y'][i])**2 + (gt_data['p_z'][i]-opt_data['p_z'][i])**2)
 		em_error_array[i, 0] += math.sqrt( (gt_data['p_x'][i]-em_data['p_x'][i])**2 + (gt_data['p_y'][i]-em_data['p_y'][i])**2 + (gt_data['p_z'][i]-em_data['p_z'][i])**2)
 		boem_error_array[i, 0] += math.sqrt( (gt_data['p_x'][i]-boem_data['p_x'][i])**2 + (gt_data['p_y'][i]-boem_data['p_y'][i])**2 + (gt_data['p_z'][i]-boem_data['p_z'][i])**2)
 
-		# dr_error_array[i,1] += quat_diff([dr_data['q_w'][i], dr_data['q_x'][i], dr_data['q_y'][i], dr_data['q_z'][i]],
-		# 							 [gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]])
+		dr_error_array[i,1] += quat_diff([dr_data['q_w'][i], dr_data['q_x'][i], dr_data['q_y'][i], dr_data['q_z'][i]],
+									 [gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]])
 		opt_error_array[i, 1] += quat_diff([opt_data['q_w'][i], opt_data['q_x'][i], opt_data['q_y'][i], opt_data['q_z'][i]],
 								  [gt_data['q_w'][i], gt_data['q_x'][i], gt_data['q_y'][i], gt_data['q_z'][i]])
 		em_error_array[i, 1] += quat_diff([em_data['q_w'][i], em_data['q_x'][i], em_data['q_y'][i], em_data['q_z'][i]],
@@ -83,7 +81,7 @@ ax1.plot(gt_data['timestamp'], opt_error_q, color = plot_color['opt'], linewidth
 ax1.plot(gt_data['timestamp'], em_error_q, color = plot_color['em'], linewidth=line_width, label='EM')
 ax1.plot(gt_data['timestamp'], boem_error_q, color = plot_color['boem'], linewidth=line_width, label='BOEM')
 ax1.set(ylabel='rotation RMSE [deg]')
-ax1.set_ylim(-0.2, 12.1)
+# ax1.set_ylim(-0.2, 12.1)
 ax1.legend(loc = 1)
 
 
@@ -93,8 +91,9 @@ ax2.plot(gt_data['timestamp'], em_error_p, color = plot_color['em'], linewidth=l
 ax2.plot(gt_data['timestamp'], boem_error_p, color = plot_color['boem'], linewidth=line_width, label='BOEM')
 ax2.set(ylabel='position RMSE [m]')
 ax2.set(xlabel='time [s]')
-ax2.set_ylim(-0.01, 0.7)
+# ax2.set_ylim(-0.01, 0.7)
 plt.show()
+
 
 
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#./build/sim/sim_app
-#./build/sim/sim_vis/sim_opt_vis
-#./build/sim/sim_vis/sim_em_vis
+./build/sim/sim_vis/sim_vis
+./build/sim/sim_vis/sim_opt_vis
+./build/sim/sim_vis/sim_em_vis
 ./build/sim/sim_vis/sim_boem_vis
 
 #REPEAT_VAR="2"

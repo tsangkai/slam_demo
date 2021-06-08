@@ -1,4 +1,4 @@
-# Install script for directory: /home/alexie/Documents/slam_demo-1/sim
+# Install script for directory: /home/alexie/Documents/slam_demo-1/sim/sim_vis
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -35,11 +35,5 @@ endif()
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for each subdirectory.
-  include("/home/alexie/Documents/slam_demo-1/cmake-build-debug/sim/sim_vis/cmake_install.cmake")
-
 endif()
 
