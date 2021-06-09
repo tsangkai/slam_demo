@@ -26,7 +26,7 @@
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
 
-Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+// Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
 struct State {
   double             t_;
@@ -226,11 +226,12 @@ class ExpLandmarkSLAM {
   }
 
 
-  bool CreateLandmark() {
+  bool CreateLandmark(Eigen::Rand::Vmt19937_64 urng) {
 
     for (size_t i=0; i< landmark_len_/4; i++) { //x walls first
 
-      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
+      Eigen::Vector3d random_3d_vec = Eigen::Rand::balanced<Eigen::Vector3d>(3, 1, urng);
+      // Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
       Eigen::Vector3d* landmark_pos = new Eigen::Vector3d((r_+box_xy_)*random_3d_vec(0),
                                                           (r_+box_xy_),
                                                           box_z_ * random_3d_vec(2) + z_h_);
@@ -240,7 +241,8 @@ class ExpLandmarkSLAM {
 
     for (size_t i=landmark_len_/4; i<landmark_len_/2; i++) {
 
-      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
+      Eigen::Vector3d random_3d_vec = Eigen::Rand::balanced<Eigen::Vector3d>(3, 1, urng);
+      // Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
       Eigen::Vector3d* landmark_pos = new Eigen::Vector3d((r_+box_xy_)*random_3d_vec(0),
                                                           -(r_+box_xy_),
                                                           box_z_ * random_3d_vec(2) + z_h_);
@@ -250,7 +252,8 @@ class ExpLandmarkSLAM {
 
     for (size_t i=landmark_len_/2; i< 3*landmark_len_/4; i++) {
 
-      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
+      Eigen::Vector3d random_3d_vec = Eigen::Rand::balanced<Eigen::Vector3d>(3, 1, urng);
+      // Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
       Eigen::Vector3d* landmark_pos = new Eigen::Vector3d((r_+box_xy_),
                                                           (r_+box_xy_)*random_3d_vec(1),
                                                           box_z_ * random_3d_vec(2) + z_h_);
@@ -260,7 +263,8 @@ class ExpLandmarkSLAM {
 
     for (size_t i=3*landmark_len_/4; i< landmark_len_; i++) {
 
-      Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
+      Eigen::Vector3d random_3d_vec = Eigen::Rand::balanced<Eigen::Vector3d>(3, 1, urng);
+      // Eigen::Vector3d random_3d_vec = Eigen::Vector3d::Random();
       Eigen::Vector3d* landmark_pos = new Eigen::Vector3d(-(r_+box_xy_),
                                                           (r_+box_xy_)*random_3d_vec(1),
                                                           box_z_ * random_3d_vec(2) + z_h_);
@@ -272,7 +276,7 @@ class ExpLandmarkSLAM {
   }  
 
 
-  bool CreateImuData() {
+  bool CreateImuData(Eigen::Rand::Vmt19937_64 urng) {
 
     double T = 0.0;
     size_t state_idx = 0;
@@ -314,7 +318,7 @@ class ExpLandmarkSLAM {
   }
 
 
-  bool CreateObservationData() {
+  bool CreateObservationData(Eigen::Rand::Vmt19937_64 urng) {
 
     observation_vec_.resize(state_len_-1);
     double T = keyframe_rate_ratio_*dt_;

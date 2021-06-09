@@ -368,14 +368,15 @@ int main(int argc, char **argv) {
   std::cout << "simulate BOEM SLAM..." << std::endl;
 
   google::InitGoogleLogging(argv[0]);
+  Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
   ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
-  slam_problem.CreateLandmark();
+  slam_problem.CreateLandmark(urng);
 
-  slam_problem.CreateImuData();
-  slam_problem.CreateObservationData();
+  slam_problem.CreateImuData(urng);
+  slam_problem.CreateObservationData(urng);
 
 
 
