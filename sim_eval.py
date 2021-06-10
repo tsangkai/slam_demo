@@ -91,6 +91,6 @@ ax2.plot(em_data['timestamp'], em_pos_error, color = plot_color['em'])
 ax2.plot(boem_data['timestamp'], boem_pos_error, color = plot_color['boem'])
 ax2.set(ylabel='position RMSE [m]')
 ax2.set(xlabel='time [s]')
-ax2.set_ylim(top=1+0.01, bottom=0-0.01)
+ax2.set_ylim(top=0.2+0.01, bottom=0-0.01)
 
 plt.show()

@@ -9,18 +9,18 @@ do
   # ./build/exp/frontend_app ${dataset}
 
 
-  perf stat -r REPEAT_VAR ./build/exp/backend_opt_app ${dataset}
-  ./build/exp/backend_opt_app ${dataset}
+  # perf stat -r REPEAT_VAR ./build/exp/backend_opt_app ${dataset}
+  # ./build/exp/backend_opt_app ${dataset}
   # ./build/exp/traj_process_app ${dataset} traj_vo
-  ./build/exp/traj_process_app ${dataset} traj_opt
+  # ./build/exp/traj_process_app ${dataset} traj_opt
 
   # perf stat -r $REPEAT_VAR ./build/exp/backend_em_app ${dataset}
-  ./build/exp/backend_em_app ${dataset}
-  ./build/exp/traj_process_app ${dataset} traj_em
+  # ./build/exp/backend_em_app ${dataset}
+  # ./build/exp/traj_process_app ${dataset} traj_em
 
   # perf stat -r $REPEAT_VAR ./build/exp/backend_boem_app ${dataset}
-  ./build/exp/backend_boem_app ${dataset}
-  ./build/exp/traj_process_app ${dataset} traj_boem
+  # ./build/exp/backend_boem_app ${dataset}
+  # ./build/exp/traj_process_app ${dataset} traj_boem
 
 
   python3 exp_eval.py ${dataset}  

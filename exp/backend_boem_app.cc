@@ -115,7 +115,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
         double p_diff = (p0 - state_est_vec_.at(i+1)->p_).norm();
 
-        if (p_diff < 0.02) {
+        if (p_diff < 0.025) {
         // if ((p0 - state_est_vec_.at(i+1)->p_).norm() >= 1) {
 
           state_est_vec_.at(i+1)->q_ = quat_positive(q0);

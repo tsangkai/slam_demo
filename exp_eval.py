@@ -15,7 +15,7 @@ plot_color = {
 
 
 fig_width = 5.84
-fig_height = 4.38
+fig_height = 4.00 #4.38
 
 # keyframe has larger time range than ground truth
 
@@ -42,7 +42,7 @@ est_boem_data['timestamp'] = est_boem_data['timestamp'] - init_time
 
 
 fig = plt.figure(1)
-# fig.set_size_inches(fig_width, fig_height)
+fig.set_size_inches(fig_width, fig_height)
 
 #ax = fig.gca(projection='3d')
 ax = Axes3D(fig, rect=(0.0, 0.05, 1, 0.9))
@@ -62,7 +62,7 @@ ax.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color 
 
 
 
-ax.view_init(39, 3)
+ax.view_init(34, -106)
 
 
 # trajectory only
@@ -72,11 +72,39 @@ ax.set_ylim(-0.5,9.5)
 ax.set_zlim(-1.7,0.9)
 '''
 
+print(ax.get_xlim())
+print(ax.get_ylim())
+print(ax.get_zlim())
+
+x_len = ax.get_xlim()[1] - ax.get_xlim()[0]
+y_len = ax.get_ylim()[1] - ax.get_ylim()[0]
+z_len = ax.get_zlim()[1] - ax.get_zlim()[0]
+
+
 ax.set_xlabel('x [m]')
 ax.set_ylabel('y [m]')
 ax.set_zlabel('z [m]')
 
 ax.legend()
+
+
+# inset
+'''
+ax2 = Axes3D(fig, rect=(0.03, 0.03, 0.33, 0.33))
+
+ax2.plot(gt_data['p_x'], gt_data['p_y'], gt_data['p_z'], color = plot_color['gt'], linewidth=line_width, label='ground truth')
+ax2.plot(vo_data['p_x'], vo_data['p_y'], vo_data['p_z'], color = plot_color['vo'], linewidth=line_width, label='VIO')
+ax2.plot(est_opt_data['p_x'], est_opt_data['p_y'], est_opt_data['p_z'], color = plot_color['opt'], linewidth=line_width, label='opt.')
+ax2.plot(est_em_data['p_x'], est_em_data['p_y'], est_em_data['p_z'], color = plot_color['em'], linewidth=line_width, label='EM')
+ax2.plot(est_boem_data['p_x'], est_boem_data['p_y'], est_boem_data['p_z'], color = plot_color['boem'], linewidth=line_width, label='BOEM')
+
+
+ax2.set_xlim(2,2 + 0.25*x_len)
+ax2.set_ylim(-2.5,-2.5 + 0.25*y_len)
+ax2.set_zlim(-0.2,-0.2+0.25*z_len)
+
+ax2.view_init(34, -106)
+'''
 
 plt.savefig("result/" + dataset + "/trajectory.pdf")
 
@@ -89,7 +117,7 @@ plt.show()
 
 # error plot
 fig = plt.figure(2)
-#fig.set_size_inches(fig_width, fig_height)
+fig.set_size_inches(fig_width, fig_height)
 
 line_width = 1.2
 
@@ -126,7 +154,7 @@ plt.legend(loc='upper right')
 
 plt.xlabel('time [s]')
 plt.ylabel('error [m]')
-plt.ylim([0,1.41])
+plt.ylim([0,1.51])
 
 plt.savefig("result/" + dataset + "/error.pdf")
 
