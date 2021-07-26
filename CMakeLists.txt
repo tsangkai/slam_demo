@@ -25,3 +25,7 @@ add_subdirectory(exp)
 if(BUILD_TEST)
   add_subdirectory(test)
 endif(BUILD_TEST)
+
+
+
+add_subdirectory(sim_fixed)
