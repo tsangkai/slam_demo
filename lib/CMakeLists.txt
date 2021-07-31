@@ -51,5 +51,5 @@ target_include_directories(EigenRand
 )
 
 target_link_libraries(EigenRand
-  PRIVATE ${EIGEN3_LIBS}
+  PRIVATE Eigen3::Eigen
 )
