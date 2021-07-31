@@ -375,7 +375,7 @@ int main(int argc, char **argv) {
   // Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
 
-  int num_real = atoi(argv[1]);
+  int num_real = std::stoi(argv[1]);
 
   for (size_t i = 0; i < num_real; ++i) {
 

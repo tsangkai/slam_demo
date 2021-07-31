@@ -358,7 +358,7 @@ int main(int argc, char **argv) {
 
   google::InitGoogleLogging(argv[0]);
 
-  int time_win = atoi(argv[1]);
+  double time_win = std::stod(argv[1]);
 
   ExpLandmarkEmSLAM slam_problem(time_win,"config/config_sim.yaml");
 
@@ -377,7 +377,7 @@ int main(int argc, char **argv) {
   slam_problem.M_step();
 
 
-  slam_problem.OutputResult("result/sim_exp_window/em_" + std::to_string(time_win) + ".csv");
+  slam_problem.OutputResult("result/sim_exp_window/em_" + std::string(argv[1]) + ".csv");
 
   return 0;
 }

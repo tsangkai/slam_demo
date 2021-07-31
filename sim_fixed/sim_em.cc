@@ -357,7 +357,7 @@ int main(int argc, char **argv) {
 
   google::InitGoogleLogging(argv[0]);
 
-  int num_real = atoi(argv[1]);
+  int num_real = std::stoi(argv[1]);
 
 //  Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 

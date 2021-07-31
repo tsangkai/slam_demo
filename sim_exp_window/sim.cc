@@ -371,7 +371,7 @@ int main(int argc, char **argv) {
 
     Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-    int time_win = atoi(argv[1]);
+    double time_win = std::stod(argv[1]);
 
     ExpLandmarkBoemSLAM slam_problem(time_win,"config/config_sim.yaml");
 
