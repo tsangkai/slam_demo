@@ -83,8 +83,6 @@ int main(int argc, char **argv) {
   srand(0);
   Eigen::Rand::Vmt19937_64 urng{ 0 };
 
-  google::InitGoogleLogging(argv[0]);
-
   double du = 752.0;              // image dimension
   double dv = 480.0;
   double fu = 458.654880721;      // focal length

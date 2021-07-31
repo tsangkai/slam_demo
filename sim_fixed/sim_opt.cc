@@ -358,8 +358,6 @@ int main(int argc, char **argv) {
 
   std::cout << "simulate optimization based SLAM..." << std::endl;
 
-  google::InitGoogleLogging(argv[0]);
-
   int num_real = std::stoi(argv[1]);
 
   for (size_t i = 0; i < num_real; ++i) {

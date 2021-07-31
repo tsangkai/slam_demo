@@ -2,7 +2,6 @@
 #define SIM_H_
 
 
-#include <cassert>
 #include <iostream>
 #include <fstream>
 #include <sstream>

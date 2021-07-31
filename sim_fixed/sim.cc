@@ -10,9 +10,6 @@ int main(int argc, char **argv) {
 
   std::cout << "generate ground truth and dead reckoning trajectories..." << std::endl;
 
-  google::InitGoogleLogging(argv[0]);
-
-
 
   int num_real = atoi(argv[1]);
   for (size_t i = 0; i < num_real; ++i) {

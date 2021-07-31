@@ -370,8 +370,6 @@ int main(int argc, char **argv) {
 
   std::cout << "simulate BOEM SLAM..." << std::endl;
 
-  google::InitGoogleLogging(argv[0]);
-
   // Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
 

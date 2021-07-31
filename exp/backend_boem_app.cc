@@ -386,8 +386,6 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
 int main(int argc, char **argv) {
 
-  google::InitGoogleLogging(argv[0]);
-
   std::string dataset = std::string(argv[1]);
 
   std::string config_folder_path("config/");

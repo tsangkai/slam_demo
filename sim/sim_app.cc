@@ -11,8 +11,6 @@ int main(int argc, char **argv) {
   
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-  google::InitGoogleLogging(argv[0]);
-
   ExpLandmarkSLAM slam_problem("config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();

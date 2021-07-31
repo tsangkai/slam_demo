@@ -358,9 +358,7 @@ int main(int argc, char **argv) {
   std::cout << "simulate optimization based SLAM..." << std::endl;
 
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
-
-  google::InitGoogleLogging(argv[0]);
-
+  
   double time_win = std::stod(argv[1]);
 
   ExpLandmarkOptSLAM slam_problem(time_win, "config/config_sim.yaml");
