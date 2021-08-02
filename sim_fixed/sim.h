@@ -10,12 +10,11 @@
 #include <cmath>
 #include <map>
 
-#include <ceres/ceres.h>
-#include <ceres/rotation.h>
-#include <Eigen/Core>
-#include <EigenRand/EigenRand>
-#include <opencv2/core.hpp>
-#include <opencv2/core/cvstd.hpp>
+#include "ceres/ceres.h"
+#include "ceres/rotation.h"
+#include "Eigen/Core"
+#include "EigenRand/EigenRand"
+#include "yaml-cpp/yaml.h"
 
 #include "so3.h"
 #include "constant.h"                           // gravity value
@@ -142,43 +141,43 @@ class ExpLandmarkSLAM {
 
   ExpLandmarkSLAM(std::string config_file_path) {
 
-    cv::FileStorage config_file(config_file_path, cv::FileStorage::READ);
+    YAML::Node config_file = YAML::LoadFile(config_file_path);
+    
+    landmark_len_ = (size_t) config_file["landmark_len"].as<int>();
 
-    landmark_len_ = (size_t)(int) config_file["landmark_len"];
-
-    duration_ = (double) config_file["duration"];
-    dt_ = (double) config_file["dt"];
-    keyframe_rate_ratio_ = (size_t)(int) config_file["keyframe_rate_ratio"];
+    duration_ = config_file["duration"].as<double>();
+    dt_ = config_file["dt"].as<double>();
+    keyframe_rate_ratio_ = (size_t) config_file["keyframe_rate_ratio"].as<int>();
 
     // trajectory parameter
-    r_ = (double) config_file["trajectory"]["r"];
-    w_ = (double) config_file["trajectory"]["w"];
-    r_z_ = (double) config_file["trajectory"]["r_z"];
-    w_z_ = (double) config_file["trajectory"]["w_z"];
-    z_h_ = (double) config_file["trajectory"]["z_h"];
+    r_ = config_file["trajectory"]["r"].as<double>();
+    w_ = config_file["trajectory"]["w"].as<double>();
+    r_z_ = config_file["trajectory"]["r_z"].as<double>();
+    w_z_ = config_file["trajectory"]["w_z"].as<double>();
+    z_h_ = config_file["trajectory"]["z_h"].as<double>();
 
-    sigma_g_c_ = (double) config_file["imu_param"]["sigma_g_c"];
-    sigma_a_c_ = (double) config_file["imu_param"]["sigma_a_c"];
+    sigma_g_c_ = config_file["imu_param"]["sigma_g_c"].as<double>();
+    sigma_a_c_ = config_file["imu_param"]["sigma_a_c"].as<double>();
 
-    box_xy_ = (double) config_file["landmark_generation"]["box_xy"];
-    box_z_ = (double) config_file["landmark_generation"]["box_z"];
+    box_xy_ = config_file["landmark_generation"]["box_xy"].as<double>();
+    box_z_ = config_file["landmark_generation"]["box_z"].as<double>();
 
-    landmark_init_noise_ = (double) config_file["landmark_init_noise"];
+    landmark_init_noise_ = config_file["landmark_init_noise"].as<double>();
 
-    cv::FileNode T_bc = config_file["camera"]["T_bc"];
-    T_bc_ << (double) T_bc[0], (double) T_bc[1], (double) T_bc[2], (double) T_bc[3],
-             (double) T_bc[4], (double) T_bc[5], (double) T_bc[6], (double) T_bc[7],
-             (double) T_bc[8], (double) T_bc[9], (double) T_bc[10], (double) T_bc[11],
-             (double) T_bc[12], (double) T_bc[13], (double) T_bc[14], (double) T_bc[15];
+    YAML::Node T_bc = config_file["camera"]["T_bc"];
+    T_bc_ << T_bc[0].as<double>(), T_bc[1].as<double>(), T_bc[2].as<double>(), T_bc[3].as<double>(),
+             T_bc[4].as<double>(), T_bc[5].as<double>(), T_bc[6].as<double>(), T_bc[7].as<double>(),
+             T_bc[8].as<double>(), T_bc[9].as<double>(), T_bc[10].as<double>(), T_bc[11].as<double>(),
+             T_bc[12].as<double>(), T_bc[13].as<double>(), T_bc[14].as<double>(), T_bc[15].as<double>();
 
-    du_ = (double) config_file["camera"]["image_dimension"][0];  // image dimension
-    dv_ = (double) config_file["camera"]["image_dimension"][1];
-    fu_ = (double) config_file["camera"]["focal_length"][0];  // focal length
-    fv_ = (double) config_file["camera"]["focal_length"][1];
-    cu_ = (double) config_file["camera"]["principal_point"][0];  // principal point
-    cv_ = (double) config_file["camera"]["principal_point"][1];
+    du_ = config_file["camera"]["image_dimension"][0].as<double>();  // image dimension
+    dv_ = config_file["camera"]["image_dimension"][1].as<double>();
+    fu_ = config_file["camera"]["focal_length"][0].as<double>();     // focal length
+    fv_ = config_file["camera"]["focal_length"][1].as<double>();
+    cu_ = config_file["camera"]["principal_point"][0].as<double>();  // principal point
+    cv_ = config_file["camera"]["principal_point"][1].as<double>();
 
-    obs_cov_ = (double) config_file["camera"]["observation_noise"];
+    obs_cov_ = config_file["camera"]["observation_noise"].as<double>();
   }
 
 
