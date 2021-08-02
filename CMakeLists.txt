@@ -4,6 +4,7 @@ project(slam_demo)
 
 set(CMAKE_CXX_STANDARD 14)
 
+option(BUILD_SHARED_LIBS "build shared libraries" ON)
 option(BUILD_TEST "build test programs" ON)
 
 
@@ -18,6 +19,8 @@ find_package(Ceres REQUIRED)
 
 
 add_subdirectory(lib)
+add_subdirectory(external)
+
 add_subdirectory(sim)
 add_subdirectory(exp)
 
@@ -29,3 +32,4 @@ endif(BUILD_TEST)
 
 
 add_subdirectory(sim_fixed)
+add_subdirectory(sim_exp_window)
