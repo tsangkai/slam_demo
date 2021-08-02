@@ -186,8 +186,8 @@ class ExpLandmarkSLAM {
   bool CreateTrajectory() {
 
     double T=0;
-
-    while (T <= duration_) {
+    double s_len_ = duration_/(dt_*keyframe_rate_ratio_);
+    for (int i=0; i<s_len_; ++i) {
 
       Eigen::Matrix3d rot;
       Eigen::Vector3d vel;      
