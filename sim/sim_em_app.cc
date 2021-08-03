@@ -8,7 +8,6 @@
 #include "sim.h"
 
 
-
 class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 

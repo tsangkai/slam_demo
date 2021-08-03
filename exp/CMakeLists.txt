@@ -5,7 +5,7 @@ add_executable(gt_process_app
 )
 
 target_link_libraries(gt_process_app
-  PUBLIC Eigen3::Eigen
+  PRIVATE Eigen3::Eigen
 )
 
 
@@ -15,7 +15,7 @@ add_executable(traj_process_app
 )
 
 target_link_libraries(traj_process_app
-  PUBLIC Eigen3::Eigen
+  PRIVATE Eigen3::Eigen
 )
 
 
@@ -26,11 +26,14 @@ add_executable(frontend_app
 )
 
 target_link_libraries(frontend_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC lib
+  PRIVATE ${OpenCV_LIBS}
+  PRIVATE lib
 )
 
 
+
+
+# backend
 
 add_executable(backend_opt_app 
   backend_opt_app.cc
@@ -38,38 +41,40 @@ add_executable(backend_opt_app
 )
 
 target_link_libraries(backend_opt_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC Eigen3::Eigen
-  PUBLIC ceres
-  PUBLIC lib
+  PRIVATE ceres
+  PRIVATE Eigen3::Eigen
+  PRIVATE lib
+  PRIVATE yaml-cpp::yaml-cpp
+  PRIVATE ${OpenCV_LIBS}
 )
-
-
-
-
 
 
 
 add_executable(backend_em_app 
   backend_em_app.cc
+  backend.h
 )
 
 target_link_libraries(backend_em_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC Eigen3::Eigen
-  PUBLIC ceres
-  PUBLIC lib
+  PRIVATE ceres
+  PRIVATE Eigen3::Eigen
+  PRIVATE lib
+  PRIVATE yaml-cpp::yaml-cpp
+  PRIVATE ${OpenCV_LIBS}
 )
+
 
 
 
 add_executable(backend_boem_app 
   backend_boem_app.cc
+  backend.h
 )
 
 target_link_libraries(backend_boem_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC Eigen3::Eigen
-  PUBLIC ceres
-  PUBLIC lib
+  PRIVATE ceres
+  PRIVATE Eigen3::Eigen
+  PRIVATE lib
+  PRIVATE yaml-cpp::yaml-cpp
+  PRIVATE ${OpenCV_LIBS}
 )

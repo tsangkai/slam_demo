@@ -14,6 +14,7 @@
 
 #include <Eigen/Core>
 #include <opencv2/core/core.hpp>    // for config file reading
+#include "yaml-cpp/yaml.h"
 
 #include "so3.h"
 #include "vec_3d_parameter_block.h"
@@ -154,6 +155,7 @@ class ExpLandmarkSLAM {
 
     sigma_g_c_ = experiment_config_file["imu_params"]["sigma_g_c"];
     sigma_a_c_ = experiment_config_file["imu_params"]["sigma_a_c"];    
+
 
     return true;
   }

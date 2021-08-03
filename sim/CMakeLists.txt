@@ -10,11 +10,11 @@ add_executable(sim_app
 )
 
 target_link_libraries(sim_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC Eigen3::Eigen
-  PUBLIC EigenRand
-  PUBLIC ceres
-  PUBLIC lib
+  PRIVATE ceres
+  PRIVATE Eigen3::Eigen
+  PRIVATE EigenRand
+  PRIVATE lib
+  PRIVATE yaml-cpp::yaml-cpp
 )
 
 
@@ -25,11 +25,11 @@ add_executable(sim_opt_app
 )
 
 target_link_libraries(sim_opt_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC Eigen3::Eigen
-  PUBLIC EigenRand
-  PUBLIC ceres
-  PUBLIC lib
+  PRIVATE ceres
+  PRIVATE Eigen3::Eigen
+  PRIVATE EigenRand
+  PRIVATE lib
+  PRIVATE yaml-cpp::yaml-cpp
 )
 
 
@@ -42,11 +42,11 @@ add_executable(sim_em_app
 )
 
 target_link_libraries(sim_em_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC Eigen3::Eigen
-  PUBLIC EigenRand
-  PUBLIC ceres
-  PUBLIC lib
+  PRIVATE ceres
+  PRIVATE Eigen3::Eigen
+  PRIVATE EigenRand
+  PRIVATE lib
+  PRIVATE yaml-cpp::yaml-cpp
 )
 
 
@@ -59,11 +59,11 @@ add_executable(sim_boem_app
 )
 
 target_link_libraries(sim_boem_app
-  PUBLIC ${OpenCV_LIBS}
-  PUBLIC Eigen3::Eigen
-  PUBLIC EigenRand
-  PUBLIC ceres
-  PUBLIC lib
+  PRIVATE ceres
+  PRIVATE Eigen3::Eigen
+  PRIVATE EigenRand
+  PRIVATE lib
+  PRIVATE yaml-cpp::yaml-cpp
 )
 
 

@@ -5,6 +5,7 @@
 
 #include <Eigen/Core>
 #include <ceres/ceres.h>
+#include "yaml-cpp/yaml.h"
 
 #include "backend.h"
 #include "constant.h"
@@ -21,10 +22,10 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
   }
 
   bool ReadExpConfig(std::string config_folder_path) {
-    cv::FileStorage exp_config_file(config_folder_path + "config_exp.yaml", cv::FileStorage::READ);
 
-    feature_threshold_ = (double) exp_config_file["em"]["feature_threshold"];
-    
+    YAML::Node exp_config_file = YAML::LoadFile(config_folder_path + "config_exp.yaml");
+    feature_threshold_ = exp_config_file["em"]["feature_threshold"].as<double>();    
+
     return true;
   }
 
