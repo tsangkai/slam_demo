@@ -111,7 +111,10 @@ plt.savefig("result/" + dataset + "/trajectory.pdf")
 plt.show()
 
 
-
+def add_boarder(lim):
+	coeff = 0.02
+	diff = lim[1] - lim[0]
+	return (lim[0]-coeff*diff, lim[1]+coeff*diff)
 
 
 
@@ -150,11 +153,11 @@ plt.plot(est_em_data['timestamp'], est_em_error, color = plot_color['em'], linew
 plt.plot(est_boem_data['timestamp'], est_boem_error, color = plot_color['boem'], linewidth=line_width, label='BOEM')
 
 
-plt.legend(loc='upper right')
+plt.legend(loc='upper right', ncol=2)
 
 plt.xlabel('time [s]')
 plt.ylabel('error [m]')
-plt.ylim([0,1.51])
+plt.ylim(add_boarder((0,1.45)))
 
 plt.savefig("result/" + dataset + "/error.pdf")
 

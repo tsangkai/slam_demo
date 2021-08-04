@@ -141,46 +141,6 @@ class ExpLandmarkSLAM {
 
   ExpLandmarkSLAM(std::string config_file_path) {
 
-    /*
-    cv::FileStorage config_file(config_file_path, cv::FileStorage::READ);
-
-    landmark_len_ = (size_t)(int) config_file["landmark_len"];
-
-    duration_ = (double) config_file["duration"];
-    dt_ = (double) config_file["dt"];
-    keyframe_rate_ratio_ = (size_t)(int) config_file["keyframe_rate_ratio"];
-
-    // trajectory parameter
-    r_ = (double) config_file["trajectory"]["r"];
-    w_ = (double) config_file["trajectory"]["w"];
-    r_z_ = (double) config_file["trajectory"]["r_z"];
-    w_z_ = (double) config_file["trajectory"]["w_z"];
-    z_h_ = (double) config_file["trajectory"]["z_h"];
-
-    sigma_g_c_ = (double) config_file["imu_param"]["sigma_g_c"];
-    sigma_a_c_ = (double) config_file["imu_param"]["sigma_a_c"];
-
-    box_xy_ = (double) config_file["landmark_generation"]["box_xy"];
-    box_z_ = (double) config_file["landmark_generation"]["box_z"];
-
-    landmark_init_noise_ = (double) config_file["landmark_init_noise"];
-
-    cv::FileNode T_bc = config_file["camera"]["T_bc"];
-    T_bc_ << (double) T_bc[0], (double) T_bc[1], (double) T_bc[2], (double) T_bc[3],
-             (double) T_bc[4], (double) T_bc[5], (double) T_bc[6], (double) T_bc[7],
-             (double) T_bc[8], (double) T_bc[9], (double) T_bc[10], (double) T_bc[11],
-             (double) T_bc[12], (double) T_bc[13], (double) T_bc[14], (double) T_bc[15];
-
-    du_ = (double) config_file["camera"]["image_dimension"][0];  // image dimension
-    dv_ = (double) config_file["camera"]["image_dimension"][1];
-    fu_ = (double) config_file["camera"]["focal_length"][0];  // focal length
-    fv_ = (double) config_file["camera"]["focal_length"][1];
-    cu_ = (double) config_file["camera"]["principal_point"][0];  // principal point
-    cv_ = (double) config_file["camera"]["principal_point"][1];
-
-    obs_cov_ = (double) config_file["camera"]["observation_noise"];
-    */
-
     YAML::Node config_file = YAML::LoadFile(config_file_path);
     
     landmark_len_ = (size_t) config_file["landmark_len"].as<int>();

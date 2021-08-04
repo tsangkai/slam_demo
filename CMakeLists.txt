@@ -33,3 +33,4 @@ endif(BUILD_TEST)
 
 add_subdirectory(sim_fixed)
 add_subdirectory(sim_exp_window)
+add_subdirectory(sim_sliding_window)

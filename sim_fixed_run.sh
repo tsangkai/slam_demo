@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPEAT_VAR="10"  # 50
+REPEAT_VAR="5"  # 50
 
 ./build/sim_fixed/sim_fixed_app $REPEAT_VAR
 ./build/sim_fixed/sim_fixed_opt_app $REPEAT_VAR

@@ -4,6 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+def add_boarder(lim):
+	coeff = 0.02
+	diff = lim[1] - lim[0]
+	return (lim[0]-coeff*diff, lim[1]+coeff*diff)
 
 def quat_diff(q1, q2):
 	[w1, x1, y1, z1] = q1
@@ -81,7 +85,7 @@ ax1.plot(opt_data['timestamp'], opt_rot_error, color = plot_color['opt'], label=
 ax1.plot(em_data['timestamp'], em_rot_error, color = plot_color['em'], label='EM')
 ax1.plot(boem_data['timestamp'], boem_rot_error, color = plot_color['boem'], label='BOEM')
 ax1.set(ylabel='rotation RMSE [deg]')
-ax1.set_ylim(top=5+0.01, bottom=0-0.01)
+ax1.set_ylim(add_boarder((0, 2)))
 ax1.legend(loc = 1)
 
 
@@ -91,6 +95,6 @@ ax2.plot(em_data['timestamp'], em_pos_error, color = plot_color['em'])
 ax2.plot(boem_data['timestamp'], boem_pos_error, color = plot_color['boem'])
 ax2.set(ylabel='position RMSE [m]')
 ax2.set(xlabel='time [s]')
-ax2.set_ylim(top=0.2+0.01, bottom=0-0.01)
+ax2.set_ylim(add_boarder((0, 0.1)))
 
 plt.show()
