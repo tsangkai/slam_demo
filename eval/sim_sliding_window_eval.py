@@ -21,7 +21,7 @@ q_error_array = np.zeros_like(p_error_array)
 
 for l in range(len(result_string)):
 	for k in range(num_realizations):
-		data = pd.read_csv("result/sim/sliding_window/%s_s_%s.csv" % (result_string[l],k))
+		data = pd.read_csv("result/sim/sliding_window/%s_%s.csv" % (result_string[l],k))
 		for i in range(len(gt_data['p_x'])):
 			p_error_array[l, i, k] = math.sqrt( (gt_data['p_x'][i]-data['p_x'][i])**2 + (gt_data['p_y'][i]-data['p_y'][i])**2
 												 + (gt_data['p_z'][i]-data['p_z'][i])**2)
@@ -47,10 +47,10 @@ for n in range(len(result_string)):
 
 
 ax1.set(ylabel='rotation RMSE [deg]')
-ax1.set_ylim(visualization.add_boarder((0, 1.5)))
+ax1.set_ylim(visualization.add_boarder((0, 3)))
 ax2.set(ylabel='position RMSE [m]')
 ax2.set(xlabel='time [s]')
 ax2.legend(loc = 1)
-ax2.set_ylim(visualization.add_boarder((0, 0.15)))
+ax2.set_ylim(visualization.add_boarder((0, 0.4)))
 plt.show()
 
