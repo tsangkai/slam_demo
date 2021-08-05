@@ -393,7 +393,7 @@ int main(int argc, char **argv) {
 
     slam_problem.EM_step(window_size);
 
-    slam_problem.OutputResult("result/sim_sliding_window/opt_s_" + std::to_string(i) + ".csv");
+    slam_problem.OutputResult("result/sim/sliding_window/opt_s_" + std::to_string(i) + ".csv");
 
     std::cout << "Completed OPT trial " << std::to_string(i) << std::endl;
   }

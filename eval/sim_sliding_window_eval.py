@@ -19,7 +19,7 @@ fig_height = 4.38
 
 # error plot
 num_realizations = int(sys.argv[1])
-gt_data = pd.read_csv("result/sim_sliding_window/gt.csv")
+gt_data = pd.read_csv("result/sim/sliding_window/gt.csv")
 result_string = ['opt', 'em', 'boem']
 p_error_array = np.zeros((len(result_string), len(gt_data['p_x']), num_realizations))
 q_error_array = np.zeros_like(p_error_array)
@@ -39,7 +39,7 @@ def quat_diff(q1, q2):
 
 for l in range(len(result_string)):
 	for k in range(num_realizations):
-		data = pd.read_csv("result/sim_sliding_window/%s_s_%s.csv" % (result_string[l],k))
+		data = pd.read_csv("result/sim/sliding_window/%s_s_%s.csv" % (result_string[l],k))
 		for i in range(len(gt_data['p_x'])):
 			p_error_array[l, i, k] = math.sqrt( (gt_data['p_x'][i]-data['p_x'][i])**2 + (gt_data['p_y'][i]-data['p_y'][i])**2
 												 + (gt_data['p_z'][i]-data['p_z'][i])**2)

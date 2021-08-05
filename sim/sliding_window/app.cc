@@ -19,11 +19,11 @@ int main(int argc, char **argv) {
   slam_problem.CreateImuData(urng);
   slam_problem.CreateObservationData(urng);
 
-  slam_problem.OutputGroundtruth("result/sim_sliding_window/gt.csv");
+  slam_problem.OutputGroundtruth("result/sim/sliding_window/gt.csv");
 
   slam_problem.InitializeSLAMProblem();
   slam_problem.InitializeTrajectory();
-  slam_problem.OutputResult("result/sim_sliding_window/dr.csv");
+  slam_problem.OutputResult("result/sim/sliding_window/dr.csv");
 
   return 0;
 }

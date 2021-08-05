@@ -23,5 +23,5 @@ done
 
 
 # visualization
-python3 sim_exp_window_eval.py $REPEAT_VAR_WIN $TIME_DIFF_VAR $NUM_WIN
+python3 eval/sim_exp_window_eval.py $REPEAT_VAR_WIN $TIME_DIFF_VAR $NUM_WIN
 

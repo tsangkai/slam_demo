@@ -2,12 +2,12 @@
 
 ###
 
-add_executable(sim_app_s_win
+add_executable(sim_sliding_window_app
   sim.h
-  sim_app_s_win.cc
+  app.cc
 )
 
-target_link_libraries(sim_app_s_win
+target_link_libraries(sim_sliding_window_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
@@ -19,12 +19,12 @@ target_link_libraries(sim_app_s_win
 
 ###
 
-add_executable(sim_opt_app_s_win
+add_executable(sim_sliding_window_opt_app
   sim.h
-  sim_opt_app_s_win.cc
+  opt_app.cc
 )
 
-target_link_libraries(sim_opt_app_s_win
+target_link_libraries(sim_sliding_window_opt_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
@@ -36,12 +36,12 @@ target_link_libraries(sim_opt_app_s_win
 
 ###
 
-add_executable(sim_em_app_s_win
+add_executable(sim_sliding_window_em_app
   sim.h
-  sim_em_app_s_win.cc
+  em_app.cc
 )
 
-target_link_libraries(sim_em_app_s_win
+target_link_libraries(sim_sliding_window_em_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
@@ -53,12 +53,12 @@ target_link_libraries(sim_em_app_s_win
 
 ###
 
-add_executable(sim_boem_app_s_win
+add_executable(sim_sliding_window_boem_app
   sim.h
-  sim_boem_app_s_win.cc
+  boem_app.cc
 )
 
-target_link_libraries(sim_boem_app_s_win
+target_link_libraries(sim_sliding_window_boem_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand

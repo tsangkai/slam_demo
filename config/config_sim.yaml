@@ -25,7 +25,7 @@ landmark_generation:
   box_xy: 2.0 # box offset from the circle
   box_z: 1 # box offset from uav height
   
-landmark_init_noise: 0.03 #0.01 #0.0005
+landmark_init_noise: 0.02 #0.01 #0.0005
 # 0.01 performance is good even before opt.
 
 camera:
