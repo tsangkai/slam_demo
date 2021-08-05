@@ -8,19 +8,20 @@
 #include "sim.h"
 
 
-class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
+class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
  public:
 
-  ExpLandmarkEmSLAM(std::string config_file_path): 
+  ExpLandmarkOptSLAM(std::string config_file_path): 
     ExpLandmarkSLAM(config_file_path) {
 
   }
 
 
 
-  bool E_step() {
+
+  bool InitializeTrajectory() {
 
     // forward filtering
     state_est_vec_.at(0)->q_ = state_vec_.at(0)->q_;
@@ -108,7 +109,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
         // exclude outliers
         Eigen::Vector2d innovation = measurement - landmark_proj;
         // if (innovation.norm() < 80) {  
-        // if (1) {  
+        if (1) {  
 
           Eigen::Matrix<double, 2, 2> H_cam;
           H_cam << fu_, 0.0,
@@ -140,16 +141,16 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
           IKH = Eigen::Matrix<double, 9, 9>::Identity() - K * H;
           cov = IKH * cov * IKH.transpose() + K * R * K.transpose();     // Joseph form
           
-        // }
+        }
       }
 
       // if (k_p.norm() < 0.65) {
-      // if (1) {
+      if (1) {
         state_est_vec_.at(i+1)->q_ = quat_positive(Eigen::Quaterniond(q * k_R));
         state_est_vec_.at(i+1)->v_ = v + k_v;
         state_est_vec_.at(i+1)->p_ = p + k_p;
         state_est_vec_.at(i+1)->cov_ = cov;
-      // }
+      }
     }
 
 
@@ -228,7 +229,8 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
   }
 
 
-  bool M_step() {
+  bool SolveOptProblem() {
+
 
 
     // ceres parameter
@@ -247,13 +249,14 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     quat_parameterization_ptr = new ceres::QuaternionParameterization();
 
 
-    // udpate parameter block
-
+    // create parameter block
     for (size_t i=0; i<state_len_; ++i) {
       state_para_vec_.at(i)->GetRotationBlock()->setEstimate(state_est_vec_.at(i)->q_);
       state_para_vec_.at(i)->GetVelocityBlock()->setEstimate(state_est_vec_.at(i)->v_);
       state_para_vec_.at(i)->GetPositionBlock()->setEstimate(state_est_vec_.at(i)->p_);
     }
+
+
 
     for (size_t i=0; i<landmark_len_; ++i) {
       landmark_para_vec_.at(i)->setEstimate(*landmark_est_vec_.at(i));
@@ -268,12 +271,10 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       optimization_problem.AddParameterBlock(state_para_vec_.at(i)->GetPositionBlock()->parameters(), 3); 
     }
 
-    for (size_t i=0; i<state_len_; ++i) {
+    optimization_problem.SetParameterBlockConstant(state_para_vec_.at(0)->GetRotationBlock()->parameters());
+    optimization_problem.SetParameterBlockConstant(state_para_vec_.at(0)->GetVelocityBlock()->parameters());
+    optimization_problem.SetParameterBlockConstant(state_para_vec_.at(0)->GetPositionBlock()->parameters());     
 
-      optimization_problem.SetParameterBlockConstant(state_para_vec_.at(i)->GetRotationBlock()->parameters());
-      optimization_problem.SetParameterBlockConstant(state_para_vec_.at(i)->GetVelocityBlock()->parameters());
-      optimization_problem.SetParameterBlockConstant(state_para_vec_.at(i)->GetPositionBlock()->parameters());     
-    }
 
     for (size_t i=0; i<landmark_len_; ++i) {
       optimization_problem.AddParameterBlock(landmark_para_vec_.at(i)->parameters(), 3);
@@ -328,13 +329,17 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     }
 
 
-
-
+    // solve the optimization problem
     ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
     std::cout << optimization_summary.FullReport() << "\n";
 
 
     // store results
+    for (size_t i=1; i<state_len_; ++i) {
+      state_est_vec_.at(i)->q_ = state_para_vec_.at(i)->GetRotationBlock()->estimate();
+      state_est_vec_.at(i)->v_ = state_para_vec_.at(i)->GetVelocityBlock()->estimate();
+      state_est_vec_.at(i)->p_ = state_para_vec_.at(i)->GetPositionBlock()->estimate();
+    }
 
     for (size_t i=0; i<landmark_len_; ++i) {
       *landmark_est_vec_.at(i) = landmark_para_vec_.at(i)->estimate();
@@ -344,18 +349,17 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     return true;
   }
 
-
 };
 
 
 
 int main(int argc, char **argv) {
 
-  std::cout << "simulate EM SLAM..." << std::endl;
+  std::cout << "simulate optimization based SLAM..." << std::endl;
 
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-  ExpLandmarkEmSLAM slam_problem("config/config_sim.yaml");
+  ExpLandmarkOptSLAM slam_problem("config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark(urng);
@@ -363,15 +367,17 @@ int main(int argc, char **argv) {
   slam_problem.CreateImuData(urng);
   slam_problem.CreateObservationData(urng);
 
+  // slam_problem.OutputGroundtruth("result/sim/easy/gt.csv");
+
 
   slam_problem.InitializeSLAMProblem();
+  slam_problem.InitializeTrajectory();
+  // slam_problem.OutputResult("result/sim/easy/pre.csv");
 
-  slam_problem.E_step();
-  slam_problem.M_step();
-  slam_problem.E_step();
+  slam_problem.SolveOptProblem();
 
 
-  slam_problem.OutputResult("result/sim/em.csv");
+  slam_problem.OutputResult("result/sim/easy/opt.csv");
 
   return 0;
 }

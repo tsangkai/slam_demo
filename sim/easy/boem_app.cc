@@ -377,16 +377,13 @@ int main(int argc, char **argv) {
   slam_problem.CreateImuData(urng);
   slam_problem.CreateObservationData(urng);
 
-
-
-
   slam_problem.InitializeSLAMProblem();
 
   slam_problem.BOEM_step();
 
 
 
-  slam_problem.OutputResult("result/sim/boem.csv");
+  slam_problem.OutputResult("result/sim/easy/boem.csv");
 
   return 0;
 }
