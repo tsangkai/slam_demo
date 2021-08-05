@@ -21,7 +21,7 @@ fig_height = 4.00 #4.38
 
 # error plot
 num_realizations = int(sys.argv[1])
-gt_data = pd.read_csv("result/sim_fixed/gt.csv")
+gt_data = pd.read_csv("result/sim/fixed/gt.csv")
 
 pdr_error_array = np.zeros((len(gt_data['p_x']), num_realizations))
 po_error_array = np.zeros_like(pdr_error_array)
@@ -52,10 +52,10 @@ def quat_diff(q1, q2):
 	return theta
 
 for k in range(num_realizations):
-	dr_data = pd.read_csv("result/sim_fixed/dr_%s.csv" % (k,))
-	opt_data = pd.read_csv("result/sim_fixed/opt_%s.csv" % (k,))
-	em_data = pd.read_csv("result/sim_fixed/em_%s.csv" % (k,))
-	boem_data = pd.read_csv("result/sim_fixed/boem_%s.csv" % (k,))
+	dr_data = pd.read_csv("result/sim/fixed/dr_%s.csv" % (k,))
+	opt_data = pd.read_csv("result/sim/fixed/opt_%s.csv" % (k,))
+	em_data = pd.read_csv("result/sim/fixed/em_%s.csv" % (k,))
+	boem_data = pd.read_csv("result/sim/fixed/boem_%s.csv" % (k,))
 	for i in range(len(gt_data['p_x'])):
 		pdr_error_array[i,k]= math.sqrt( (gt_data['p_x'][i]-dr_data['p_x'][i])**2 + (gt_data['p_y'][i]-dr_data['p_y'][i])**2
 									  + (gt_data['p_z'][i]-dr_data['p_z'][i])**2)

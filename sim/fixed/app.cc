@@ -24,9 +24,9 @@ int main(int argc, char **argv) {
     slam_problem.CreateObservationData(urng);
     slam_problem.InitializeSLAMProblem();
     slam_problem.InitializeTrajectory();
-    slam_problem.OutputResult("result/sim_fixed/dr_"+ std::to_string(i) + ".csv");
+    slam_problem.OutputResult("result/sim/fixed/dr_"+ std::to_string(i) + ".csv");
     std::cout << "Completed DR trial " << std::to_string(i) << std::endl;
-    slam_problem.OutputGroundtruth("result/sim_fixed/gt.csv");
+    slam_problem.OutputGroundtruth("result/sim/fixed/gt.csv");
   }
 
   return 0;

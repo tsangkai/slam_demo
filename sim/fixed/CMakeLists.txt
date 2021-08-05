@@ -3,7 +3,7 @@
 
 
 add_executable(sim_fixed_app
-  sim.cc
+  app.cc
   sim.h
 )
 
@@ -18,7 +18,7 @@ target_link_libraries(sim_fixed_app
 
 
 add_executable(sim_fixed_opt_app
-  sim_opt.cc
+  opt_app.cc
   sim.h
 )
 
@@ -33,7 +33,7 @@ target_link_libraries(sim_fixed_opt_app
 
 
 add_executable(sim_fixed_em_app
-  sim_em.cc
+  em_app.cc
   sim.h
 )
 
@@ -48,7 +48,7 @@ target_link_libraries(sim_fixed_em_app
 
 
 add_executable(sim_fixed_boem_app
-  sim_boem.cc
+  boem_app.cc
   sim.h
 )
 
