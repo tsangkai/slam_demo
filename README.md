@@ -22,11 +22,10 @@ To build this project, just follow standard CMake procedure.
 ```
 mkdir build
 cd build
-cmake [-DBUILD_TEST=OFF] ..
+cmake ..
 cmake --build .
 ```
 
+## Setup
 
-## Evaluation
-
-We use `perf` to measure the execution time of each algorithm.
+The configuration files for simulation and experiment are in `config`. We use `perf` to measure the execution time of each algorithm.
