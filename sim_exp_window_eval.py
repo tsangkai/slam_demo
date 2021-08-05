@@ -37,8 +37,8 @@ for m in range(len(result_string)):
 	for tw in range(time_diff, time_diff*num_win+1, time_diff):
 		skip_len = 0
 		for nr in range(1,num_realizations+1):
-			raw_lists[m] = pd.read_csv("result/sim_exp_window/%s_%s.csv" % (result_string[m], tw), skiprows=skip_len, nrows=tw*10)
-			raw_lists[m].to_csv("result/sim_exp_window/%s_%s_%s.csv" % (result_string[m], tw, nr), index=False, float_format='%.6f')
+			raw_lists[m] = pd.read_csv("result/sim/exp_window/%s_%s.csv" % (result_string[m], tw), skiprows=skip_len, nrows=tw*10)
+			raw_lists[m].to_csv("result/sim/exp_window/%s_%s_%s.csv" % (result_string[m], tw, nr), index=False, float_format='%.6f')
 			skip_len+=(tw*10+1)
 # 		os.remove("result/sim_exp_window/%s_%s.csv" % (result_string[m], tw))
 
@@ -48,7 +48,7 @@ time_lists = [[] for i in range(len(result_string))]
 sd_lists = [[] for i in range(len(result_string))]
 
 for str_index, str in enumerate(result_string):
-	with open("result/sim_exp_window/perf_%s.txt" % (str,)) as textFile:
+	with open("result/sim/exp_window/perf_%s.txt" % (str,)) as textFile:
 		for line in textFile.readlines():
 			index1 = line.find('task')
 			if index1!= -1:
@@ -70,12 +70,12 @@ for j in range(len(result_string)):
 		sd_lists[j].append(float(std.strip())/100*float(time.strip().replace(",", ""))/1000)
 
 # find RMSE error
-gt_data = pd.read_csv("result/sim_exp_window/gt.csv")
+gt_data = pd.read_csv("result/sim/exp_window/gt.csv")
 error_array = np.zeros((len(result_string), num_win, num_realizations))
 for l in range(len(result_string)):
 	for h in range(num_win):
 		for k in range(num_realizations):
-			data = pd.read_csv("result/sim_exp_window/%s_%s_%s.csv" % (result_string[l], (h+1)*time_diff, (k+1)))
+			data = pd.read_csv("result/sim/exp_window/%s_%s_%s.csv" % (result_string[l], (h+1)*time_diff, (k+1)))
 			for i in range(len(data['p_x'])):
 				error_array[l, h, k] += (gt_data['p_x'][i]-data['p_x'][i])**2 + (gt_data['p_y'][i]-data['p_y'][i])**2\
 									   + (gt_data['p_z'][i]-data['p_z'][i])**2
@@ -114,7 +114,7 @@ ax2.set(ylabel='processing time [log(s)]')
 ax2.set(xlabel='time [s]')
 plt.show()
 
-fig.savefig('sim_exp_win.png')
+fig.savefig('result/sim/exp_window/sim_exp_win.png')
 
 
 

@@ -403,7 +403,7 @@ int main(int argc, char **argv) {
 
 
 
-  slam_problem.OutputResult("result/sim_exp_window/boem_" + std::string(argv[1]) + ".csv");
+  slam_problem.OutputResult("result/sim/exp_window/boem_" + std::string(argv[1]) + ".csv");
 
   return 0;
 }

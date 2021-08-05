@@ -375,7 +375,7 @@ int main(int argc, char **argv) {
 
     slam_problem.CreateTrajectory();
 
-    slam_problem.OutputGroundtruth("result/sim_exp_window/gt.csv");
+    slam_problem.OutputGroundtruth("result/sim/exp_window/gt.csv");
 
     return 0;
 }

@@ -3,10 +3,9 @@ project(slam_demo)
 
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 option(BUILD_SHARED_LIBS "build shared libraries" ON)
-option(BUILD_TEST "build test programs" ON)
-
 
 
 find_package(OpenCV REQUIRED)
@@ -25,12 +24,4 @@ add_subdirectory(sim)
 add_subdirectory(exp)
 
 
-if(BUILD_TEST)
-  add_subdirectory(test)
-endif(BUILD_TEST)
-
-
-
-add_subdirectory(sim_fixed)
-add_subdirectory(sim_exp_window)
-add_subdirectory(sim_sliding_window)
+# add_subdirectory(test)

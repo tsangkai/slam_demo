@@ -4,12 +4,12 @@
 
 
 
-add_executable(app 
+add_executable(sim_easy_app 
   sim.h
   app.cc
 )
 
-target_link_libraries(app
+target_link_libraries(sim_easy_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
@@ -19,12 +19,12 @@ target_link_libraries(app
 
 
 
-add_executable(opt_app 
+add_executable(sim_easy_opt_app 
   sim.h
   opt_app.cc
 )
 
-target_link_libraries(opt_app
+target_link_libraries(sim_easy_opt_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
@@ -36,12 +36,12 @@ target_link_libraries(opt_app
 
 ###
 
-add_executable(em_app 
+add_executable(sim_easy_em_app 
   sim.h
   em_app.cc
 )
 
-target_link_libraries(em_app
+target_link_libraries(sim_easy_em_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
@@ -53,12 +53,12 @@ target_link_libraries(em_app
 
 ###
 
-add_executable(boem_app 
+add_executable(sim_easy_boem_app 
   sim.h
   boem_app.cc
 )
 
-target_link_libraries(boem_app
+target_link_libraries(sim_easy_boem_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand

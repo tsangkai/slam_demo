@@ -373,7 +373,7 @@ int main(int argc, char **argv) {
   slam_problem.M_step();
 
 
-  slam_problem.OutputResult("result/sim_exp_window/em_" + std::string(argv[1]) + ".csv");
+  slam_problem.OutputResult("result/sim/exp_window/em_" + std::string(argv[1]) + ".csv");
 
   return 0;
 }
