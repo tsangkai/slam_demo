@@ -4,6 +4,7 @@
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
 #include <Eigen/Core>
+#include "gflags/gflags.h"
 
 #include "sim.h"
 
@@ -27,7 +28,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
     double c = 30.25;
 
     size_t block_size = floor(c * pow(n, a)); 
-    size_t T = 0; //1;
+    size_t T = 0;
 
     bool reach_end = false;
 
@@ -40,8 +41,6 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
     state_est_vec_.at(0)->cov_ = Eigen::Matrix<double, 9, 9>::Zero();
 
 
-
-    // while (T+block_size < state_vec_.size()) {
     while (!reach_end) {
 
       std::cout << n << " " << T << ", " << T + block_size << std::endl;
@@ -367,6 +366,7 @@ int main(int argc, char **argv) {
 
   std::cout << "simulate BOEM SLAM..." << std::endl;
 
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
   ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
@@ -380,8 +380,6 @@ int main(int argc, char **argv) {
   slam_problem.InitializeSLAMProblem();
 
   slam_problem.BOEM_step();
-
-
 
   slam_problem.OutputResult("result/sim/easy/boem.csv");
 

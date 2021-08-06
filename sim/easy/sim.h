@@ -14,6 +14,7 @@
 #include <ceres/rotation.h>
 #include <Eigen/Core>
 #include "EigenRand/EigenRand"
+#include "gflags/gflags.h"
 #include "yaml-cpp/yaml.h"
 
 #include "so3.h"
@@ -23,6 +24,11 @@
 #include "quat_parameter_block.h"
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
+
+
+   
+
+DEFINE_double(duration, 50, "The duration for this simulation");
 
 
 struct State {
@@ -141,11 +147,13 @@ class ExpLandmarkSLAM {
 
   ExpLandmarkSLAM(std::string config_file_path) {
 
+    duration_ = FLAGS_duration;
+
     YAML::Node config_file = YAML::LoadFile(config_file_path);
     
     landmark_len_ = (size_t) config_file["landmark_len"].as<int>();
 
-    duration_ = config_file["duration"].as<double>();
+    // duration_ = config_file["duration"].as<double>();
     dt_ = config_file["dt"].as<double>();
     keyframe_rate_ratio_ = (size_t) config_file["keyframe_rate_ratio"].as<int>();
 

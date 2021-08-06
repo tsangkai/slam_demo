@@ -4,6 +4,7 @@
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
 #include <Eigen/Core>
+#include "gflags/gflags.h"
 
 #include "sim.h"
 
@@ -353,6 +354,7 @@ int main(int argc, char **argv) {
 
   std::cout << "simulate EM SLAM..." << std::endl;
 
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
   ExpLandmarkEmSLAM slam_problem("config/config_sim.yaml");
