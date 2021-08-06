@@ -366,25 +366,22 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
 
 int main(int argc, char **argv) {
-//  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
-
+  
   std::cout << "simulate BOEM SLAM..." << std::endl;
 
-  // Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  int num_trials = FLAGS_trials;
 
-
-  int num_real = std::stoi(argv[1]);
-
-  for (size_t i = 0; i < num_real; ++i) {
+  for (size_t i = 0; i < num_trials; ++i) {
 
     Eigen::Rand::Vmt19937_64 urng{ i };
 
 
     ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
     slam_problem.CreateTrajectory();
-    slam_problem.CreateLandmark(urng);  // Eigen
+    slam_problem.CreateLandmark(urng);
  
-    slam_problem.CreateImuData(urng);   // Eigen::Random
+    slam_problem.CreateImuData(urng);
     slam_problem.CreateObservationData(urng);
 
 

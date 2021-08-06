@@ -354,13 +354,13 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
 
 
 int main(int argc, char **argv) {
-//  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
 
   std::cout << "simulate optimization based SLAM..." << std::endl;
 
-  int num_real = std::stoi(argv[1]);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  int num_trials = FLAGS_trials;
 
-  for (size_t i = 0; i < num_real; ++i) {
+  for (size_t i = 0; i < num_trials; ++i) {
 
     Eigen::Rand::Vmt19937_64 urng{ i };
 

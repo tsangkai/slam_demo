@@ -6,13 +6,13 @@
 
 
 int main(int argc, char **argv) {
-//  srand((unsigned int) time(NULL)); //eigen uses the random number generator of the standard lib
 
   std::cout << "generate ground truth and dead reckoning trajectories..." << std::endl;
 
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  int num_trials = FLAGS_trials;
 
-  int num_real = atoi(argv[1]);
-  for (size_t i = 0; i < num_real; ++i) {
+  for (size_t i = 0; i < num_trials; ++i) {
 
     Eigen::Rand::Vmt19937_64 urng{ i };
 

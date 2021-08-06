@@ -355,11 +355,10 @@ int main(int argc, char **argv) {
 
   std::cout << "simulate EM SLAM..." << std::endl;
 
-  int num_real = std::stoi(argv[1]);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  int num_trials = FLAGS_trials;
 
-//  Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
-
-  for (size_t i = 0; i < num_real; ++i) {
+  for (size_t i = 0; i < num_trials; ++i) {
 
 
     Eigen::Rand::Vmt19937_64 urng{ i };
