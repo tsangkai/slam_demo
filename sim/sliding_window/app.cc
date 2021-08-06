@@ -4,14 +4,18 @@
 
 #include "sim.h"
 
+#include "gflags/gflags.h"
+
 
 int main(int argc, char **argv) {
 
   std::cout << "generate ground truth and dead reckoning trajectories..." << std::endl;
+
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-  ExpLandmarkSLAM slam_problem("config/config_sim_sliding_window.yaml");
+  ExpLandmarkSLAM slam_problem("config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark(urng);

@@ -15,6 +15,7 @@
 #include <ceres/rotation.h>
 #include <Eigen/Core>
 #include "EigenRand/EigenRand"
+#include "gflags/gflags.h"
 #include "yaml-cpp/yaml.h"
 
 #include "so3.h"
@@ -25,7 +26,10 @@
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
 
-// Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+DEFINE_double(duration, 50, "The duration for this simulation");
+DEFINE_int32(trials, 5, "The number of simulations");
+DEFINE_double(fixed_window_size, 50, "The fixed window size for sliding window simulations");
+
 
 struct State {
   double             t_;
@@ -142,11 +146,15 @@ class ExpLandmarkSLAM {
 
   ExpLandmarkSLAM(std::string config_file_path) {
 
+    // from command line arguments
+    duration_ = FLAGS_duration;
+
+    // from config file
     YAML::Node config_file = YAML::LoadFile(config_file_path);
     
     landmark_len_ = (size_t) config_file["landmark_len"].as<int>();
 
-    duration_ = config_file["duration"].as<double>();
+    // duration_ = config_file["duration"].as<double>();
     dt_ = config_file["dt"].as<double>();
     keyframe_rate_ratio_ = (size_t) config_file["keyframe_rate_ratio"].as<int>();
 

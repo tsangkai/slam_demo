@@ -18,10 +18,13 @@ int main(int argc, char **argv) {
 
 
     ExpLandmarkSLAM slam_problem("config/config_sim.yaml");
+
     slam_problem.CreateTrajectory();
     slam_problem.CreateLandmark(urng);
+
     slam_problem.CreateImuData(urng);
     slam_problem.CreateObservationData(urng);
+    
     slam_problem.InitializeSLAMProblem();
     slam_problem.InitializeTrajectory();
     slam_problem.OutputResult("result/sim/fixed/dr_"+ std::to_string(i) + ".csv");

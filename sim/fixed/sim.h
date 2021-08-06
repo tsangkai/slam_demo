@@ -27,7 +27,7 @@
 
 
 DEFINE_double(duration, 50, "The duration for this simulation");
-DEFINE_double(trials, 5, "The number of simulations");
+DEFINE_int32(trials, 5, "The number of simulations");
 
 
 struct State {

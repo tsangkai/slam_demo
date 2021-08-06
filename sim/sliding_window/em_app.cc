@@ -4,6 +4,7 @@
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
 #include <Eigen/Core>
+#include "gflags/gflags.h"
 
 #include "sim.h"
 
@@ -16,13 +17,12 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
   ExpLandmarkEmSLAM(std::string config_file_path): 
     ExpLandmarkSLAM(config_file_path) {
-
   }
 
 
 
-  bool EM_step(int block_size) {
-
+  bool EM_step() {
+    int block_size = FLAGS_fixed_window_size;
     size_t T = 0;
 
     bool reach_end = false;
@@ -340,12 +340,13 @@ int main(int argc, char **argv) {
 
   std::cout << "simulate EM SLAM..." << std::endl;
 
-  Eigen::Rand::Vmt19937_64 urng{(unsigned int) time(0)};
-  int num_real = std::stoi(argv[1]);
-  int window_size = 60;
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  int num_trials = FLAGS_trials;
 
-  for (size_t i = 0; i < num_real; ++i) {
-    ExpLandmarkEmSLAM slam_problem("config/config_sim_sliding_window.yaml");
+  for (size_t i = 0; i < num_trials; ++i) {
+    Eigen::Rand::Vmt19937_64 urng{ i };
+
+    ExpLandmarkEmSLAM slam_problem("config/config_sim.yaml");
 
     slam_problem.CreateTrajectory();
     slam_problem.CreateLandmark(urng);
@@ -356,7 +357,7 @@ int main(int argc, char **argv) {
 
     slam_problem.InitializeSLAMProblem();
 
-    slam_problem.EM_step(window_size);
+    slam_problem.EM_step();
 
 
     slam_problem.OutputResult("result/sim/sliding_window/em_" + std::to_string(i) + ".csv");

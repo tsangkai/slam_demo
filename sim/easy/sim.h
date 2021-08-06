@@ -153,7 +153,6 @@ class ExpLandmarkSLAM {
     
     landmark_len_ = (size_t) config_file["landmark_len"].as<int>();
 
-    // duration_ = config_file["duration"].as<double>();
     dt_ = config_file["dt"].as<double>();
     keyframe_rate_ratio_ = (size_t) config_file["keyframe_rate_ratio"].as<int>();
 

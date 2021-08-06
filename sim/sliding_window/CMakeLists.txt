@@ -1,7 +1,5 @@
 
 
-###
-
 add_executable(sim_sliding_window_app
   sim.h
   app.cc
@@ -11,13 +9,12 @@ target_link_libraries(sim_sliding_window_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )
 
 
-
-###
 
 add_executable(sim_sliding_window_opt_app
   sim.h
@@ -28,13 +25,12 @@ target_link_libraries(sim_sliding_window_opt_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )
 
 
-
-###
 
 add_executable(sim_sliding_window_em_app
   sim.h
@@ -45,13 +41,12 @@ target_link_libraries(sim_sliding_window_em_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )
 
 
-
-###
 
 add_executable(sim_sliding_window_boem_app
   sim.h
@@ -62,6 +57,7 @@ target_link_libraries(sim_sliding_window_boem_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )

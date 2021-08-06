@@ -4,6 +4,7 @@
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
 #include <Eigen/Core>
+#include "gflags/gflags.h"
 
 #include "sim.h"
 
@@ -358,29 +359,33 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
 int main(int argc, char **argv) {
 
-    std::cout << "simulate BOEM SLAM..." << std::endl;
-    Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+  std::cout << "simulate BOEM SLAM..." << std::endl;
 
-    int num_real = std::stoi(argv[1]);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  int num_trials = FLAGS_trials;
 
-    for (size_t i = 0; i < num_real; ++i) {
-        ExpLandmarkBoemSLAM slam_problem("config/config_sim_sliding_window.yaml");
-        slam_problem.CreateTrajectory();
-        slam_problem.CreateLandmark(urng);
+  for (size_t i = 0; i < num_trials; ++i) {
+    Eigen::Rand::Vmt19937_64 urng{ i };
 
-        slam_problem.CreateImuData(urng);
-        slam_problem.CreateObservationData(urng);
+    ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
 
+    slam_problem.CreateTrajectory();
+    slam_problem.CreateLandmark(urng);
 
-        slam_problem.InitializeSLAMProblem();
-
-        slam_problem.BOEM_step();
+    slam_problem.CreateImuData(urng);
+    slam_problem.CreateObservationData(urng);
 
 
-        slam_problem.OutputResult("result/sim/sliding_window/boem_" + std::to_string(i) + ".csv");
+    slam_problem.InitializeSLAMProblem();
 
-        std::cout << "Completed BOEM trial " << std::to_string(i) << std::endl;
+    slam_problem.BOEM_step();
 
-    }
-    return 0;
+
+    slam_problem.OutputResult("result/sim/sliding_window/boem_" + std::to_string(i) + ".csv");
+
+    std::cout << "Completed BOEM trial " << std::to_string(i) << std::endl;
+
+  }
+
+  return 0;
 }
