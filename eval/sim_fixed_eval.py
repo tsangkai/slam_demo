@@ -117,7 +117,7 @@ def plot_with_std():
 
 	ax2.set_ylim(visualization.add_boarder((0, 0.1)))
 
-	fig.savefig('dynamic.pdf')
+	fig.savefig('result/sim/fixed/dynamic.pdf')
 
 	return plt.show()
 

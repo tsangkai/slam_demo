@@ -28,7 +28,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
     size_t block_size = floor(c * pow(n, a));
 
-    size_t T = 0; //1;
+    size_t T = 0;
 
     bool reach_end = false;
 
@@ -41,8 +41,6 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
     state_est_vec_.at(0)->cov_ = Eigen::Matrix<double, 9, 9>::Zero();
 
 
-
-    // while (T+block_size < state_vec_.size()) {
     while (!reach_end) {
 
       std::cout << n << " " << T << ", " << T + block_size << std::endl;
@@ -379,7 +377,7 @@ int main(int argc, char **argv) {
         slam_problem.BOEM_step();
 
 
-        slam_problem.OutputResult("result/sim/sliding_window/boem_s_" + std::to_string(i) + ".csv");
+        slam_problem.OutputResult("result/sim/sliding_window/boem_" + std::to_string(i) + ".csv");
 
         std::cout << "Completed BOEM trial " << std::to_string(i) << std::endl;
 

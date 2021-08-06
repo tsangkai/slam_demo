@@ -380,8 +380,7 @@ int main(int argc, char **argv) {
     slam_problem.InitializeTrajectory();
     // slam_problem.OutputResult("result/sim/pre.csv");
 
-    // slam_problem.SolveOptProblem();
-
+    slam_problem.SolveOptProblem();
 
     slam_problem.OutputResult("result/sim/fixed/opt_" + std::to_string(i) + ".csv");
 

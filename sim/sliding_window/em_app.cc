@@ -23,7 +23,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
   bool EM_step(int block_size) {
 
-    size_t T = 0; //1;
+    size_t T = 0;
 
     bool reach_end = false;
 
@@ -35,9 +35,7 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
 
 
-    // while (T+block_size < state_vec_.size()) {
     while (!reach_end) {
-
 
       // E step
       for (size_t i=T; i < T+block_size; ++i) {
@@ -361,7 +359,7 @@ int main(int argc, char **argv) {
     slam_problem.EM_step(window_size);
 
 
-    slam_problem.OutputResult("result/sim/sliding_window/em_s_" + std::to_string(i) + ".csv");
+    slam_problem.OutputResult("result/sim/sliding_window/em_" + std::to_string(i) + ".csv");
 
     std::cout << "Completed EM trial " << std::to_string(i) << std::endl;
   }

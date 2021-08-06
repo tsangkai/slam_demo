@@ -377,7 +377,7 @@ int main(int argc, char **argv) {
 
   for (size_t i = 0; i < num_real; ++i) {
 
-    Eigen::Rand::Vmt19937_64 urng{ i+1 };
+    Eigen::Rand::Vmt19937_64 urng{ i };
 
 
     ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");

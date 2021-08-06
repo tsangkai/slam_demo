@@ -5,12 +5,13 @@ TIME_DIFF_VAR="15"
 NUM_WIN="3" #"7"
 REPEAT_VAR_WIN="5" #"20"
 
+let TOTAL_TIME_VAR=($NUM_WIN*$TIME_DIFF_VAR)
+
+
 rm -f result/sim/exp_window/*
 
 # ground truth
-let TOTAL_TIME_VAR=($NUM_WIN*$TIME_DIFF_VAR)
 ./bin/sim_exp_window_app $TOTAL_TIME_VAR
-
 
 for (( i=0; i<$NUM_WIN; i++ ))
 do
@@ -23,5 +24,5 @@ done
 
 
 # visualization
-python3 eval/sim_exp_window_eval.py $REPEAT_VAR_WIN $TIME_DIFF_VAR $NUM_WIN
+python eval/sim_exp_window_eval.py $REPEAT_VAR_WIN $TIME_DIFF_VAR $NUM_WIN
 

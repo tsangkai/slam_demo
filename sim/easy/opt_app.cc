@@ -231,8 +231,6 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
 
   bool SolveOptProblem() {
 
-
-
     // ceres parameter
     ceres::Problem                  optimization_problem;
     ceres::Solver::Options          optimization_options;
@@ -265,7 +263,6 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
 
     // add parameter blocks
     for (size_t i=0; i<state_len_; ++i) {
-
       optimization_problem.AddParameterBlock(state_para_vec_.at(i)->GetRotationBlock()->parameters(), 4, quat_parameterization_ptr);
       optimization_problem.AddParameterBlock(state_para_vec_.at(i)->GetVelocityBlock()->parameters(), 3);
       optimization_problem.AddParameterBlock(state_para_vec_.at(i)->GetPositionBlock()->parameters(), 3); 

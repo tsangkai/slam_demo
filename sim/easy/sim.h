@@ -24,7 +24,6 @@
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
 
-// Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
 struct State {
   double             t_;
@@ -42,7 +41,8 @@ struct Estimate {
   Eigen::Matrix<double, 9, 9> cov_;
 };
 
-// This class only handles the memory. The underlying estimate is handled by each parameter blocks.
+// This class is defined for ceres solver. 
+// The underlying estimate is handled by each parameter blocks.
 class StatePara {
 
  public:
@@ -657,33 +657,29 @@ class ExpLandmarkSLAM {
   size_t keyframe_rate_ratio_;
 
   // trajectory parameter
-  double r_; // circle radius x-y plane
-  double w_; // angular velocity
+  double r_;            // circle radius x-y plane
+  double w_;            // angular velocity
   double r_z_;
   double w_z_;
-  double z_h_; // height of the uav
+  double z_h_;          // height of the uav
 
   // IMU parameters
   double sigma_g_c_;    // gyro noise density [rad/s/sqrt(Hz)]
   double sigma_a_c_;    // accelerometer noise density [m/s^2/sqrt(Hz)]
 
   // landmark generation parameter
-  double box_xy_;  // box offset from the circle
-  double box_z_;   // box offset from uav height
+  double box_xy_;       // box offset from the circle
+  double box_z_;        // box offset from uav height
   double landmark_init_noise_;
 
   // camera parameters
-
   Eigen::Matrix4d T_bc_;
 
   double obs_cov_; 
 
-  double du_;  // image dimension
-  double dv_;
-  double fu_;  // focal length
-  double fv_;
-  double cu_;  // principal point
-  double cv_;
+  double du_, dv_;      // image dimension
+  double fu_, fv_;      // focal length
+  double cu_, cv_;      // principal point
 
 
   // ground truth containers
