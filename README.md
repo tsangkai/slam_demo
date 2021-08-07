@@ -23,9 +23,9 @@ cmake --build .
 
 ## Usage
 
-# Simulations
+### Simulations
 
 The shell scripts provide a guildline on how to use the simulations. 
 
 
-# Experiments on EuRoC datasets
+### Experiments on EuRoC datasets
