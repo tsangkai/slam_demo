@@ -4,7 +4,6 @@
 #include <ceres/ceres.h>
 #include <ceres/rotation.h>
 #include <Eigen/Core>
-#include "gflags/gflags.h"
 
 #include "sim.h"
 
@@ -14,8 +13,8 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkEmSLAM(std::string config_file_path): 
-    ExpLandmarkSLAM(config_file_path) {
+  ExpLandmarkEmSLAM(double duration, std::string config_file_path): 
+    ExpLandmarkSLAM(duration, config_file_path) {
 
   }
 
@@ -357,7 +356,7 @@ int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-  ExpLandmarkEmSLAM slam_problem("config/config_sim.yaml");
+  ExpLandmarkEmSLAM slam_problem(FLAGS_duration, "config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark(urng);
