@@ -1,28 +1,28 @@
 #!/bin/bash
 
 # parameters
-TIME_DIFF_VAR="15"
+TIME_DIFF="15"
 NUM_WIN="3" #"7"
-REPEAT_VAR_WIN="5" #"20"
+TRIALS="5" #"20"
 
-let TOTAL_TIME_VAR=($NUM_WIN*$TIME_DIFF_VAR)
+let TOTAL_DURATION=($NUM_WIN*$TIME_DIFF)
 
 
 rm -f result/sim/exp_window/*
 
 # ground truth
-./bin/sim_exp_window_app $TOTAL_TIME_VAR
+./bin/sim_exp_window_app -duration=$TOTAL_DURATION
 
 for (( i=0; i<$NUM_WIN; i++ ))
 do
-  let WINDOW_VAR=($i+1)*$TIME_DIFF_VAR
+  let DURATION=($i+1)*$TIME_DIFF
 
-  perf stat -r $REPEAT_VAR_WIN ./bin/sim_exp_window_opt_app $WINDOW_VAR |& tee -a result/sim/exp_window/perf_opt.txt
-  perf stat -r $REPEAT_VAR_WIN ./bin/sim_exp_window_em_app $WINDOW_VAR |& tee -a result/sim/exp_window/perf_em.txt
-  perf stat -r $REPEAT_VAR_WIN ./bin/sim_exp_window_boem_app $WINDOW_VAR |& tee -a result/sim/exp_window/perf_boem.txt
+  perf stat -r $TRIALS ./bin/sim_exp_window_opt_app  -duration=$DURATION |& tee -a result/sim/exp_window/perf_opt.txt
+  perf stat -r $TRIALS ./bin/sim_exp_window_em_app   -duration=$DURATION |& tee -a result/sim/exp_window/perf_em.txt
+  perf stat -r $TRIALS ./bin/sim_exp_window_boem_app -duration=$DURATION |& tee -a result/sim/exp_window/perf_boem.txt
 done
 
 
 # visualization
-python eval/sim_exp_window_eval.py $REPEAT_VAR_WIN $TIME_DIFF_VAR $NUM_WIN
+python eval/sim_exp_window_eval.py $TRIALS $TIME_DIFF $NUM_WIN
 

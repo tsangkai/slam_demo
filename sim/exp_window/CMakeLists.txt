@@ -9,6 +9,7 @@ target_link_libraries(sim_exp_window_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )
@@ -24,6 +25,7 @@ target_link_libraries(sim_exp_window_opt_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )
@@ -39,6 +41,7 @@ target_link_libraries(sim_exp_window_em_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )
@@ -54,6 +57,7 @@ target_link_libraries(sim_exp_window_boem_app
   PRIVATE ceres
   PRIVATE Eigen3::Eigen
   PRIVATE EigenRand
+  PRIVATE gflags::gflags
   PRIVATE lib
   PRIVATE yaml-cpp::yaml-cpp
 )

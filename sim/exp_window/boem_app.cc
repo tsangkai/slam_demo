@@ -13,8 +13,8 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkBoemSLAM(double time_win, std::string config_file_path):
-    ExpLandmarkSLAM(time_win, config_file_path) {
+  ExpLandmarkBoemSLAM(std::string config_file_path):
+    ExpLandmarkSLAM(config_file_path) {
 
   }
 
@@ -383,11 +383,11 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 int main(int argc, char **argv) {
 
   std::cout << "simulate BOEM SLAM..." << std::endl;
+
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-  double time_win = std::stod(argv[1]);
-
-  ExpLandmarkBoemSLAM slam_problem(time_win,"config/config_sim.yaml");
+  ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark(urng);
@@ -395,15 +395,11 @@ int main(int argc, char **argv) {
   slam_problem.CreateImuData(urng);
   slam_problem.CreateObservationData(urng);
 
-
-
   slam_problem.InitializeSLAMProblem();
 
   slam_problem.BOEM_step();
 
-
-
-  slam_problem.OutputResult("result/sim/exp_window/boem_" + std::string(argv[1]) + ".csv");
+  slam_problem.OutputResult("result/sim/exp_window/boem_" + std::to_string((int) FLAGS_duration) + ".csv");
 
   return 0;
 }

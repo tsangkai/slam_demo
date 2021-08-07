@@ -1,4 +1,5 @@
 
+add_subdirectory(gflags)
 add_subdirectory(yaml-cpp)
 
 

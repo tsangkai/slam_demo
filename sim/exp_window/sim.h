@@ -15,6 +15,7 @@
 #include <ceres/rotation.h>
 #include <Eigen/Core>
 #include "EigenRand/EigenRand"
+#include "gflags/gflags.h"
 #include "yaml-cpp/yaml.h"
 
 #include "so3.h"
@@ -25,7 +26,7 @@
 #include "pre_int_imu_error.h"
 #include "reprojection_error.h"   
 
-// Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
+DEFINE_double(duration, 50, "The duration for this simulation");
 
 struct State {
   double             t_;
@@ -127,9 +128,9 @@ class ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkSLAM(double time_win, std::string config_file_path) {
+  ExpLandmarkSLAM(std::string config_file_path) {
 
-    duration_ = time_win;
+    duration_ = FLAGS_duration;
 
     YAML::Node config_file = YAML::LoadFile(config_file_path);
     

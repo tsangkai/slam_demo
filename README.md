@@ -21,6 +21,11 @@ cmake ..
 cmake --build .
 ```
 
-## Setup
+## Usage
 
-The configuration files for simulation and experiment are in `config`. We use `perf` to measure the execution time of each algorithm.
+# Simulations
+
+The shell scripts provide a guildline on how to use the simulations. 
+
+
+# Experiments on EuRoC datasets
