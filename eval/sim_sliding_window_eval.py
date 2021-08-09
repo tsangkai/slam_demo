@@ -11,6 +11,8 @@ import visualization
 fig_width = 5.84
 fig_height = 4.38
 
+line_width = 1.2
+
 algorithms = ['opt', 'em', 'boem']
 algorithms_display = ['opt.', 'EM', 'BOEM']
 
@@ -33,7 +35,6 @@ for l in range(len(algorithms)):
 
 fig, (ax1, ax2) = plt.subplots(2)
 fig.set_size_inches(fig_width, fig_height)
-line_width = 1.2
 for n in range(len(algorithms)):
 	error_q_m =  np.mean(q_error_array[n], axis=1)
 	error_q_s = np.std(q_error_array[n], axis=1)
