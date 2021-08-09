@@ -28,7 +28,7 @@
 
 DEFINE_double(duration, 50, "The duration for this simulation");
 DEFINE_int32(trials, 5, "The number of simulations");
-DEFINE_double(fixed_window_size, 50, "The fixed window size for sliding window simulations");
+DEFINE_int32(fixed_window_size, 50, "The fixed window size for sliding window simulations");
 
 
 struct State {
@@ -144,17 +144,15 @@ class ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkSLAM(std::string config_file_path) {
+  ExpLandmarkSLAM(double duration, std::string config_file_path) {
 
-    // from command line arguments
-    duration_ = FLAGS_duration;
+    duration_ = duration;
 
     // from config file
     YAML::Node config_file = YAML::LoadFile(config_file_path);
     
     landmark_len_ = (size_t) config_file["landmark_len"].as<int>();
 
-    // duration_ = config_file["duration"].as<double>();
     dt_ = config_file["dt"].as<double>();
     keyframe_rate_ratio_ = (size_t) config_file["keyframe_rate_ratio"].as<int>();
 

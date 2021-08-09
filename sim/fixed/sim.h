@@ -143,8 +143,8 @@ class ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkSLAM(std::string config_file_path) {
-    duration_ = FLAGS_duration;
+  ExpLandmarkSLAM(double duration, std::string config_file_path) {
+    duration_ = duration;
 
     YAML::Node config_file = YAML::LoadFile(config_file_path);
     

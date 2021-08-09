@@ -13,8 +13,8 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkBoemSLAM(std::string config_file_path):
-    ExpLandmarkSLAM(config_file_path) {
+  ExpLandmarkBoemSLAM(double duration, std::string config_file_path):
+    ExpLandmarkSLAM(duration, config_file_path) {
 
   }
 
@@ -358,24 +358,6 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
     return true;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 };
 
 
@@ -387,7 +369,7 @@ int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-  ExpLandmarkBoemSLAM slam_problem("config/config_sim.yaml");
+  ExpLandmarkBoemSLAM slam_problem(FLAGS_duration, "config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark(urng);

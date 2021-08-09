@@ -13,8 +13,8 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkOptSLAM(std::string config_file_path):
-    ExpLandmarkSLAM(config_file_path) {
+  ExpLandmarkOptSLAM(double duration, std::string config_file_path):
+    ExpLandmarkSLAM(duration, config_file_path) {
   }
 
   bool InitializeTrajectory() {
@@ -327,7 +327,7 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
 
     // solve the optimization problem
     ceres::Solve(optimization_options, &optimization_problem, &optimization_summary);
-//    std::cout << optimization_summary.FullReport() << "\n";
+    // std::cout << optimization_summary.FullReport() << "\n";
 
 
     // store results
@@ -340,7 +340,6 @@ class ExpLandmarkOptSLAM: public ExpLandmarkSLAM {
     for (size_t i=0; i<landmark_len_; ++i) {
       *landmark_est_vec_.at(i) = landmark_para_vec_.at(i)->estimate();
     }
-
 
     return true;
   }
@@ -356,7 +355,7 @@ int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   Eigen::Rand::Vmt19937_64 urng{ (unsigned int) time(0) };
 
-  ExpLandmarkOptSLAM slam_problem("config/config_sim.yaml");
+  ExpLandmarkOptSLAM slam_problem(FLAGS_duration, "config/config_sim.yaml");
 
   slam_problem.CreateTrajectory();
   slam_problem.CreateLandmark(urng);
@@ -370,7 +369,6 @@ int main(int argc, char **argv) {
 
   slam_problem.SolveOptProblem();
 
-  int duration_for_filename = FLAGS_duration;
   slam_problem.OutputResult("result/sim/exp_window/opt_" + std::to_string((int) FLAGS_duration) + ".csv");
 
   return 0;

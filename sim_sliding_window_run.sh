@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DURATION="300"
-TRIALS="5"   # 50
+DURATION="1000"  #300
+TRIALS="10"   #50
 FIXED_WINDOW_SIZE="60"
 
 ./bin/sim_sliding_window_app      -duration=$DURATION

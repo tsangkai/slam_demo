@@ -15,14 +15,15 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
 
  public:
 
-  ExpLandmarkEmSLAM(std::string config_file_path): 
-    ExpLandmarkSLAM(config_file_path) {
+  ExpLandmarkEmSLAM(double duration, int window_size, std::string config_file_path): 
+    ExpLandmarkSLAM(duration, config_file_path) {
+      window_size_ = window_size;
   }
 
 
 
   bool EM_step() {
-    int block_size = FLAGS_fixed_window_size;
+    int block_size = window_size_;
     size_t T = 0;
 
     bool reach_end = false;
@@ -332,7 +333,8 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
     return true;
   }
 
-
+ private:
+  int window_size_;
 };
 
 
@@ -346,7 +348,7 @@ int main(int argc, char **argv) {
   for (size_t i = 0; i < num_trials; ++i) {
     Eigen::Rand::Vmt19937_64 urng{ i };
 
-    ExpLandmarkEmSLAM slam_problem("config/config_sim.yaml");
+    ExpLandmarkEmSLAM slam_problem(FLAGS_duration, FLAGS_fixed_window_size, "config/config_sim.yaml");
 
     slam_problem.CreateTrajectory();
     slam_problem.CreateLandmark(urng);
