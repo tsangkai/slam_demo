@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DURATION="50"
-TRIALS="5"   # 50
+TRIALS="50"
 
 ./bin/sim_fixed_app      -duration=$DURATION -trials=$TRIALS
 ./bin/sim_fixed_opt_app  -duration=$DURATION -trials=$TRIALS

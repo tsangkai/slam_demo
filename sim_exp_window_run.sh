@@ -2,8 +2,8 @@
 
 # parameters
 TIME_DIFF="15"
-NUM_WIN="3" #"7"
-TRIALS="5" #"20"
+NUM_WIN="7"
+TRIALS="20"
 
 let TOTAL_DURATION=($NUM_WIN*$TIME_DIFF)
 

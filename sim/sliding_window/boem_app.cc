@@ -25,7 +25,7 @@ class ExpLandmarkBoemSLAM: public ExpLandmarkSLAM {
     // block structure
     size_t n = 1;
     double a = 1.1;
-    double c = 90; //30.25;
+    double c = 120; //30.25;
 
     size_t block_size = floor(c * pow(n, a));
 

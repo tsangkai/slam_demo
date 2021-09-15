@@ -276,6 +276,13 @@ class ExpLandmarkEmSLAM: public ExpLandmarkSLAM {
       optimization_problem.SetParameterBlockConstant(state_para_vec_.at(T)->GetPositionBlock()->parameters());
 
 
+      if (T!=0) {
+        for (size_t i=0; i<landmark_para_vec_.size(); ++i) {
+          optimization_problem.SetParameterBlockConstant(landmark_para_vec_.at(i)->parameters());
+        }        
+      }
+
+
       for (size_t i=T; i <T+block_size; ++i) {
         // create parameter block
         state_para_vec_.at(i+1)->GetRotationBlock()->setEstimate(state_est_vec_.at(i+1)->q_);
